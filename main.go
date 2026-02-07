@@ -101,7 +101,7 @@ func main() {
 
 	// Public Routes
 	e.GET("/", func(c echo.Context) error {
-		return c.Redirect(http.StatusFound, "/dashboard")
+		return c.Redirect(http.StatusFound, "/signin")
 	})
 	e.GET("/signup", authHandler.SignupPage)
 	e.POST("/signup", authHandler.HandleSignup)
