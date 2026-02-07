@@ -1,0 +1,68 @@
+# Docker
+Dockerfile
+.dockerignore
+docker-compose.override.yml
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# CI/CD
+.github
+.gitlab-ci.yml
+
+# Build artifacts
+bin/
+*.exe
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Development
+*.log
+logs/
+tmp/
+temp/
+
+# Documentation (include in image if needed)
+# docs/
+# README.md
+
+# Tests
+tests/
+*_test.go
+testdata/
+
+# Data and uploads
+data/
+uploads/
+/reports/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Node modules (if any)
+node_modules/
+
+# Generated files
+web/templates/*_templ.go
+
+# MLPack artifacts
+internal/ml/mlpack/*.o
+internal/ml/mlpack/*.a

@@ -1,0 +1,65 @@
+server:
+  port: 8080
+  host: 0.0.0.0
+
+mongodb:
+  uri: "mongodb://localhost:27017"
+  database: "geoagent"
+  timeout: 10
+
+organization:
+  id: "ORG001"
+  name: "Example Mining Corporation"
+  deposit_models:
+    - porphyry
+    - epithermal
+    - vms
+
+agents:
+  qc:
+    outlier_threshold: 3.0
+    min_sample_size: 30
+    enable_lab_comparison: true
+
+  anomaly:
+    pathfinder_weights:
+      Au: 0.4
+      Cu: 0.3
+      Mo: 0.2
+      Ag: 0.1
+    isolation_forest:
+      num_trees: 100
+      sample_size: 256
+    lof:
+      k: 20
+    dbscan:
+      eps: 0.5
+      min_pts: 5
+
+  prospectivity:
+    grid_resolution: 100.0  # meters
+    weights:
+      geochemistry: 0.6
+      geology: 0.3
+      structure: 0.1
+
+  sampling:
+    default_budget: 50000.0
+    cost_per_sample: 500.0
+    max_suggestions: 20
+
+  orchestrator:
+    min_confidence: 0.7
+    require_human_review: false
+
+security:
+  enable_auth: false
+  jwt_secret: "change-this-in-production"
+  allowed_origins:
+    - "*"
+
+llm:
+  provider: "gemini"
+  api_key: ""  # Set via environment variable GEOAGENT_LLM_API_KEY
+  model: "gemini-2.5-flash"
+  max_tokens: 4000

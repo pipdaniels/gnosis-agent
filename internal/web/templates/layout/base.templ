@@ -1,0 +1,107 @@
+package layout
+
+templ Base(title string) {
+	<!DOCTYPE html>
+	<html lang="en">
+	<head>
+		<meta charset="UTF-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta name="description" content="GeoAgent - AI-Powered Geochemical Analysis Platform"/>
+		<meta name="theme-color" content="#1a73e8"/>
+		<title>{title} - GeoAgent</title>
+		
+		<!-- PWA Manifest -->
+		<link rel="manifest" href="/static/manifest.json"/>
+		<link rel="icon" type="image/png" href="/static/icon-192.png"/>
+		<link rel="apple-touch-icon" href="/static/icon-512.png"/>
+		
+		<!-- Stylesheets -->
+		<link rel="stylesheet" href="/static/css/main.css"/>
+		<link rel="stylesheet" href="/static/css/components.css"/>
+		
+		<!-- Leaflet for maps -->
+		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+		
+		<!-- Scripts -->
+		<script src="/static/js/db.js" defer></script>
+		<script src="/static/js/app.js" defer></script>
+		<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
+		
+		<!-- Register Service Worker -->
+		<script>
+			if ('serviceWorker' in navigator) {
+				navigator.serviceWorker.register('/sw.js');
+			}
+		</script>
+	</head>
+	<body>
+		<div class="app-container">
+			@Navigation()
+			<main class="main-content">
+				{ children... }
+			</main>
+			@Footer()
+		</div>
+		<div id="toast-container"></div>
+	</body>
+	</html>
+}
+
+templ Navigation() {
+	<nav class="navbar">
+		<div class="nav-container">
+			<div class="nav-brand">
+				<span class="logo">🔬</span>
+				<span class="brand-text">GeoAgent</span>
+			</div>
+			<div class="nav-links">
+				<a href="/" class="nav-link">
+					<span class="icon">📊</span>
+					Dashboard
+				</a>
+				<a href="/upload" class="nav-link">
+					<span class="icon">📤</span>
+					Upload
+				</a>
+				<a href="/datasets" class="nav-link">
+					<span class="icon">📁</span>
+					Datasets
+				</a>
+				<a href="/targets" class="nav-link">
+					<span class="icon">🎯</span>
+					Targets
+				</a>
+				<a href="/decisions" class="nav-link">
+					<span class="icon">✓</span>
+					Decisions
+				</a>
+				<a href="/reports" class="nav-link">
+					<span class="icon">📄</span>
+					Reports
+				</a>
+			</div>
+			<div class="nav-actions">
+				<button class="btn-icon" id="theme-toggle" aria-label="Toggle theme">
+					<span class="icon">🌙</span>
+				</button>
+				<div class="connection-status" id="connection-status">
+					<span class="status-dot online"></span>
+					<span class="status-text">Online</span>
+				</div>
+			</div>
+		</div>
+	</nav>
+}
+
+templ Footer() {
+	<footer class="footer">
+		<div class="footer-container">
+			<p>&copy; 2026 GeoAgent Platform. Powered by Google Gemini AI.</p>
+			<div class="footer-links">
+				<a href="/docs">Documentation</a>
+				<a href="/api">API</a>
+				<a href="/about">About</a>
+			</div>
+		</div>
+	</footer>
+}

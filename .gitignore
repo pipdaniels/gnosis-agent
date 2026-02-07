@@ -1,0 +1,54 @@
+# GeoAgent Platform - Ignore files
+
+# Binaries
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Go workspace file
+go.work
+
+# Dependency directories
+vendor/
+
+# Generated files
+internal/ml/mlpack/*.o
+internal/ml/mlpack/*.a
+web/templates/*_templ.go
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Config (keep examples)
+configs/*.yaml
+!configs/org.example.yaml
+
+# Reports and data (generated output, not source code)
+/reports/
+data/
+uploads/
+
+# Environment variables
+.env
+.env.local
+
+# Logs
+*.log
+logs/

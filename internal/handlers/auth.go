@@ -1,0 +1,109 @@
+package handlers
+
+import (
+	"fmt"
+	"net/http"
+	"time"
+
+	"github.com/labstack/echo/v4"
+	"github.com/pipdaniels/geochem-agent/internal/services/auth"
+	"github.com/pipdaniels/geochem-agent/internal/web/templates/pages"
+)
+
+type AuthHandler struct {
+	service *auth.AuthService
+}
+
+func NewAuthHandler(service *auth.AuthService) *AuthHandler {
+	return &AuthHandler{service: service}
+}
+
+// SignupPage renders the signup page
+func (h *AuthHandler) SignupPage(c echo.Context) error {
+	return render(c, pages.Signup())
+}
+
+// SigninPage renders the signin page
+func (h *AuthHandler) SigninPage(c echo.Context) error {
+	return render(c, pages.Signin())
+}
+
+// HandleSignup processes signup requests
+func (h *AuthHandler) HandleSignup(c echo.Context) error {
+	orgName := c.FormValue("org_name")
+	email := c.FormValue("email")
+	password := c.FormValue("password")
+	confirmPassword := c.FormValue("confirm_password")
+	passkey := c.FormValue("passkey")
+	terms := c.FormValue("terms") == "on"
+
+	req := auth.SignupRequest{
+		OrgName:         orgName,
+		Email:           email,
+		Password:        password,
+		ConfirmPassword: confirmPassword,
+		Passkey:         passkey,
+		TermsAccepted:   terms,
+	}
+
+	result, err := h.service.Signup(c.Request().Context(), req)
+	if err != nil {
+		// TODO: Render with error message
+		return c.String(http.StatusBadRequest, fmt.Sprintf("Signup failed: %v", err))
+	}
+
+	// Set Auth Cookie
+	cookie := new(http.Cookie)
+	cookie.Name = "auth_token"
+	cookie.Value = result.Token
+	cookie.Expires = time.Now().Add(24 * time.Hour)
+	cookie.HttpOnly = true
+	cookie.Path = "/"
+	c.SetCookie(cookie)
+	
+	// Show API Key or Redirect (For now, simple response/redirect)
+	// ideally show a success page with API key
+	return c.String(http.StatusOK, fmt.Sprintf("Signup successful! OrgID: %s. API Key: %s. Redirecting...", result.OrgID, result.APIKey))
+}
+
+// HandleSignin processes signin requests
+func (h *AuthHandler) HandleSignin(c echo.Context) error {
+	orgID := c.FormValue("org_id")
+	email := c.FormValue("email")
+	password := c.FormValue("password")
+
+	req := auth.LoginRequest{
+		OrgID:    orgID,
+		Email:    email,
+		Password: password,
+	}
+
+	token, err := h.service.Login(c.Request().Context(), req)
+	if err != nil {
+		// TODO: Render with error message
+		return c.String(http.StatusUnauthorized, "Invalid credentials")
+	}
+
+	// Set Auth Cookie
+	cookie := new(http.Cookie)
+	cookie.Name = "auth_token"
+	cookie.Value = token
+	cookie.Expires = time.Now().Add(24 * time.Hour)
+	cookie.HttpOnly = true
+	cookie.Path = "/"
+	c.SetCookie(cookie)
+
+	return c.Redirect(http.StatusFound, "/dashboard")
+}
+
+// Logout clears the session
+func (h *AuthHandler) Logout(c echo.Context) error {
+	cookie := new(http.Cookie)
+	cookie.Name = "auth_token"
+	cookie.Value = ""
+	cookie.Expires = time.Now().Add(-1 * time.Hour)
+	cookie.HttpOnly = true
+	cookie.Path = "/"
+	c.SetCookie(cookie)
+	return c.Redirect(http.StatusFound, "/signin")
+}
