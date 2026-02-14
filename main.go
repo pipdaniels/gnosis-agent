@@ -79,7 +79,7 @@ func main() {
 		return c.JSON(200, map[string]string{
 			"status":  "healthy",
 			"version": "1.0.0",
-			"org":     cfg.Org.ID,
+			"org":     cfg.Org.Name,
 		})
 	})
 
@@ -124,6 +124,7 @@ func main() {
 
 	protected.GET("/dashboard", handlers.Dashboard)
 	protected.GET("/upload", handlers.Upload)
+	protected.POST("/upload", handlers.HandleUpload)
 
 	// API Group (Headless / Programmatic)
 	// Uses API Key from Header

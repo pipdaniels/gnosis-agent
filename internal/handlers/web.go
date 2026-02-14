@@ -1,8 +1,6 @@
 package handlers
 
 import (
-	"net/http"
-
 	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
 	"github.com/pipdaniels/geochem-agent/internal/web/templates/pages"
@@ -29,10 +27,10 @@ func Upload(c echo.Context) error {
 	return render(c, pages.Upload())
 }
 
-func Signup(c echo.Context) error {
-	return c.String(http.StatusNotImplemented, "Signup page not implemented yet")
+func HandleUpload(c echo.Context) error {
+	// data := c.File()
+
+	// Take the attached file, parse it, and save it to the database
+	return nil
 }
 
-func Signin(c echo.Context) error {
-	return c.String(http.StatusNotImplemented, "Signin page not implemented yet")
-}

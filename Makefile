@@ -40,9 +40,9 @@ build-all: ## Build for all platforms
 	@PLATFORMS="linux/amd64 linux/arm64 darwin/amd64 darwin/arm64 windows/amd64" ./scripts/build.sh
 	@echo "${GREEN}All builds complete${NC}"
 
-run: ## Run the application locally
+run: build## Run the application locally
 	@echo "${YELLOW}Starting application...${NC}"
-	@go run ./cmd/geoagent start --config configs/org.example.yaml
+	@go run main.go start --config configs/org.example.yaml
 
 test: ## Run tests
 	@echo "${YELLOW}Running tests...${NC}"

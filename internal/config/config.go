@@ -10,7 +10,7 @@ import (
 type Config struct {
 	Server   ServerConfig   `mapstructure:"server"`
 	MongoDB  MongoConfig    `mapstructure:"mongodb"`
-	Org      OrgConfig      `mapstructure:"organization"`
+	Org      OrgConfig      `mapstructure:"org"`
 	Agents   AgentConfig    `mapstructure:"agents"`
 	Security SecurityConfig `mapstructure:"security"`
 	LLM      LLMConfig      `mapstructure:"llm"`
@@ -144,6 +144,10 @@ func LoadConfig(configPath string) (*Config, error) {
 	v.SetDefault("llm.provider", "gemini")
 	v.SetDefault("llm.model", "gemini-2.5-flash")
 	v.SetDefault("llm.max_tokens", 4000)
+	v.SetDefault("llm.api_key", "[ENCRYPTION_KEY]")
+	v.SetDefault("org.id", "default")
+	v.SetDefault("org.name", "Admin_Organization")
+	v.SetDefault("org.deposit_models", []string{"epithermal", "porphyry", "orogenic"})
 
 	// Read from config file if provided
 	if configPath != "" {
