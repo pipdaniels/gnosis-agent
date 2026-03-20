@@ -138,8 +138,6 @@ func LoadConfig(configPath string) (*Config, error) {
 	v.SetDefault("agents.sampling.max_suggestions", 20)
 	v.SetDefault("agents.orchestrator.min_confidence", 0.7)
 	v.SetDefault("agents.orchestrator.require_human_review", false)
-	v.SetDefault("security.enable_auth", true)
-	v.SetDefault("security.signup_passkey", "geochem-invite-2026") // Default invite code
 	v.SetDefault("security.api_key_header", "X-API-Key")
 	v.SetDefault("llm.provider", "gemini")
 	v.SetDefault("llm.model", "gemini-2.5-flash")

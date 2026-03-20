@@ -112,7 +112,6 @@ func main() {
 	// Protected Group (Web)
 	// Uses JWT from cookie
 	protected := e.Group("")
-	if cfg.Security.EnableAuth {
 		protected.Use(echojwt.WithConfig(echojwt.Config{
 			SigningKey:  []byte(cfg.Security.JWTSecret),
 			TokenLookup: "cookie:auth_token",
@@ -120,16 +119,21 @@ func main() {
 				return c.Redirect(http.StatusFound, "/signin")
 			},
 		}))
-	}
+		
+	webHandler := handlers.NewWebHandler(mongoMgr)
 
 	protected.GET("/dashboard", handlers.Dashboard)
 	protected.GET("/upload", handlers.Upload)
-	protected.POST("/upload", handlers.HandleUpload)
+	protected.POST("/upload", webHandler.HandleUpload)
+	protected.POST("/api/upload", webHandler.HandleUpload)
 
+
+
+	
 	// API Group (Headless / Programmatic)
 	// Uses API Key from Header
 	api := e.Group("/api")
-	if cfg.Security.EnableAuth {
+
 		api.Use(middleware.KeyAuthWithConfig(middleware.KeyAuthConfig{
 			KeyLookup: "header:" + cfg.Security.APIKeyHeader,
 			Validator: func(key string, c echo.Context) (bool, error) {
@@ -151,7 +155,6 @@ func main() {
 				return true, nil
 			},
 		}))
-	}
 
 	api.GET("/", func(c echo.Context) error {
 		return c.JSON(200, map[string]string{

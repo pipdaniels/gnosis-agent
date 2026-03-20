@@ -9,6 +9,7 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import "github.com/pipdaniels/geochem-agent/internal/web/templates/layout"
+import "github.com/pipdaniels/geochem-agent/internal/web/templates/components"
 
 func Upload() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
@@ -43,7 +44,55 @@ func Upload() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"upload-page\"><div class=\"page-header\"><h1>Upload Geochemical Data</h1><p class=\"subtitle\">Upload CSV or Excel files with sample assay data</p></div><div class=\"upload-container\"><form id=\"upload-form\" enctype=\"multipart/form-data\"><!-- File Drop Zone --><div class=\"upload-section\"><h2>1. Select File</h2><div class=\"drop-zone\" id=\"dropZone\"><div class=\"drop-zone-content\"><div class=\"upload-icon\">📁</div><h3>Drag and drop file here</h3><p>or click to browse</p><p class=\"file-types\">Supported: CSV, XLSX (max 50MB)</p><input type=\"file\" id=\"fileInput\" accept=\".csv,.xlsx\" hidden> <button type=\"button\" class=\"btn btn-primary\" onclick=\"document.getElementById('fileInput').click()\">Choose File</button></div><div class=\"file-preview\" id=\"filePreview\" style=\"display: none;\"><div class=\"file-info\"><div class=\"file-icon\">📄</div><div class=\"file-details\"><h4 id=\"fileName\"></h4><p id=\"fileSize\"></p></div></div><button type=\"button\" class=\"btn-icon btn-remove\" id=\"removeFile\"><span>✕</span></button></div></div></div><!-- Metadata --><div class=\"upload-section\"><h2>2. Dataset Information</h2><div class=\"form-grid\"><div class=\"form-group\"><label for=\"projectName\">Project Name <span class=\"required\">*</span></label> <input type=\"text\" id=\"projectName\" name=\"project_name\" required placeholder=\"e.g., Porphyry Exploration 2026\"></div><div class=\"form-group\"><label for=\"samplingMethod\">Sampling Method <span class=\"required\">*</span></label> <select id=\"samplingMethod\" name=\"sampling_method\" required><option value=\"\">Select method...</option> <option value=\"soil\">Soil Sampling</option> <option value=\"rock_chip\">Rock Chip Sampling</option> <option value=\"drill_core\">Drill Core</option> <option value=\"stream_sediment\">Stream Sediment</option> <option value=\"auger\">Auger</option></select></div><div class=\"form-group\"><label for=\"labName\">Laboratory <span class=\"required\">*</span></label> <input type=\"text\" id=\"labName\" name=\"lab_name\" required placeholder=\"e.g., ALS Global\"></div><div class=\"form-group\"><label for=\"commodities\">Target Commodities</label> <input type=\"text\" id=\"commodities\" name=\"commodities\" placeholder=\"e.g., Au, Cu, Mo\"></div><div class=\"form-group\"><label for=\"depositType\">Deposit Model</label> <select id=\"depositType\" name=\"deposit_type\"><option value=\"\">Select model...</option> <option value=\"porphyry\">Porphyry Cu-Au</option> <option value=\"epithermal\">Epithermal Au-Ag</option> <option value=\"vms\">VMS</option> <option value=\"orogenic\">Orogenic Gold</option> <option value=\"skarn\">Skarn</option> <option value=\"sedex\">SEDEX</option></select></div><div class=\"form-group\"><label for=\"samplingDate\">Sampling Date</label> <input type=\"date\" id=\"samplingDate\" name=\"sampling_date\"></div></div></div><!-- Advanced Options --><div class=\"upload-section collapsible\"><div class=\"section-toggle\" onclick=\"toggleSection('advancedOptions')\"><h2>3. Advanced Options</h2><span class=\"toggle-icon\">▼</span></div><div id=\"advancedOptions\" class=\"section-content\" style=\"display: none;\"><div class=\"form-grid\"><div class=\"form-group\"><label for=\"detectionLimit\">Detection Limit Handling</label> <select id=\"detectionLimit\" name=\"detection_limit\"><option value=\"half\">Use half detection limit</option> <option value=\"zero\">Use zero</option> <option value=\"limit\">Use detection limit</option></select></div><div class=\"form-group\"><label for=\"autoAnalyze\"><input type=\"checkbox\" id=\"autoAnalyze\" name=\"auto_analyze\" checked> Run automatic analysis after upload</label></div></div></div></div><!-- Submit --><div class=\"upload-actions\"><button type=\"submit\" class=\"btn btn-primary btn-lg\" id=\"submitBtn\"><span class=\"btn-text\">Upload & Analyze</span> <span class=\"btn-loader\" style=\"display: none;\">Processing...</span></button> <button type=\"reset\" class=\"btn btn-outline btn-lg\">Clear Form</button></div></form><!-- Progress --><div id=\"uploadProgress\" class=\"upload-progress\" style=\"display: none;\"><div class=\"progress-header\"><h3>Uploading...</h3><span id=\"progressPercent\">0%</span></div><div class=\"progress-bar\"><div class=\"progress-fill\" id=\"progressFill\"></div></div><p id=\"progressText\">Preparing upload...</p></div></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"upload-page\"><div class=\"screen-header\"><div><h1>Upload Geochemical Data</h1><p class=\"subtitle\">Upload CSV or Excel files with sample assay data</p></div></div><div class=\"upload-container\"><form id=\"upload-form\" enctype=\"multipart/form-data\"><!-- File Drop Zone --><div class=\"upload-section\"><h2>1. Select File</h2><div class=\"drop-zone\" id=\"dropZone\"><div class=\"drop-zone-content\"><div class=\"upload-icon\">📁</div><h3>Drag and drop file here</h3><p>or click to browse</p><p class=\"file-types\">Supported: CSV, XLSX (max 50MB)</p><input type=\"file\" id=\"fileInput\" accept=\".csv,.xlsx\" hidden>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = components.Button("Choose File", "button", "primary", false, templ.Attributes{"onclick": "document.getElementById('fileInput').click()"}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div><div class=\"file-preview\" id=\"filePreview\" style=\"display: none;\"><div class=\"file-info\"><div class=\"file-icon\">📄</div><div class=\"file-details\"><h4 id=\"fileName\"></h4><p id=\"fileSize\"></p></div></div><button type=\"button\" class=\"btn-icon btn-remove\" id=\"removeFile\"><span>✕</span></button></div></div></div><!-- Metadata --><div class=\"upload-section\"><h2>2. Dataset Information</h2><div class=\"form-grid\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = components.Input("Project Name", "projectName", "project_name", "text", "e.g., Porphyry Exploration 2026", true, "").Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"form-group\"><label for=\"samplingMethod\">Sampling Method <span class=\"required\">*</span></label> <select id=\"samplingMethod\" name=\"sampling_method\" required><option value=\"\">Select method...</option> <option value=\"soil\">Soil Sampling</option> <option value=\"rock_chip\">Rock Chip Sampling</option> <option value=\"drill_core\">Drill Core</option> <option value=\"stream_sediment\">Stream Sediment</option> <option value=\"auger\">Auger</option></select></div>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = components.Input("Laboratory", "labName", "lab_name", "text", "e.g., ALS Global", true, "").Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = components.Input("Target Commodities", "commodities", "commodities", "text", "e.g., Au, Cu, Mo", false, "").Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"form-group\"><label for=\"depositType\">Deposit Model</label> <select id=\"depositType\" name=\"deposit_type\"><option value=\"\">Select model...</option> <option value=\"porphyry\">Porphyry Cu-Au</option> <option value=\"epithermal\">Epithermal Au-Ag</option> <option value=\"vms\">VMS</option> <option value=\"orogenic\">Orogenic Gold</option> <option value=\"skarn\">Skarn</option> <option value=\"sedex\">SEDEX</option></select></div>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = components.Input("Sampling Date", "samplingDate", "sampling_date", "date", "", false, "").Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</div></div><!-- Advanced Options --><div class=\"upload-section collapsible\"><div class=\"section-toggle\" onclick=\"toggleSection('advancedOptions')\"><h2>3. Advanced Options</h2><span class=\"toggle-icon\">▼</span></div><div id=\"advancedOptions\" class=\"section-content\" style=\"display: none;\"><div class=\"form-grid\"><div class=\"form-group\"><label for=\"detectionLimit\">Detection Limit Handling</label> <select id=\"detectionLimit\" name=\"detection_limit\"><option value=\"half\">Use half detection limit</option> <option value=\"zero\">Use zero</option> <option value=\"limit\">Use detection limit</option></select></div><div class=\"form-group checkbox\"><label class=\"checkbox-container\"><input type=\"checkbox\" id=\"autoAnalyze\" name=\"auto_analyze\" checked> <span class=\"checkbox-label\">Run automatic analysis after upload</span></label></div></div></div></div><!-- Submit --><div class=\"upload-actions\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = components.Button("Upload & Analyze", "submit", "primary", false, templ.Attributes{"id": "submitBtn"}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = components.Button("Clear Form", "reset", "outline", false, nil).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div></form><!-- Progress --><div id=\"uploadProgress\" class=\"upload-progress\" style=\"display: none;\"><div class=\"progress-header\"><h3>Uploading...</h3><span id=\"progressPercent\">0%</span></div><div class=\"progress-bar\"><div class=\"progress-fill\" id=\"progressFill\"></div></div><p id=\"progressText\">Preparing upload...</p></div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

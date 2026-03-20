@@ -1,33 +1,30 @@
 package pages
 
 import "github.com/pipdaniels/geochem-agent/internal/web/templates/layout"
+import "github.com/pipdaniels/geochem-agent/internal/web/templates/components"
 
 templ Signin() {
-	@layout.Base("Sign In - GeoAgent") {
+	@layout.Base("Sign In") {
 		<div class="auth-page">
 			<div class="auth-container">
-				<div class="auth-header">
-					<h1>Welcome Back</h1>
-					<p>Sign in to continue exploration</p>
+				<div class="auth-card">
+					<div class="auth-header">
+						<div class="auth-logo">🔬</div>
+						<h1>Welcome Back</h1>
+						<p>Sign in to your GeoAgent account</p>
+					</div>
+					<form action="/signin" method="POST" class="auth-form">
+						@components.Input("Organization", "orgID", "org_id", "text", "e.g., ORG123", true, "")
+						@components.Input("Email Address", "email", "email", "email", "you@company.com", true, "")
+						@components.Input("Password", "password", "password", "password", "••••••••", true, "")
+						<div class="form-actions">
+							@components.Button("Sign In", "submit", "primary", true, nil)
+						</div>
+						<div class="auth-footer">
+							<p>Don't have an account? <a href="/signup">Create one for free</a></p>
+						</div>
+					</form>
 				</div>
-				<form action="/signin" method="POST" class="auth-form">
-					<div class="form-group">
-						<label for="orgID">Organization ID</label>
-						<input type="text" id="orgID" name="org_id" required placeholder="e.g., ORG123"/>
-					</div>
-					<div class="form-group">
-						<label for="email">Email Address</label>
-						<input type="email" id="email" name="email" required placeholder="you@company.com"/>
-					</div>
-					<div class="form-group">
-						<label for="password">Password</label>
-						<input type="password" id="password" name="password" required/>
-					</div>
-					<button type="submit" class="btn btn-primary btn-block">Sign In</button>
-					<div class="auth-footer">
-						<p>Don't have an account? <a href="/signup">Sign Up</a></p>
-					</div>
-				</form>
 			</div>
 		</div>
 	}

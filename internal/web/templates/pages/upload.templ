@@ -1,15 +1,17 @@
 package pages
 
 import "github.com/pipdaniels/geochem-agent/internal/web/templates/layout"
+import "github.com/pipdaniels/geochem-agent/internal/web/templates/components"
 
 templ Upload() {
 	@layout.Base("Upload Data") {
 		<div class="upload-page">
-			<div class="page-header">
-				<h1>Upload Geochemical Data</h1>
-				<p class="subtitle">Upload CSV or Excel files with sample assay data</p>
+			<div class="screen-header">
+				<div>
+					<h1>Upload Geochemical Data</h1>
+					<p class="subtitle">Upload CSV or Excel files with sample assay data</p>
+				</div>
 			</div>
-			
 			<div class="upload-container">
 				<form id="upload-form" enctype="multipart/form-data">
 					<!-- File Drop Zone -->
@@ -22,9 +24,7 @@ templ Upload() {
 								<p>or click to browse</p>
 								<p class="file-types">Supported: CSV, XLSX (max 50MB)</p>
 								<input type="file" id="fileInput" accept=".csv,.xlsx" hidden/>
-								<button type="button" class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
-									Choose File
-								</button>
+								@components.Button("Choose File", "button", "primary", false, templ.Attributes{"onclick": "document.getElementById('fileInput').click()"})
 							</div>
 							<div class="file-preview" id="filePreview" style="display: none;">
 								<div class="file-info">
@@ -40,16 +40,11 @@ templ Upload() {
 							</div>
 						</div>
 					</div>
-					
 					<!-- Metadata -->
 					<div class="upload-section">
 						<h2>2. Dataset Information</h2>
 						<div class="form-grid">
-							<div class="form-group">
-								<label for="projectName">Project Name <span class="required">*</span></label>
-								<input type="text" id="projectName" name="project_name" required placeholder="e.g., Porphyry Exploration 2026"/>
-							</div>
-							
+							@components.Input("Project Name", "projectName", "project_name", "text", "e.g., Porphyry Exploration 2026", true, "")
 							<div class="form-group">
 								<label for="samplingMethod">Sampling Method <span class="required">*</span></label>
 								<select id="samplingMethod" name="sampling_method" required>
@@ -61,17 +56,8 @@ templ Upload() {
 									<option value="auger">Auger</option>
 								</select>
 							</div>
-							
-							<div class="form-group">
-								<label for="labName">Laboratory <span class="required">*</span></label>
-								<input type="text" id="labName" name="lab_name" required placeholder="e.g., ALS Global"/>
-							</div>
-							
-							<div class="form-group">
-								<label for="commodities">Target Commodities</label>
-								<input type="text" id="commodities" name="commodities" placeholder="e.g., Au, Cu, Mo"/>
-							</div>
-							
+							@components.Input("Laboratory", "labName", "lab_name", "text", "e.g., ALS Global", true, "")
+							@components.Input("Target Commodities", "commodities", "commodities", "text", "e.g., Au, Cu, Mo", false, "")
 							<div class="form-group">
 								<label for="depositType">Deposit Model</label>
 								<select id="depositType" name="deposit_type">
@@ -84,14 +70,9 @@ templ Upload() {
 									<option value="sedex">SEDEX</option>
 								</select>
 							</div>
-							
-							<div class="form-group">
-								<label for="samplingDate">Sampling Date</label>
-								<input type="date" id="samplingDate" name="sampling_date"/>
-							</div>
+							@components.Input("Sampling Date", "samplingDate", "sampling_date", "date", "", false, "")
 						</div>
 					</div>
-					
 					<!-- Advanced Options -->
 					<div class="upload-section collapsible">
 						<div class="section-toggle" onclick="toggleSection('advancedOptions')">
@@ -108,27 +89,21 @@ templ Upload() {
 										<option value="limit">Use detection limit</option>
 									</select>
 								</div>
-								
-								<div class="form-group">
-									<label for="autoAnalyze">
+								<div class="form-group checkbox">
+									<label class="checkbox-container">
 										<input type="checkbox" id="autoAnalyze" name="auto_analyze" checked/>
-										Run automatic analysis after upload
+										<span class="checkbox-label">Run automatic analysis after upload</span>
 									</label>
 								</div>
 							</div>
 						</div>
 					</div>
-					
 					<!-- Submit -->
 					<div class="upload-actions">
-						<button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
-							<span class="btn-text">Upload & Analyze</span>
-							<span class="btn-loader" style="display: none;">Processing...</span>
-						</button>
-						<button type="reset" class="btn btn-outline btn-lg">Clear Form</button>
+						@components.Button("Upload & Analyze", "submit", "primary", false, templ.Attributes{"id": "submitBtn"})
+						@components.Button("Clear Form", "reset", "outline", false, nil)
 					</div>
 				</form>
-				
 				<!-- Progress -->
 				<div id="uploadProgress" class="upload-progress" style="display: none;">
 					<div class="progress-header">

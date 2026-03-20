@@ -9,6 +9,7 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import "github.com/pipdaniels/geochem-agent/internal/web/templates/layout"
+import "github.com/pipdaniels/geochem-agent/internal/web/templates/components"
 
 func Signup() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
@@ -43,13 +44,41 @@ func Signup() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"auth-page\"><div class=\"auth-container\"><div class=\"auth-header\"><h1>Create Account</h1><p>Start your geochemical exploration journey</p></div><form action=\"/signup\" method=\"POST\" class=\"auth-form\"><div class=\"form-group\"><label for=\"orgName\">Organization Name</label> <input type=\"text\" id=\"orgName\" name=\"org_name\" required placeholder=\"My Mining Corp\"></div><div class=\"form-group\"><label for=\"email\">Email Address</label> <input type=\"email\" id=\"email\" name=\"email\" required placeholder=\"you@company.com\"></div><div class=\"form-group\"><label for=\"password\">Password</label> <input type=\"password\" id=\"password\" name=\"password\" required minlength=\"8\"></div><div class=\"form-group\"><label for=\"confirmPassword\">Confirm Password</label> <input type=\"password\" id=\"confirmPassword\" name=\"confirm_password\" required minlength=\"8\"></div><div class=\"form-group\"><label for=\"passkey\">Invite Passkey</label> <input type=\"text\" id=\"passkey\" name=\"passkey\" required placeholder=\"Enter invite code\"> <small class=\"form-hint\">Required for beta access</small></div><div class=\"form-group checkbox\"><label><input type=\"checkbox\" name=\"terms\" required> I accept the Terms of Service and Privacy Policy</label></div><button type=\"submit\" class=\"btn btn-primary btn-block\">Create Account</button><div class=\"auth-footer\"><p>Already have an account? <a href=\"/signin\">Sign In</a></p></div></form></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"auth-page\"><div class=\"auth-container\"><div class=\"auth-card\"><div class=\"auth-header\"><div class=\"auth-logo\">🔬</div><h1>Create Account</h1><p>Start your geochemical exploration journey</p></div><form action=\"/signup\" method=\"POST\" class=\"auth-form\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = components.Input("Organization Name", "orgName", "org_name", "text", "My Mining Corp", true, "").Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = components.Input("Email Address", "email", "email", "email", "you@company.com", true, "").Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = components.Input("Password", "password", "password", "password", "••••••••", true, "").Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = components.Input("Confirm Password", "confirmPassword", "confirm_password", "password", "••••••••", true, "").Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"form-group checkbox\"><label class=\"checkbox-container\"><input type=\"checkbox\" name=\"terms\" required> <span class=\"checkbox-label\">I accept the <a href=\"/terms\">Terms of Service</a> and <a href=\"/privacy\">Privacy Policy</a></span></label></div><div class=\"form-actions\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = components.Button("Create Account", "submit", "primary", true, nil).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div><div class=\"auth-footer\"><p>Already have an account? <a href=\"/signin\">Sign In</a></p></div></form></div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			return nil
 		})
-		templ_7745c5c3_Err = layout.Base("Sign Up - GeoAgent").Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = layout.Base("Sign Up").Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

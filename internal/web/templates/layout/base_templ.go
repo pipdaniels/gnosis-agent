@@ -36,7 +36,7 @@ func Base(title string) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/layout/base.templ`, Line: 11, Col: 15}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/layout/base.templ`, Line: 11, Col: 17}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -95,7 +95,7 @@ func Navigation() templ.Component {
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<nav class=\"navbar\"><div class=\"nav-container\"><div class=\"nav-brand\"><span class=\"logo\">🔬</span> <span class=\"brand-text\">GeoAgent</span></div><div class=\"nav-links\"><a href=\"/\" class=\"nav-link\"><span class=\"icon\">📊</span> Dashboard</a> <a href=\"/upload\" class=\"nav-link\"><span class=\"icon\">📤</span> Upload</a> <a href=\"/datasets\" class=\"nav-link\"><span class=\"icon\">📁</span> Datasets</a> <a href=\"/targets\" class=\"nav-link\"><span class=\"icon\">🎯</span> Targets</a> <a href=\"/decisions\" class=\"nav-link\"><span class=\"icon\">✓</span> Decisions</a> <a href=\"/reports\" class=\"nav-link\"><span class=\"icon\">📄</span> Reports</a></div><div class=\"nav-actions\"><button class=\"btn-icon\" id=\"theme-toggle\" aria-label=\"Toggle theme\"><span class=\"icon\">🌙</span></button><div class=\"connection-status\" id=\"connection-status\"><span class=\"status-dot online\"></span> <span class=\"status-text\">Online</span></div></div></div></nav>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<nav class=\"navbar\"><div class=\"nav-container\"><div class=\"nav-brand\"><span class=\"logo\">🔬</span> <span class=\"brand-text\">GeoAgent</span></div><div class=\"nav-links\"><a href=\"/\" class=\"nav-link active\">Dashboard</a> <a href=\"/upload\" class=\"nav-link\">Upload</a> <a href=\"/datasets\" class=\"nav-link\">Datasets</a> <a href=\"/targets\" class=\"nav-link\">Targets</a> <a href=\"/decisions\" class=\"nav-link\">Decisions</a> <a href=\"/reports\" class=\"nav-link\">Reports</a></div><div class=\"nav-actions\"><button class=\"btn btn-outline btn-sm\" id=\"theme-toggle\"><span class=\"icon\">🌙</span></button><div class=\"user-profile\"><div class=\"avatar\">U</div></div></div></div></nav>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -124,7 +124,7 @@ func Footer() templ.Component {
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<footer class=\"footer\"><div class=\"footer-container\"><p>&copy; 2026 GeoAgent Platform. Powered by Google Gemini AI.</p><div class=\"footer-links\"><a href=\"/docs\">Documentation</a> <a href=\"/api\">API</a> <a href=\"/about\">About</a></div></div></footer>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<footer class=\"footer\"><div class=\"footer-container\"><div class=\"footer-info\"><p>&copy; 2026 Gnosis, a GeoAgent.</p><p class=\"powered-by\">Powered by Sipstory LTD.</p></div><div class=\"footer-links\"><a href=\"/docs\">Docs</a> <a href=\"/api\">API</a> <a href=\"/about\">About</a> <a href=\"/privacy\">Privacy</a></div></div></footer>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -9,6 +9,7 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import "github.com/pipdaniels/geochem-agent/internal/web/templates/layout"
+import "github.com/pipdaniels/geochem-agent/internal/web/templates/components"
 
 func Signin() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
@@ -43,13 +44,37 @@ func Signin() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"auth-page\"><div class=\"auth-container\"><div class=\"auth-header\"><h1>Welcome Back</h1><p>Sign in to continue exploration</p></div><form action=\"/signin\" method=\"POST\" class=\"auth-form\"><div class=\"form-group\"><label for=\"orgID\">Organization ID</label> <input type=\"text\" id=\"orgID\" name=\"org_id\" required placeholder=\"e.g., ORG123\"></div><div class=\"form-group\"><label for=\"email\">Email Address</label> <input type=\"email\" id=\"email\" name=\"email\" required placeholder=\"you@company.com\"></div><div class=\"form-group\"><label for=\"password\">Password</label> <input type=\"password\" id=\"password\" name=\"password\" required></div><button type=\"submit\" class=\"btn btn-primary btn-block\">Sign In</button><div class=\"auth-footer\"><p>Don't have an account? <a href=\"/signup\">Sign Up</a></p></div></form></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"auth-page\"><div class=\"auth-container\"><div class=\"auth-card\"><div class=\"auth-header\"><div class=\"auth-logo\">🔬</div><h1>Welcome Back</h1><p>Sign in to your GeoAgent account</p></div><form action=\"/signin\" method=\"POST\" class=\"auth-form\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = components.Input("Organization", "orgID", "org_id", "text", "e.g., ORG123", true, "").Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = components.Input("Email Address", "email", "email", "email", "you@company.com", true, "").Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = components.Input("Password", "password", "password", "password", "••••••••", true, "").Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"form-actions\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = components.Button("Sign In", "submit", "primary", true, nil).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div><div class=\"auth-footer\"><p>Don't have an account? <a href=\"/signup\">Create one for free</a></p></div></form></div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			return nil
 		})
-		templ_7745c5c3_Err = layout.Base("Sign In - GeoAgent").Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = layout.Base("Sign In").Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -101,8 +101,10 @@ docker-clean: ## Clean Docker resources
 	@echo "${GREEN}Docker cleanup complete${NC}"
 
 dev: ## Run in development mode with hot reload
+	@echo "${YELLOW}Generating templates...${NC}"
+	@templ generate
 	@echo "${YELLOW}Starting development server...${NC}"
-	@air || go run ./cmd/geoagent start --config configs/org.example.yaml
+	@air || go run ./main.go start --config configs/org.example.yaml
 
 format: ## Format code
 	@echo "${YELLOW}Formatting code...${NC}"

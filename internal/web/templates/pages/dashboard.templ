@@ -1,33 +1,36 @@
 package pages
 
 import "github.com/pipdaniels/geochem-agent/internal/web/templates/layout"
+import "github.com/pipdaniels/geochem-agent/internal/web/templates/components"
 import "fmt"
 
 type DatasetSummary struct {
-	ID           string
-	Name         string
-	SampleCount  int
-	UploadedAt   string
-	Status       string
-	QCScore      float64
+	ID          string
+	Name        string
+	SampleCount int
+	UploadedAt  string
+	Status      string
+	QCScore     float64
 }
 
 type DecisionSummary struct {
-	ID          string
-	TargetID    string
-	Decision    string
-	Confidence  float64
-	CreatedAt   string
+	ID         string
+	TargetID   string
+	Decision   string
+	Confidence float64
+	CreatedAt  string
 }
 
 templ Dashboard(datasets []DatasetSummary, recentDecisions []DecisionSummary, stats map[string]interface{}) {
 	@layout.Base("Dashboard") {
 		<div class="dashboard">
-			<div class="dashboard-header">
-				<h1>Geochemical Analysis Dashboard</h1>
-				<p class="subtitle">AI-powered exploration decision support</p>
+			<div class="screen-header">
+				<div>
+					<h1>Geochemical Analysis Dashboard</h1>
+					<p class="subtitle">AI-powered exploration decision support</p>
+				</div>
+				@components.Button("New Dataset", "button", "primary", false, templ.Attributes{"onclick": "window.location.href='/upload'"})
 			</div>
-			
 			<!-- Statistics Cards -->
 			<div class="stats-grid">
 				<div class="stat-card primary">
@@ -37,7 +40,6 @@ templ Dashboard(datasets []DatasetSummary, recentDecisions []DecisionSummary, st
 						<p class="stat-label">Active Datasets</p>
 					</div>
 				</div>
-				
 				<div class="stat-card success">
 					<div class="stat-icon">✓</div>
 					<div class="stat-content">
@@ -45,7 +47,6 @@ templ Dashboard(datasets []DatasetSummary, recentDecisions []DecisionSummary, st
 						<p class="stat-label">Recent Decisions</p>
 					</div>
 				</div>
-				
 				<div class="stat-card warning">
 					<div class="stat-icon">🎯</div>
 					<div class="stat-content">
@@ -53,7 +54,6 @@ templ Dashboard(datasets []DatasetSummary, recentDecisions []DecisionSummary, st
 						<p class="stat-label">Active Targets</p>
 					</div>
 				</div>
-				
 				<div class="stat-card info">
 					<div class="stat-icon">🔬</div>
 					<div class="stat-content">
@@ -62,98 +62,95 @@ templ Dashboard(datasets []DatasetSummary, recentDecisions []DecisionSummary, st
 					</div>
 				</div>
 			</div>
-			
-			<!-- Recent Datasets -->
-			<section class="dashboard-section">
-				<div class="section-header">
-					<h2>Recent Datasets</h2>
-					<a href="/datasets" class="btn btn-secondary">View All</a>
-				</div>
-				
-				if len(datasets) > 0 {
-					<div class="dataset-grid">
-						for _, ds := range datasets {
-							<div class="dataset-card">
-								<div class="card-header">
-									<h3>{ds.Name}</h3>
-									<span class={"badge badge-" + ds.Status}>{ds.Status}</span>
-								</div>
-								<div class="card-body">
-									<div class="card-stat">
-										<span class="label">Samples:</span>
-										<span class="value">{fmt.Sprint(ds.SampleCount)}</span>
-									</div>
-									<div class="card-stat">
-										<span class="label">QC Score:</span>
-										<span class="value">{fmt.Sprintf("%.2f", ds.QCScore)}</span>
-									</div>
-									<div class="card-stat">
-										<span class="label">Uploaded:</span>
-										<span class="value">{ds.UploadedAt}</span>
-									</div>
-								</div>
-								<div class="card-footer">
-									<a href={templ.URL("/datasets/" + ds.ID)} class="btn btn-primary btn-sm">View Details</a>
-									<a href={templ.URL("/datasets/" + ds.ID + "/map")} class="btn btn-outline btn-sm">Map</a>
-								</div>
-							</div>
-						}
+			<div class="dashboard-content">
+				<!-- Recent Datasets -->
+				<section class="dashboard-section">
+					<div class="section-header">
+						<h2>Recent Datasets</h2>
+						<a href="/datasets" class="text-link">View All</a>
 					</div>
-				} else {
-					<div class="empty-state">
-						<div class="empty-icon">📊</div>
-						<h3>No Datasets Yet</h3>
-						<p>Upload your first geochemical dataset to get started</p>
-						<a href="/upload" class="btn btn-primary">Upload Dataset</a>
-					</div>
-				}
-			</section>
-			
-			<!-- Recent Decisions -->
-			<section class="dashboard-section">
-				<div class="section-header">
-					<h2>Recent Decisions</h2>
-					<a href="/decisions" class="btn btn-secondary">View All</a>
-				</div>
-				
-				if len(recentDecisions) > 0 {
-					<div class="decisions-list">
-						for _, dec := range recentDecisions {
-							<div class="decision-item">
-								<div class="decision-icon">
-									if dec.Decision == "drill" {
-										<span class="icon success">✓</span>
-									} else if dec.Decision == "no_drill" {
-										<span class="icon danger">✗</span>
-									} else {
-										<span class="icon warning">?</span>
-									}
-								</div>
-								<div class="decision-content">
-									<h4>Target {dec.TargetID}</h4>
-									<p class="decision-type">{dec.Decision}</p>
-								</div>
-								<div class="decision-meta">
-									<div class="confidence">
-										<span class="label">Confidence:</span>
-										<div class="confidence-bar">
-											<div class="confidence-fill" style={fmt.Sprintf("width: %.0f%%", dec.Confidence*100)}></div>
+					if len(datasets) > 0 {
+						<div class="dataset-grid">
+							for _, ds := range datasets {
+								<div class="dataset-card">
+									<div class="card-header">
+										<h3>{ ds.Name }</h3>
+										<span class={ "badge badge-" + ds.Status }>{ ds.Status }</span>
+									</div>
+									<div class="card-body">
+										<div class="card-stat">
+											<span class="label">Samples</span>
+											<span class="value">{ fmt.Sprint(ds.SampleCount) }</span>
 										</div>
-										<span class="value">{fmt.Sprintf("%.0f%%", dec.Confidence*100)}</span>
+										<div class="card-stat">
+											<span class="label">QC Score</span>
+											<span class="value">{ fmt.Sprintf("%.2f", ds.QCScore) }</span>
+										</div>
+										<span class="timestamp">Uploaded { ds.UploadedAt }</span>
 									</div>
-									<span class="timestamp">{dec.CreatedAt}</span>
+									<div class="card-footer">
+										@components.Button("Details", "button", "outline", true, templ.Attributes{"onclick": fmt.Sprintf("window.location.href='/datasets/%s'", ds.ID)})
+										@components.Button("Map", "button", "secondary", true, templ.Attributes{"onclick": fmt.Sprintf("window.location.href='/datasets/%s/map'", ds.ID)})
+									</div>
 								</div>
+							}
+						</div>
+					} else {
+						<div class="empty-state">
+							<div class="empty-icon">📊</div>
+							<h3>No Datasets Yet</h3>
+							<p>Upload your first geochemical dataset to get started</p>
+							<div class="empty-actions">
+								@components.Button("Upload Dataset", "button", "primary", false, templ.Attributes{"onclick": "window.location.href='/upload'"})
 							</div>
-						}
+						</div>
+					}
+				</section>
+				<!-- Recent Decisions -->
+				<section class="dashboard-section">
+					<div class="section-header">
+						<h2>Recent Decisions</h2>
+						<a href="/decisions" class="text-link">View All</a>
 					</div>
-				} else {
-					<div class="empty-state">
-						<div class="empty-icon">✓</div>
-						<h3>No Decisions Yet</h3>
-						<p>Decisions will appear here after analysis is complete</p>
-					</div>
-				}
-			</section>
+					if len(recentDecisions) > 0 {
+						<div class="decisions-list">
+							for _, dec := range recentDecisions {
+								<div class="decision-item">
+									<div class="decision-icon">
+										if dec.Decision == "drill" {
+											<span class="icon success">✓</span>
+										} else if dec.Decision == "no_drill" {
+											<span class="icon danger">✗</span>
+										} else {
+											<span class="icon warning">?</span>
+										}
+									</div>
+									<div class="decision-content">
+										<h4>Target { dec.TargetID }</h4>
+										<p class="decision-type">{ dec.Decision }</p>
+									</div>
+									<div class="decision-meta">
+										<div class="confidence">
+											<span class="label">Confidence</span>
+											<div class="confidence-bar">
+												<div class="confidence-fill" style={ fmt.Sprintf("width: %.0f%%", dec.Confidence*100) }></div>
+											</div>
+											<span class="value">{ fmt.Sprintf("%.0f%%", dec.Confidence*100) }</span>
+										</div>
+										<span class="timestamp">{ dec.CreatedAt }</span>
+									</div>
+								</div>
+							}
+						</div>
+					} else {
+						<div class="empty-state">
+							<div class="empty-icon">✓</div>
+							<h3>No Decisions Yet</h3>
+							<p>Decisions will appear here after analysis is complete</p>
+						</div>
+					}
+				</section>
+			</div>
 		</div>
 	}
 }

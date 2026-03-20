@@ -1,0 +1,25 @@
+package components
+
+templ Input(label, id, name, type_, placeholder string, required bool, helpText string) {
+	<div class="form-group">
+		<label for={ id }>
+			{ label }
+			if required {
+				<span class="required">*</span>
+			}
+		</label>
+		<input
+			type={ type_ }
+			id={ id }
+			name={ name }
+			placeholder={ placeholder }
+			if required {
+				required
+			}
+			class="input-field"
+		/>
+		if helpText != "" {
+			<small class="form-hint">{ helpText }</small>
+		}
+	</div>
+}

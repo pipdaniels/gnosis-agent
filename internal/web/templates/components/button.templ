@@ -1,0 +1,11 @@
+package components
+
+templ Button(text string, type_ string, variant string, isBlock bool, attrs templ.Attributes) {
+	<button
+		type={ type_ }
+		class={ "btn", "btn-" + variant, templ.KV("btn-block", isBlock) }
+		{ attrs... }
+	>
+		{ text }
+	</button>
+}
