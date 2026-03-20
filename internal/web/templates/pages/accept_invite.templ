@@ -1,0 +1,176 @@
+package pages
+
+import "gnosis-agent/internal/web/templates/layout"
+
+templ AcceptInvite(email string, orgID string, inviteToken string) {
+	@layout.Base("Accept Invitation") {
+		<div class="auth-page">
+			<div class="auth-card">
+				<div class="auth-header">
+					<div class="auth-logo">🧬</div>
+					<h1>Complete Your Account</h1>
+					<p class="subtitle">Join your organization on Gnosis Agent</p>
+				</div>
+				
+				<div class="invite-info">
+					<p>You've been invited as <strong>{ email }</strong> to join organization ID: <strong>{ orgID }</strong>.</p>
+				</div>
+
+				<form id="accept-invite-form" onsubmit="handleAcceptInviteSubmit(event)">
+					<input type="hidden" name="org_id" value={ orgID } />
+					<input type="hidden" name="token" value={ inviteToken } />
+					
+					<div class="form-row">
+						<div class="form-group">
+							<label for="first_name">First Name</label>
+							<input type="text" id="first_name" name="first_name" required placeholder="John" />
+						</div>
+						<div class="form-group">
+							<label for="last_name">Last Name</label>
+							<input type="text" id="last_name" name="last_name" required placeholder="Doe" />
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="password">Create Password</label>
+						<input type="password" id="password" name="password" required minlength="8" placeholder="••••••••" />
+						<p class="help-text">Must be at least 8 characters</p>
+					</div>
+
+					<div class="form-group">
+						<label for="confirm_password">Confirm Password</label>
+						<input type="password" id="confirm_password" name="confirm_password" required minlength="8" placeholder="••••••••" />
+					</div>
+
+					<div class="auth-actions">
+						<button type="submit" class="btn btn-primary btn-block" id="submit-btn">
+							Activate Account
+						</button>
+					</div>
+				</form>
+				
+				<div class="auth-footer">
+					<p>Already have an account? <a href="/signin">Sign In</a></p>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			async function handleAcceptInviteSubmit(event) {
+				event.preventDefault();
+				const form = event.target;
+				const btn = document.getElementById('submit-btn');
+				
+				const password = form.password.value;
+				const confirm = form.confirm_password.value;
+				
+				if (password !== confirm) {
+					alert('Passwords do not match');
+					return;
+				}
+
+				btn.disabled = true;
+				btn.innerText = 'Creating Account...';
+
+				const formData = new FormData(form);
+				try {
+					const resp = await fetch('/invite/accept', {
+						method: 'POST',
+						body: formData
+					});
+					const data = await resp.json();
+					if (data.success) {
+						window.location.href = '/signin?msg=Account activated! Please sign in.';
+					} else {
+						alert(data.error || 'Failed to activate account');
+					}
+				} catch (err) {
+					alert('Connection error');
+				} finally {
+					btn.disabled = false;
+					btn.innerText = 'Activate Account';
+				}
+			}
+		</script>
+
+		<style>
+			.auth-page {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				min-height: 80vh;
+				padding: 2rem;
+			}
+			.auth-card {
+				background: var(--bg-card);
+				padding: 2.5rem;
+				border-radius: 16px;
+				box-shadow: var(--shadow-xl);
+				width: 100%;
+				max-width: 480px;
+				border: 1px solid var(--border-color);
+			}
+			.auth-header {
+				text-align: center;
+				margin-bottom: 2rem;
+			}
+			.auth-logo {
+				font-size: 3rem;
+				margin-bottom: 1rem;
+			}
+			.invite-info {
+				background: var(--bg-secondary);
+				padding: 1rem;
+				border-radius: 8px;
+				margin-bottom: 1.5rem;
+				font-size: 0.9rem;
+				border-left: 4px solid var(--primary-color);
+			}
+			.form-row {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 1rem;
+			}
+			.form-group {
+				margin-bottom: 1.25rem;
+			}
+			.form-group label {
+				display: block;
+				margin-bottom: 0.5rem;
+				font-weight: 500;
+				font-size: 0.9rem;
+			}
+			.form-group input {
+				width: 100%;
+				padding: 0.75rem;
+				border: 1px solid var(--border-color);
+				border-radius: 8px;
+				background: var(--bg-primary);
+				color: var(--text-primary);
+				font-size: 1rem;
+			}
+			.btn-block {
+				width: 100%;
+				padding: 0.875rem;
+				font-weight: 600;
+				border-radius: 8px;
+			}
+			.auth-footer {
+				margin-top: 1.5rem;
+				text-align: center;
+				font-size: 0.9rem;
+				color: var(--text-muted);
+			}
+			.auth-footer a {
+				color: var(--primary-color);
+				font-weight: 500;
+				text-decoration: none;
+			}
+			.help-text {
+				font-size: 0.75rem;
+				color: var(--text-muted);
+				margin-top: 0.25rem;
+			}
+		</style>
+	}
+}

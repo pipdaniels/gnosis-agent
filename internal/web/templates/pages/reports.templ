@@ -1,0 +1,195 @@
+package pages
+
+import "gnosis-agent/internal/web/templates/layout"
+import "gnosis-agent/internal/models"
+
+templ Reports(processedDatasets []models.ProcessedDataset, technicalReports []models.TechnicalReport) {
+	@layout.Base("Reports") {
+		<div class="page-container" style="max-width: 1400px; margin: 2rem auto; padding: 0 1rem; font-family: sans-serif;">
+			<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+				<h1 style="margin: 0; font-size: 1.8rem; color: #111827;">Technical Reports Configuration</h1>
+			</div>
+
+			<div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; margin-bottom: 3rem;">
+				<!-- Agent Config Form -->
+				<div class="card" style="background: white; border-radius: 12px; border: 1px solid #e5e7eb; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); padding: 1.5rem; height: fit-content;">
+					<h3 style="margin-top: 0; color: #111827; font-size: 1.2rem; border-bottom: 1px solid #f3f4f6; padding-bottom: 0.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+						<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bot"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
+						Agent Generation Setup
+					</h3>
+					
+					if len(processedDatasets) == 0 {
+						<p style="color: #ef4444; font-size: 0.9rem; margin-bottom: 1rem;">No formatted datasets available. You must run dataset analysis before generating technical reports.</p>
+					} else {
+						<form id="report-generator-form" style="display: flex; flex-direction: column; gap: 1.25rem;">
+							
+							<div>
+								<label style="display: block; margin-bottom: 0.3rem; font-weight: 500; font-size: 0.85rem; color: #374151;">Processed Dataset Context</label>
+								<select name="dataset_id" id="dataset_id" style="width: 100%; padding: 0.6rem; border-radius: 6px; border: 1px solid #d1d5db; background: #f9fafb;">
+									for _, ds := range processedDatasets {
+										<option value={ds.DatasetID}>{ds.DatasetID}</option>
+									}
+								</select>
+							</div>
+
+							<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+								<div>
+									<label style="display: block; margin-bottom: 0.3rem; font-weight: 500; font-size: 0.85rem; color: #374151;">Company Name</label>
+									<input type="text" id="company_name" placeholder="Acme Minerals" required style="width: 100%; box-sizing: border-box; padding: 0.6rem; border-radius: 6px; border: 1px solid #d1d5db;" />
+								</div>
+								<div>
+									<label style="display: block; margin-bottom: 0.3rem; font-weight: 500; font-size: 0.85rem; color: #374151;">Competent Person (Author)</label>
+									<input type="text" id="author" placeholder="Dr. John Doe" required style="width: 100%; box-sizing: border-box; padding: 0.6rem; border-radius: 6px; border: 1px solid #d1d5db;" />
+								</div>
+							</div>
+
+							<div>
+								<label style="display: block; margin-bottom: 0.3rem; font-weight: 500; font-size: 0.85rem; color: #374151;">Business/Brand Logo URL</label>
+								<input type="url" id="logo_url" placeholder="https://example.com/logo.png" style="width: 100%; box-sizing: border-box; padding: 0.6rem; border-radius: 6px; border: 1px solid #d1d5db;" />
+							</div>
+
+							<div>
+								<label style="display: block; margin-bottom: 0.3rem; font-weight: 500; font-size: 0.85rem; color: #374151;">Template Color Scheme</label>
+								<select id="color_scheme" style="width: 100%; padding: 0.6rem; border-radius: 6px; border: 1px solid #d1d5db;">
+									<option value="#1a73e8">Corporate Blue</option>
+									<option value="#047857">Exploration Emerald</option>
+									<option value="#b91c1c">Geochemistry Crimson</option>
+									<option value="#374151">Executive Slate</option>
+								</select>
+							</div>
+
+							<div>
+								<label style="display: block; margin-bottom: 0.3rem; font-weight: 500; font-size: 0.85rem; color: #374151;">Report Structure / TOC Prompt</label>
+								<p style="font-size: 0.8rem; color: #6b7280; margin-top: 0; margin-bottom: 0.5rem;">Define the exact sections the AI should draft.</p>
+								<textarea id="sections" rows="4" style="width: 100%; box-sizing: border-box; padding: 0.6rem; border-radius: 6px; border: 1px solid #d1d5db; font-family: sans-serif; resize: vertical;" required>1. Executive Summary
+2. Geological Anomalies Profile (Pathfinders)
+3. Drilling Decisions & Cost-Benefit Rationale
+4. Conclusion & Operational Recommendations</textarea>
+							</div>
+
+							<div id="trigger-error" style="color: #dc2626; font-size: 0.85rem; display: none;"></div>
+
+							<button type="submit" id="trigger-btn" style="background: #111827; color: white; border: none; padding: 0.8rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 0.5rem; transition: background 0.2s; margin-top: 0.5rem;">
+								<span id="trigger-text">Run Technical Report Agent</span>
+								<div id="trigger-loader" style="display: none; width: 14px; height: 14px; border: 2px solid #ffffff; border-bottom-color: transparent; border-radius: 50%; box-sizing: border-box; animation: rotation 1s linear infinite;"></div>
+							</button>
+						</form>
+					}
+				</div>
+
+				<!-- Archives List -->
+				<div>
+					<h3 style="margin-top: 0; color: #111827; font-size: 1.2rem; margin-bottom: 1.5rem;">Generated Reports Archive</h3>
+					if len(technicalReports) == 0 {
+						<div class="empty-state" style="text-align: center; padding: 3rem 2rem; background: #f9fafb; border: 1px dashed #d1d5db; border-radius: 12px;">
+							<div style="display: inline-flex; align-items: center; justify-content: center; width: 50px; height: 50px; border-radius: 50%; background: #e0e7ff; color: #4f46e5; margin-bottom: 1rem;">
+								<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-text"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+							</div>
+							<p style="color: #4b5563; font-weight: 500; font-size: 0.95rem;">No technical reports generated yet.</p>
+							<p style="color: #6b7280; font-size: 0.85rem; max-width: 300px; margin: 0 auto;">Configure the settings on the left to invoke the Agent and draft your first report.</p>
+						</div>
+					} else {
+						<div style="display: flex; flex-direction: column; gap: 1rem;">
+							for _, doc := range technicalReports {
+								<div style="background: white; border-radius: 12px; border: 1px solid #e5e7eb; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); padding: 1.5rem;">
+									<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; border-bottom: 1px solid #f3f4f6; padding-bottom: 1rem;">
+										<div style="display: flex; align-items: center; gap: 1rem;">
+											if len(doc.Visualizations) > 0 && doc.Visualizations[0].FilePath != "" {
+												<img src={doc.Visualizations[0].FilePath} style="height: 40px; width: 40px; object-fit: contain; background: #f9fafb; border-radius: 6px; border: 1px solid #e5e7eb;"/>
+											} else {
+												<div style="height: 40px; width: 40px; background: #f3f4f6; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #9ca3af; font-weight: 700; font-size: 0.8rem;">LOGO</div>
+											}
+											<div>
+												<h4 style="margin: 0; color: #111827; font-size: 1.1rem;">{ doc.Title }</h4>
+												<div style="font-size: 0.85rem; color: #6b7280; margin-top: 0.2rem;">Author: <span style="font-weight: 500; color: #374151;">{ doc.Metadata.Author }</span> &bull; { doc.GeneratedAt.Format("Jan 02, 2006 (15:04)") }</div>
+											</div>
+										</div>
+										<span style="background: #eff6ff; color: #1d4ed8; font-size: 0.75rem; font-weight: 600; padding: 0.3rem 0.6rem; border-radius: 99px;">
+											{ doc.ReportID }
+										</span>
+									</div>
+
+									<div style="font-family: inherit;">
+										for _, section := range doc.Sections {
+											<div style="margin-bottom: 1.5rem;">
+												if len(doc.Visualizations) > 1 {
+													<h5 style="margin: 0 0 0.5rem 0; font-size: 1rem; color: #111827; border-left: 4px solid var(--theme-color); padding-left: 0.5rem;" data-theme={doc.Visualizations[1].Description}>{ section.Title }</h5>
+												} else {
+													<h5 style="margin: 0 0 0.5rem 0; font-size: 1rem; color: #111827; border-left: 4px solid #1a73e8; padding-left: 0.5rem;">{ section.Title }</h5>
+												}
+												<div style="font-size: 0.9rem; color: #4b5563; line-height: 1.5; white-space: pre-line;">{ section.Content }</div>
+											</div>
+										}
+									</div>
+
+									<div style="display: flex; gap: 0.8rem; margin-top: 1rem;">
+										<button class="btn btn-outline" style="border: 1px solid #d1d5db; background: white; padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.85rem; font-weight: 500; cursor: pointer;">Download PDF</button>
+										<button class="btn btn-outline" style="border: 1px solid #e0e7ff; background: #eff6ff; color: #4f46e5; padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.85rem; font-weight: 500; cursor: pointer;">Share Report</button>
+									</div>
+								</div>
+							}
+						</div>
+					}
+				</div>
+			</div>
+			
+			<style>
+			@keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+			[data-theme="#1a73e8"] { border-left-color: #1a73e8 !important; }
+			[data-theme="#047857"] { border-left-color: #047857 !important; }
+			[data-theme="#b91c1c"] { border-left-color: #b91c1c !important; }
+			[data-theme="#374151"] { border-left-color: #374151 !important; }
+			</style>
+			<script>
+				const form = document.getElementById("report-generator-form");
+				if(form) {
+					form.addEventListener("submit", async (e) => {
+						e.preventDefault();
+						const btn = document.getElementById("trigger-btn");
+						const loader = document.getElementById("trigger-loader");
+						const txt = document.getElementById("trigger-text");
+						const errDiv = document.getElementById("trigger-error");
+						
+						btn.disabled = true;
+						btn.style.opacity = "0.7";
+						loader.style.display = "inline-block";
+						txt.innerText = "Agent Generating Report... (Tools Mode)";
+						errDiv.style.display = "none";
+
+						try {
+							const formData = new URLSearchParams();
+							formData.append('dataset_id', document.getElementById("dataset_id").value);
+							formData.append('company_name', document.getElementById("company_name").value);
+							formData.append('author', document.getElementById("author").value);
+							formData.append('logo_url', document.getElementById("logo_url").value);
+							formData.append('color_scheme', document.getElementById("color_scheme").value);
+							formData.append('sections', document.getElementById("sections").value);
+
+							const res = await fetch("/api/reports/generate", {
+								method: "POST",
+								headers: { "Content-Type": "application/x-www-form-urlencoded" },
+								body: formData.toString()
+							});
+
+							const data = await res.json();
+							
+							if (!res.ok) {
+								throw new Error(data.error || "Failed to trigger report agent");
+							}
+
+							window.location.reload();
+						} catch (err) {
+							errDiv.innerText = err.message;
+							errDiv.style.display = "block";
+							
+							btn.disabled = false;
+							btn.style.opacity = "1";
+							loader.style.display = "none";
+							txt.innerText = "Run Technical Report Agent";
+						}
+					});
+				}
+			</script>
+		</div>
+	}
+}

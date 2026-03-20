@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log"
 	"time"
+	"unicode"
 
 	"gnosis-agent/internal/config"
 	"gnosis-agent/internal/db"
@@ -61,10 +62,7 @@ type SignupResult struct {
 
 // Signup processes a new organization signup
 func (s *AuthService) Signup(ctx context.Context, req SignupRequest) (*SignupResult, error) {
-	// 1. Validation
-	if req.Passkey != s.config.Security.SignupPasskey {
-		return nil, errors.New("invalid passkey")
-	}
+
 	if !req.TermsAccepted {
 		return nil, errors.New("terms must be accepted")
 	}
@@ -76,8 +74,8 @@ func (s *AuthService) Signup(ctx context.Context, req SignupRequest) (*SignupRes
 	}
 
 	// 2. Generate OrgID
-	// Simple generation for now, could be more robust
-	orgID := generateID(8)
+	// Generate a more robust OrgID using the capital first letters and two numbers of the organisation name
+	orgID := generateID(req.OrgName, 8)
 
 	// 3. Create Org Database
 	if err := s.mongo.CreateOrgDatabase(ctx, orgID); err != nil {
@@ -124,6 +122,8 @@ func (s *AuthService) Signup(ctx context.Context, req SignupRequest) (*SignupRes
 		PasswordHash: string(hashedPassword),
 		APIKey:       apiKey,
 		Role:         "admin", // First user is admin
+		Status:       "joined",
+		IsActive:     true,
 	}
 	if err := s.repo.CreateUser(ctx, db, user); err != nil {
 		return nil, fmt.Errorf("failed to create user: %w", err)
@@ -246,11 +246,28 @@ func (s *AuthService) generateJWT(user *models.User, orgID string) (string, erro
 	return token.SignedString([]byte(s.config.Security.JWTSecret))
 }
 
-// Helper: Generate random ID (alphanumeric)
-func generateID(length int) string {
-	b := make([]byte, length)
-	rand.Read(b)
-	return base64.RawURLEncoding.EncodeToString(b)[:length]
+// Helper: Generate random ID (all caps alphanumeric) with the first 4 Letters of the organisation name
+func generateID(orgName string, length int) string {
+	const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	prefix := ""
+	if orgName != "" {
+		for _, r := range orgName {
+			if unicode.IsLetter(r) || unicode.IsDigit(r) {
+				prefix += string(unicode.ToUpper(r))
+			}
+			if len(prefix) == 4 {
+				break
+			}
+		}
+	}
+
+	id := prefix
+	for len(id) < length {
+		b := make([]byte, 1)
+		rand.Read(b)
+		id += string(charset[int(b[0])%len(charset)])
+	}
+	return id
 }
 
 // Helper: Generate API Key

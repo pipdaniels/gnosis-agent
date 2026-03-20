@@ -14,7 +14,7 @@ templ Signin() {
 						<p>Sign in to your GeoAgent account</p>
 					</div>
 					<form action="/signin" method="POST" class="auth-form">
-						@components.Input("Organization", "orgID", "org_id", "text", "e.g., ORG123", true, "")
+						@components.Input("Organization ID", "orgID", "org_id", "text", "e.g., ORG123", true, "")
 						@components.Input("Email Address", "email", "email", "email", "you@company.com", true, "")
 						@components.Input("Password", "password", "password", "password", "••••••••", true, "")
 						<div class="form-actions">

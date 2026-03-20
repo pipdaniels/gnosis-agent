@@ -1,0 +1,347 @@
+package pages
+
+import "gnosis-agent/internal/web/templates/layout"
+import "gnosis-agent/internal/models"
+import "fmt"
+
+templ TeamSettings(users []models.User, currentUserID string) {
+	@layout.Base("Team Settings") {
+		<div class="team-settings">
+			<div class="screen-header">
+				<div>
+					<h1>Team Management</h1>
+					<p class="subtitle">Manage organization members and roles</p>
+				</div>
+				<button class="btn btn-primary" onclick="openInviteModal()">
+					<span class="icon">+</span> Invite Member
+				</button>
+			</div>
+
+			<div class="team-grid">
+				<div class="card">
+					<div class="card-header">
+						<h3>Active Members</h3>
+						<span class="badge badge-info">{ fmt.Sprint(len(users)) } Users</span>
+					</div>
+					<div class="table-container">
+						<table class="data-table">
+							<thead>
+								<tr>
+									<th>User</th>
+									<th>Email</th>
+									<th>Role</th>
+									<th>Status</th>
+									<th>Joined</th>
+									<th>Actions</th>
+								</tr>
+							</thead>
+							<tbody>
+								for _, user := range users {
+									<tr id={ "user-row-" + user.ID.Hex() }>
+										<td>
+											<div class="user-info">
+												<div class="avatar-small">👤</div>
+												<div>
+													<div class="user-name">
+														if user.FirstName != "" {
+															{ user.FirstName } { user.LastName }
+														} else {
+															<span class="text-muted">Pending Join</span>
+														}
+													</div>
+												</div>
+											</div>
+										</td>
+										<td>{ user.Email }</td>
+										<td>
+											<span class={ "badge badge-outline" }>{ user.Role }</span>
+										</td>
+										<td>
+											if user.Status == "joined" {
+												if user.IsActive {
+													<span class="status-indicator active"></span>
+													<span>Active</span>
+												} else {
+													<span class="status-indicator inactive"></span>
+													<span>Deactivated</span>
+												}
+											} else {
+												<span class="status-indicator pending"></span>
+												<span>Pending</span>
+											}
+										</td>
+										<td>{ user.CreatedAt.Format("Jan 02, 2006") }</td>
+										<td>
+											<div class="action-buttons">
+												if user.Status == "joined" && user.ID.Hex() != currentUserID {
+													{{ 
+														var actionBtnTitle string
+														var actionBtnIcon string
+														if user.IsActive {
+															actionBtnTitle = "Deactivate User"
+															actionBtnIcon = "⏸️"
+														} else {
+															actionBtnTitle = "Activate User"
+															actionBtnIcon = "▶️"
+														}
+													}}
+													<button 
+														class="btn-icon" 
+														title={ actionBtnTitle }
+														{ templ.Attributes{"onclick": fmt.Sprintf("toggleUserStatus('%s', %t)", user.ID.Hex(), !user.IsActive)}... }
+													>
+														{ actionBtnIcon }
+													</button>
+												}
+												if user.ID.Hex() != currentUserID {
+													<button 
+														class="btn-icon danger" 
+														title="Delete User"
+														{ templ.Attributes{"onclick": fmt.Sprintf("confirmDeleteUser('%s')", user.ID.Hex())}... }
+													>
+														🗑️
+													</button>
+												}
+											</div>
+										</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+
+			<!-- Invite Modal -->
+			<div id="invite-modal" class="modal-overlay" style="display: none;">
+				<div class="modal">
+					<div class="modal-header">
+						<h3>Invite New Member</h3>
+						<button class="close-btn" onclick="closeInviteModal()">&times;</button>
+					</div>
+					<form id="invite-form" onsubmit="handleInviteSubmit(event)">
+						<div class="modal-body">
+							<div class="form-group">
+								<label for="email">Email Address</label>
+								<input type="email" id="email" name="email" placeholder="colleague@company.com" required />
+							</div>
+							<div class="form-group">
+								<label for="role">Role</label>
+								<select id="role" name="role" required>
+									<option value="viewer">Viewer</option>
+									<option value="analyst">Analyst</option>
+									<option value="admin">Admin</option>
+								</select>
+								<p class="help-text">Admins have full control. Analysts can process data. Viewers are read-only.</p>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-outline" onclick="closeInviteModal()">Cancel</button>
+							<button type="submit" class="btn btn-primary" id="invite-submit-btn">Send Invitation</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			function openInviteModal() {
+				document.getElementById('invite-modal').style.display = 'flex';
+			}
+
+			function closeInviteModal() {
+				document.getElementById('invite-modal').style.display = 'none';
+			}
+
+			async function handleInviteSubmit(event) {
+				event.preventDefault();
+				const btn = document.getElementById('invite-submit-btn');
+				btn.disabled = true;
+				btn.innerText = 'Sending...';
+
+				const formData = new FormData(event.target);
+				try {
+					const resp = await fetch('/team/invite', {
+						method: 'POST',
+						body: formData
+					});
+					const data = await resp.json();
+					if (data.success) {
+						location.reload();
+					} else {
+						alert(data.error || 'Failed to send invite');
+					}
+				} catch (err) {
+					alert('Connection error');
+				} finally {
+					btn.disabled = false;
+					btn.innerText = 'Send Invitation';
+				}
+			}
+
+			async function toggleUserStatus(userId, newStatus) {
+				const formData = new FormData();
+				formData.append('user_id', userId);
+				formData.append('is_active', newStatus);
+
+				try {
+					const resp = await fetch('/team/status', {
+						method: 'POST',
+						body: formData
+					});
+					if (resp.ok) {
+						location.reload();
+					} else {
+						const data = await resp.json();
+						alert(data.error || 'Failed to update user');
+					}
+				} catch (err) {
+					alert('Connection error');
+				}
+			}
+
+			async function confirmDeleteUser(userId) {
+				if (!confirm('Are you sure you want to remove this user? This action can be undone by an admin later.')) {
+					return;
+				}
+
+				try {
+					const resp = await fetch(`/team/delete/${userId}`, {
+						method: 'DELETE'
+					});
+					if (resp.ok) {
+						location.reload();
+					} else {
+						const data = await resp.json();
+						alert(data.error || 'Failed to delete user');
+					}
+				} catch (err) {
+					alert('Connection error');
+				}
+			}
+		</script>
+
+		<style>
+			.team-settings {
+				padding: 2rem;
+				max-width: 1200px;
+				margin: 0 auto;
+			}
+			.team-grid {
+				margin-top: 2rem;
+			}
+			.user-info {
+				display: flex;
+				align-items: center;
+				gap: 0.75rem;
+			}
+			.avatar-small {
+				width: 32px;
+				height: 32px;
+				background: var(--bg-secondary);
+				border-radius: 50%;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-size: 1.2rem;
+			}
+			.status-indicator {
+				display: inline-block;
+				width: 8px;
+				height: 8px;
+				border-radius: 50%;
+				margin-right: 0.5rem;
+			}
+			.status-indicator.active { background: #10b981; }
+			.status-indicator.inactive { background: #9ca3af; }
+			.status-indicator.pending { background: #f59e0b; }
+			
+			.action-buttons {
+				display: flex;
+				gap: 0.5rem;
+			}
+			.btn-icon {
+				background: none;
+				border: none;
+				cursor: pointer;
+				font-size: 1.2rem;
+				padding: 4px;
+				border-radius: 4px;
+				transition: background 0.2s;
+			}
+			.btn-icon:hover {
+				background: var(--bg-secondary);
+			}
+			.btn-icon.danger:hover {
+				background: #fee2e2;
+			}
+
+			.modal-overlay {
+				position: fixed;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background: rgba(0,0,0,0.5);
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				z-index: 1000;
+				backdrop-filter: blur(4px);
+			}
+			.modal {
+				background: var(--bg-card);
+				border-radius: 12px;
+				width: 100%;
+				max-width: 450px;
+				box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+				color: var(--text-primary);
+			}
+			.modal-header {
+				padding: 1.25rem;
+				border-bottom: 1px solid var(--border-color);
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+			}
+			.close-btn {
+				background: none;
+				border: none;
+				font-size: 1.5rem;
+				cursor: pointer;
+				color: var(--text-muted);
+			}
+			.modal-body {
+				padding: 1.25rem;
+			}
+			.modal-footer {
+				padding: 1.25rem;
+				border-top: 1px solid var(--border-color);
+				display: flex;
+				justify-content: flex-end;
+				gap: 0.75rem;
+			}
+			.form-group {
+				margin-bottom: 1.25rem;
+			}
+			.form-group label {
+				display: block;
+				margin-bottom: 0.5rem;
+				font-weight: 500;
+			}
+			.form-group input, .form-group select {
+				width: 100%;
+				padding: 0.625rem;
+				border: 1px solid var(--border-color);
+				border-radius: 6px;
+				background: var(--bg-primary);
+				color: var(--text-primary);
+			}
+			.help-text {
+				font-size: 0.8rem;
+				color: var(--text-muted);
+				margin-top: 0.4rem;
+			}
+		</style>
+	}
+}

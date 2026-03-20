@@ -110,28 +110,42 @@ func main() {
 	e.POST("/signin", authHandler.HandleSignin)
 	e.GET("/logout", authHandler.Logout)
 
+	webHandler := handlers.NewWebHandler(mongoMgr, authService)
+
+	// Invite Routes (Public)
+	e.GET("/invite", webHandler.HandleAcceptInviteView)
+	e.POST("/invite/accept", webHandler.HandleAcceptInviteSubmit)
+
 	// Protected Group (Web)
 	// Uses JWT from cookie
 	protected := e.Group("")
-		protected.Use(echojwt.WithConfig(echojwt.Config{
-			SigningKey:  []byte(cfg.Security.JWTSecret),
-			TokenLookup: "cookie:auth_token",
-			ErrorHandler: func(c echo.Context, err error) error {
-				return c.Redirect(http.StatusFound, "/signin")
-			},
-		}))
-		
-	webHandler := handlers.NewWebHandler(mongoMgr, authService)
+	protected.Use(echojwt.WithConfig(echojwt.Config{
+		SigningKey:  []byte(cfg.Security.JWTSecret),
+		TokenLookup: "cookie:auth_token",
+		ErrorHandler: func(c echo.Context, err error) error {
+			return c.Redirect(http.StatusFound, "/signin")
+		},
+	}))
 
 	protected.GET("/dashboard", handlers.Dashboard)
 	protected.GET("/profile", webHandler.HandleProfile)
+	protected.GET("/datasets", webHandler.HandleDatasets)
+	protected.GET("/targets", webHandler.HandleTargets)
+	protected.GET("/decisions", webHandler.HandleDecisions)
+	protected.POST("/api/decisions/generate", webHandler.HandleGenerateDecisions)
+	protected.GET("/reports", webHandler.HandleReports)
+	protected.POST("/api/reports/generate", webHandler.HandleGenerateReport)
 	protected.GET("/upload", handlers.Upload)
 	protected.POST("/upload", webHandler.HandleUpload)
 	protected.POST("/api/upload", webHandler.HandleUpload)
 
+	// Team Management (Protected)
+	protected.GET("/team", webHandler.HandleTeamSettings)
+	protected.GET("/settings/team", webHandler.HandleTeamSettings) // canonical URL per plan
+	protected.POST("/team/invite", webHandler.HandleInviteUser)
+	protected.POST("/team/status", webHandler.HandleUserStatusToggle)
+	protected.DELETE("/team/delete/:id", webHandler.HandleUserDelete)
 
-
-	
 	// API Group (Headless / Programmatic)
 	// Uses API Key from Header
 	api := e.Group("/api")

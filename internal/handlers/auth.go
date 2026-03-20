@@ -35,7 +35,6 @@ func (h *AuthHandler) HandleSignup(c echo.Context) error {
 	email := c.FormValue("email")
 	password := c.FormValue("password")
 	confirmPassword := c.FormValue("confirm_password")
-	passkey := c.FormValue("passkey")
 	terms := c.FormValue("terms") == "on"
 
 	req := auth.SignupRequest{
@@ -43,7 +42,6 @@ func (h *AuthHandler) HandleSignup(c echo.Context) error {
 		Email:           email,
 		Password:        password,
 		ConfirmPassword: confirmPassword,
-		Passkey:         passkey,
 		TermsAccepted:   terms,
 	}
 

@@ -1,0 +1,201 @@
+package pages
+
+import "gnosis-agent/internal/web/templates/layout"
+import "gnosis-agent/internal/models"
+import "fmt"
+
+templ Decisions(processedDatasets []models.ProcessedDataset, decisionArchives []models.DrillDecisions) {
+	@layout.Base("Decisions") {
+		<div class="page-container" style="max-width: 1200px; margin: 2rem auto; padding: 0 1rem; font-family: sans-serif;">
+			<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+				<h1 style="margin: 0; font-size: 1.8rem; color: #111827;">Drill Decisions Archive</h1>
+				
+				<button onclick="document.getElementById('agent-modal').showModal()" class="btn btn-primary" style="display: flex; align-items: center; gap: 0.5rem; text-decoration: none; background: #1a73e8; color: white; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: 500; border: none; cursor: pointer; transition: background 0.2s;">
+					<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cpu"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/></svg>
+					Run Decision Agent
+				</button>
+			</div>
+
+			<!-- Trigger Modal -->
+			<dialog id="agent-modal" style="border: none; border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); padding: 2rem; max-width: 500px; width: 100%;">
+				<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+					<h3 style="margin: 0; font-size: 1.25rem; color: #111827;">Run Decision Agent (GoADK)</h3>
+					<button onclick="document.getElementById('agent-modal').close()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #6b7280;">&times;</button>
+				</div>
+				
+				if len(processedDatasets) == 0 {
+					<p style="color: #6b7280; font-size: 0.95rem;">You need to process raw datasets first before running decisions.</p>
+				} else {
+					<form id="agent-form" style="display: flex; flex-direction: column; gap: 1.5rem;">
+						<div>
+							<label style="display: block; margin-bottom: 0.5rem; font-weight: 500; font-size: 0.9rem; color: #374151;">Select Processed Dataset</label>
+							<select name="dataset_id" id="modal-dataset-select" style="width: 100%; padding: 0.6rem; border-radius: 6px; border: 1px solid #d1d5db; background: white;">
+								for _, ds := range processedDatasets {
+									<option value={ds.DatasetID}>{ds.DatasetID}</option>
+								}
+							</select>
+						</div>
+
+						<div style="background: #f9fafb; padding: 1rem; border-radius: 8px; border: 1px solid #e5e7eb;">
+							<h4 style="margin: 0 0 1rem 0; font-size: 0.9rem; color: #4b5563;">Agent Pre-Flight Profile</h4>
+							
+							<div style="margin-bottom: 0.8rem;">
+								<div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 0.3rem;">
+									<span style="color: #6b7280;">QC Score</span>
+									<span style="font-weight: 600; color: #111827;">Active</span>
+								</div>
+								<div style="width: 100%; background: #e5e7eb; border-radius: 99px; height: 6px;">
+									<div style="background: #10b981; height: 100%; border-radius: 99px; width: 100%;"></div>
+								</div>
+							</div>
+
+							<div style="margin-bottom: 0.8rem;">
+								<div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 0.3rem;">
+									<span style="color: #6b7280;">Anomaly Profile</span>
+									<span style="font-weight: 600; color: #111827;">Analyzed</span>
+								</div>
+								<div style="width: 100%; background: #e5e7eb; border-radius: 99px; height: 6px;">
+									<div style="background: #3b82f6; height: 100%; border-radius: 99px; width: 100%;"></div>
+								</div>
+							</div>
+
+							<div>
+								<div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 0.3rem;">
+									<span style="color: #6b7280;">Prospectivity Mapping</span>
+									<span style="font-weight: 600; color: #111827;">Ready</span>
+								</div>
+								<div style="width: 100%; background: #e5e7eb; border-radius: 99px; height: 6px;">
+									<div style="background: #8b5cf6; height: 100%; border-radius: 99px; width: 100%;"></div>
+								</div>
+							</div>
+						</div>
+
+						<div id="trigger-error" style="color: #dc2626; font-size: 0.85rem; display: none;"></div>
+
+						<div style="display: flex; justify-content: flex-end; gap: 0.8rem;">
+							<button type="button" onclick="document.getElementById('agent-modal').close()" style="background: white; border: 1px solid #d1d5db; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 500;">Cancel</button>
+							<button type="submit" id="trigger-btn" style="background: #1a73e8; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 0.5rem;">
+								<span id="trigger-text">Initialize Gemini Agent</span>
+								<div id="trigger-loader" style="display: none; width: 14px; height: 14px; border: 2px solid #ffffff; border-bottom-color: transparent; border-radius: 50%; display: inline-block; box-sizing: border-box; animation: rotation 1s linear infinite;"></div>
+							</button>
+						</div>
+					</form>
+
+					<style>
+					@keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+					</style>
+					<script>
+						document.getElementById("agent-form").addEventListener("submit", async (e) => {
+							e.preventDefault();
+							const btn = document.getElementById("trigger-btn");
+							const loader = document.getElementById("trigger-loader");
+							const txt = document.getElementById("trigger-text");
+							const errDiv = document.getElementById("trigger-error");
+							
+							const datasetID = document.getElementById("modal-dataset-select").value;
+
+							// Processing State Lock
+							btn.disabled = true;
+							btn.style.opacity = "0.7";
+							loader.style.display = "inline-block";
+							txt.innerText = "Processing...";
+							errDiv.style.display = "none";
+
+							try {
+								const formData = new URLSearchParams();
+								formData.append('dataset_id', datasetID);
+
+								const res = await fetch("/api/decisions/generate", {
+									method: "POST",
+									headers: { "Content-Type": "application/x-www-form-urlencoded" },
+									body: formData.toString()
+								});
+
+								const data = await res.json();
+								
+								if (!res.ok) {
+									throw new Error(data.error || "Failed to trigger agent");
+								}
+
+								// Success: Refresh page to see new decisions
+								window.location.reload();
+
+							} catch (err) {
+								errDiv.innerText = err.message;
+								errDiv.style.display = "block";
+								
+								// Release State Lock
+								btn.disabled = false;
+								btn.style.opacity = "1";
+								loader.style.display = "none";
+								txt.innerText = "Initialize Gemini Agent";
+							}
+						});
+					</script>
+				}
+			</dialog>
+
+			if len(decisionArchives) == 0 {
+				<div class="empty-state" style="text-align: center; padding: 4rem 2rem; background: #f9fafb; border: 1px dashed #d1d5db; border-radius: 12px;">
+					<div style="display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 50%; background: #e0e7ff; color: #4f46e5; margin-bottom: 1.5rem;">
+						<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-crosshair"><circle cx="12" cy="12" r="10"/><line x1="22" x2="18" y1="12" y2="12"/><line x1="6" x2="2" y1="12" y2="12"/><line x1="12" x2="12" y1="6" y2="2"/><line x1="12" x2="12" y1="22" y2="18"/></svg>
+					</div>
+					<h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: #111827;">No Decisions Generated</h3>
+					<p style="color: #6b7280; max-width: 400px; margin: 0 auto 2rem auto; line-height: 1.5;">You haven't initialized the Decision Agent for any processed dataset yet. Click above to trigger the analysis.</p>
+				</div>
+			} else {
+				for _, archive := range decisionArchives {
+					<div style="margin-bottom: 3rem;">
+						<div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+							<h2 style="font-size: 1.25rem; font-weight: 600; color: #374151; margin: 0;">Dataset: <span style="font-family: monospace; color: #1a73e8;">{ archive.DatasetID }</span></h2>
+							<span style="font-size: 0.8rem; color: #6b7280; background: #f3f4f6; padding: 0.2rem 0.6rem; border-radius: 99px;">Processed: { archive.CreatedAt.Format("Jan 02, 2006") }</span>
+						</div>
+
+						<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem;">
+							for _, target := range archive.Decisions {
+								<div class="card" style="background: white; border-radius: 12px; border: 1px solid #e5e7eb; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); padding: 1.5rem; display: flex; flex-direction: column;">
+									<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+										<div>
+											<span style="font-family: monospace; font-size: 0.85rem; color: #6b7280;">TARGET ID</span>
+											<div style="font-weight: 600; color: #111827; font-size: 1.1rem;">{ target.TargetID }</div>
+										</div>
+										if target.Decision == "drill" {
+											<span style="background: #166534; color: white; padding: 0.3rem 0.8rem; border-radius: 99px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px;">DRILL</span>
+										} else {
+											<span style="background: #991b1b; color: white; padding: 0.3rem 0.8rem; border-radius: 99px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px;">NO DRILL</span>
+										}
+									</div>
+
+									<div style="flex-grow: 1; margin-bottom: 1.5rem;">
+										<div style="font-size: 0.85rem; color: #6b7280; margin-bottom: 0.5rem; font-weight: 500;">Geological Rationale:</div>
+										<ul style="margin: 0; padding-left: 1.2rem; font-size: 0.9rem; color: #374151; line-height: 1.4;">
+											for _, rat := range target.Rationale {
+												<li style="margin-bottom: 0.3rem;">{ rat }</li>
+											}
+										</ul>
+									</div>
+
+									<div style="border-top: 1px solid #f3f4f6; padding-top: 1rem; margin-top: auto;">
+										<div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 0.5rem;">
+											<span style="color: #6b7280; font-weight: 500;">Agent Certainty</span>
+											<span style="font-weight: 600; color: #111827;">{ fmt.Sprintf("%.1f%%", target.Confidence * 100) }</span>
+										</div>
+										<div style="width: 100%; background: #e5e7eb; border-radius: 99px; height: 6px;">
+											if target.Confidence >= 0.8 {
+												<div style={ fmt.Sprintf("background: #10b981; height: 100%%; border-radius: 99px; width: %.1f%%;", target.Confidence * 100) }></div>
+											} else if target.Confidence >= 0.5 {
+												<div style={ fmt.Sprintf("background: #f59e0b; height: 100%%; border-radius: 99px; width: %.1f%%;", target.Confidence * 100) }></div>
+											} else {
+												<div style={ fmt.Sprintf("background: #ef4444; height: 100%%; border-radius: 99px; width: %.1f%%;", target.Confidence * 100) }></div>
+											}
+										</div>
+									</div>
+								</div>
+							}
+						</div>
+					</div>
+				}
+			}
+		</div>
+	}
+}

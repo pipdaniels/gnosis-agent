@@ -6,9 +6,9 @@ templ Base(title string) {
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-			<meta name="description" content="GeoAgent - AI-Powered Geochemical Analysis Platform"/>
+			<meta name="description" content="Gnosis Agent - AI-Powered Geochemical Analysis Platform"/>
 			<meta name="theme-color" content="#1a73e8"/>
-			<title>{ title } - GeoAgent</title>
+			<title>{ title } - Gnosis Agent</title>
 			<!-- PWA Manifest -->
 			<link rel="manifest" href="/static/manifest.json"/>
 			<link rel="icon" type="image/png" href="/static/icon-192.png"/>
@@ -31,7 +31,7 @@ templ Base(title string) {
 		</head>
 		<body>
 			<div class="app-container">
-				@Navigation()
+				@Navigation(title)
 				<main class="main-content">
 					{ children... }
 				</main>
@@ -42,30 +42,30 @@ templ Base(title string) {
 	</html>
 }
 
-templ Navigation() {
+templ Navigation(title string) {
 	<nav class="navbar">
 		<div class="nav-container">
 			<div class="nav-brand">
 				<span class="logo">🔬</span>
-				<span class="brand-text">GeoAgent</span>
+				<span class="brand-text">Gnosis Agent</span>
 			</div>
 			<div class="nav-links">
-				<a href="/dashboard" class="nav-link active">
+				<a href="/dashboard" class={ "nav-link", templ.KV("active", title == "Dashboard") }>
 					Dashboard
 				</a>
-				<a href="/upload" class="nav-link">
+				<a href="/upload" class={ "nav-link", templ.KV("active", title == "Upload") }>
 					Upload
 				</a>
-				<a href="/datasets" class="nav-link">
+				<a href="/datasets" class={ "nav-link", templ.KV("active", title == "Datasets") }>
 					Datasets
 				</a>
-				<a href="/targets" class="nav-link">
+				<a href="/targets" class={ "nav-link", templ.KV("active", title == "Targets") }>
 					Targets
 				</a>
-				<a href="/decisions" class="nav-link">
+				<a href="/decisions" class={ "nav-link", templ.KV("active", title == "Decisions") }>
 					Decisions
 				</a>
-				<a href="/reports" class="nav-link">
+				<a href="/reports" class={ "nav-link", templ.KV("active", title == "Reports") }>
 					Reports
 				</a>
 			</div>
@@ -73,6 +73,9 @@ templ Navigation() {
 				<button class="btn btn-outline btn-sm" id="theme-toggle">
 					<span class="icon">🌙</span>
 				</button>
+				<a href="/settings/team" class={ "btn-icon-nav", templ.KV("active", title == "Team Settings") } title="Team Settings" style="text-decoration: none; font-size: 1.3rem; display: flex; align-items: center; padding: 4px 8px; border-radius: 8px; transition: background 0.2s;">
+					⚙️
+				</a>
 				<a href="/profile" class="user-profile" style="text-decoration: none;">
 					<div class="avatar">👤</div>
 				</a>
