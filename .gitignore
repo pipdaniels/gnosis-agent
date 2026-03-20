@@ -7,6 +7,8 @@ bin/
 *.dll
 *.so
 *.dylib
+.agents/
+docs/
 
 # Test binary
 *.test

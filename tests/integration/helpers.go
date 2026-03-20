@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/pipdaniels/geochem-agent/internal/models"
+	"gnosis-agent/internal/models"
 )
 
 // CreateTestDataset creates a synthetic geochemical dataset for testing

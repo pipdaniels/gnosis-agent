@@ -1,4 +1,4 @@
-module github.com/pipdaniels/geochem-agent
+module gnosis-agent
 
 go 1.24.0
 

@@ -4,18 +4,22 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
+	"log"
 	"net/http"
 	"path/filepath"
 	"strings"
 	"time"
 
-	"github.com/golang-jwt/jwt/v5"
+	"gnosis-agent/internal/db"
+	"gnosis-agent/internal/models"
+	"gnosis-agent/internal/services/auth"
+	"gnosis-agent/internal/services/ingestion"
+	"gnosis-agent/internal/web/templates/pages"
+	"gnosis-agent/internal/dto"
+
 	"github.com/a-h/templ"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
-	"github.com/pipdaniels/geochem-agent/internal/db"
-	"github.com/pipdaniels/geochem-agent/internal/models"
-	"github.com/pipdaniels/geochem-agent/internal/services/ingestion"
-	"github.com/pipdaniels/geochem-agent/internal/web/templates/pages"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -26,8 +30,8 @@ func render(c echo.Context, component templ.Component) error {
 
 func Dashboard(c echo.Context) error {
 	// TODO: Fetch real data
-	datasets := []pages.DatasetSummary{}
-	decisions := []pages.DecisionSummary{}
+	datasets := []dto.DatasetSummary{}
+	decisions := []dto.DecisionSummary{}
 	stats := map[string]interface{}{
 		"targets": 0.0,
 		"qc_rate": 0.0,
@@ -41,12 +45,13 @@ func Upload(c echo.Context) error {
 
 // WebHandler holds dependencies for web-layer handlers.
 type WebHandler struct {
-	mongo *db.MongoManager
+	mongo       *db.MongoManager
+	authService *auth.AuthService
 }
 
-// NewWebHandler creates a WebHandler with the given MongoManager.
-func NewWebHandler(mongo *db.MongoManager) *WebHandler {
-	return &WebHandler{mongo: mongo}
+// NewWebHandler creates a WebHandler with the given MongoManager and AuthService.
+func NewWebHandler(mongo *db.MongoManager, authService *auth.AuthService) *WebHandler {
+	return &WebHandler{mongo: mongo, authService: authService}
 }
 
 // HandleUpload processes a multipart file upload (CSV or XLSX) and saves
@@ -164,4 +169,34 @@ func generateID(n int) string {
 	b := make([]byte, n)
 	rand.Read(b)
 	return base64.RawURLEncoding.EncodeToString(b)[:n]
+}
+
+// HandleProfile displays the user profile
+func (h *WebHandler) HandleProfile(c echo.Context) error {
+	token, ok := c.Get("user").(*jwt.Token)
+	if !ok {
+		return c.Redirect(http.StatusFound, "/signin")
+	}
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return c.Redirect(http.StatusFound, "/signin")
+	}
+
+	orgID, _ := claims["org_id"].(string)
+	userID, _ := claims["user_id"].(string)
+
+	ctx := c.Request().Context()
+	user, err := h.authService.GetUserByID(ctx, userID, orgID)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, "Failed to load user")
+	}
+
+	log.Println("User loaded successfully", user)
+	log.Println("Org ID", orgID)
+	org, err := h.authService.GetOrganization(ctx, orgID)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, "Failed to load organization")
+	}
+
+	return render(c, pages.Profile(user, org))
 }

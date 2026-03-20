@@ -5,9 +5,10 @@ import (
 	"net/http"
 	"time"
 
+	"gnosis-agent/internal/services/auth"
+	"gnosis-agent/internal/web/templates/pages"
+
 	"github.com/labstack/echo/v4"
-	"github.com/pipdaniels/geochem-agent/internal/services/auth"
-	"github.com/pipdaniels/geochem-agent/internal/web/templates/pages"
 )
 
 type AuthHandler struct {
@@ -60,10 +61,8 @@ func (h *AuthHandler) HandleSignup(c echo.Context) error {
 	cookie.HttpOnly = true
 	cookie.Path = "/"
 	c.SetCookie(cookie)
-	
-	// Show API Key or Redirect (For now, simple response/redirect)
-	// ideally show a success page with API key
-	return c.String(http.StatusOK, fmt.Sprintf("Signup successful! OrgID: %s. API Key: %s. Redirecting...", result.OrgID, result.APIKey))
+
+	return c.Redirect(http.StatusFound, "/dashboard")
 }
 
 // HandleSignin processes signin requests

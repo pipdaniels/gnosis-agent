@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/pipdaniels/geochem-agent/internal/config"
-	"github.com/pipdaniels/geochem-agent/internal/models"
+	"gnosis-agent/internal/config"
+	"gnosis-agent/internal/models"
 )
 
 // OrchestratorAgent synthesizes all agent outputs into final decisions

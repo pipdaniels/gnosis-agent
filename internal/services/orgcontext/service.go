@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/pipdaniels/geochem-agent/internal/db"
-	"github.com/pipdaniels/geochem-agent/internal/models"
+	"gnosis-agent/internal/db"
+	"gnosis-agent/internal/models"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )

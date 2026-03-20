@@ -10,16 +10,17 @@ import (
 	"syscall"
 	"time"
 
+	"gnosis-agent/internal/agents"
+	"gnosis-agent/internal/agents/anomaly"
+	"gnosis-agent/internal/config"
+	"gnosis-agent/internal/db"
+	"gnosis-agent/internal/handlers"
+	"gnosis-agent/internal/services/auth"
+	"gnosis-agent/internal/web"
+
 	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/pipdaniels/geochem-agent/internal/agents"
-	"github.com/pipdaniels/geochem-agent/internal/agents/anomaly"
-	"github.com/pipdaniels/geochem-agent/internal/config"
-	"github.com/pipdaniels/geochem-agent/internal/db"
-	"github.com/pipdaniels/geochem-agent/internal/handlers"
-	"github.com/pipdaniels/geochem-agent/internal/services/auth"
-	"github.com/pipdaniels/geochem-agent/internal/web"
 )
 
 func main() {
@@ -120,9 +121,10 @@ func main() {
 			},
 		}))
 		
-	webHandler := handlers.NewWebHandler(mongoMgr)
+	webHandler := handlers.NewWebHandler(mongoMgr, authService)
 
 	protected.GET("/dashboard", handlers.Dashboard)
+	protected.GET("/profile", webHandler.HandleProfile)
 	protected.GET("/upload", handlers.Upload)
 	protected.POST("/upload", webHandler.HandleUpload)
 	protected.POST("/api/upload", webHandler.HandleUpload)

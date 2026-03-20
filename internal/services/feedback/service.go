@@ -4,9 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/pipdaniels/geochem-agent/internal/db"
-	"github.com/pipdaniels/geochem-agent/internal/models"
-	"github.com/pipdaniels/geochem-agent/internal/services/orgcontext"
+	"gnosis-agent/internal/db"
+	"gnosis-agent/internal/models"
+	"gnosis-agent/internal/services/orgcontext"
+
 	"go.mongodb.org/mongo-driver/bson"
 )
 

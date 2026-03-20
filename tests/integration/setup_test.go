@@ -6,8 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/pipdaniels/geochem-agent/internal/config"
-	"github.com/pipdaniels/geochem-agent/internal/db"
+	"gnosis-agent/internal/config"
+	"gnosis-agent/internal/db"
+
 	"go.mongodb.org/mongo-driver/mongo"
 )
 

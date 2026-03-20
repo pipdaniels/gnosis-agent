@@ -1,4 +1,4 @@
-# GeoAgent - Geochemical Decision Platform
+# Gnosis Agent - Geochemical Decision Platform
 
 A multi-tenant, agent-based geochemical decision platform that transforms raw assays into confident "Drill / Don't Drill" decisions.
 
@@ -40,7 +40,7 @@ go install github.com/a-h/templ/cmd/templ@latest
 #### 2. Clone and build
 
 ```bash
-git clone https://github.com/pipdaniels/geochem-agent.git
+git clone https://gnosis-agent.git
 cd geochem-agent
 
 # Initialize Go modules

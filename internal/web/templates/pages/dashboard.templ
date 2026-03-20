@@ -1,27 +1,13 @@
 package pages
 
-import "github.com/pipdaniels/geochem-agent/internal/web/templates/layout"
-import "github.com/pipdaniels/geochem-agent/internal/web/templates/components"
+import "gnosis-agent/internal/web/templates/layout"
+import "gnosis-agent/internal/web/templates/components"
+import "gnosis-agent/internal/dto"
 import "fmt"
 
-type DatasetSummary struct {
-	ID          string
-	Name        string
-	SampleCount int
-	UploadedAt  string
-	Status      string
-	QCScore     float64
-}
 
-type DecisionSummary struct {
-	ID         string
-	TargetID   string
-	Decision   string
-	Confidence float64
-	CreatedAt  string
-}
 
-templ Dashboard(datasets []DatasetSummary, recentDecisions []DecisionSummary, stats map[string]interface{}) {
+templ Dashboard(datasets []dto.DatasetSummary, recentDecisions []dto.DecisionSummary, stats map[string]interface{}) {
 	@layout.Base("Dashboard") {
 		<div class="dashboard">
 			<div class="screen-header">

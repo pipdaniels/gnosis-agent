@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/pipdaniels/geochem-agent/internal/config"
-	"github.com/pipdaniels/geochem-agent/internal/models"
+	"gnosis-agent/internal/config"
+	"gnosis-agent/internal/models"
+
 	"gonum.org/v1/gonum/stat"
 )
 

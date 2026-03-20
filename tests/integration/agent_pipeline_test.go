@@ -5,13 +5,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/pipdaniels/geochem-agent/internal/agents"
-	"github.com/pipdaniels/geochem-agent/internal/agents/anomaly"
-	"github.com/pipdaniels/geochem-agent/internal/agents/orchestrator"
-	"github.com/pipdaniels/geochem-agent/internal/agents/prospectivity"
-	"github.com/pipdaniels/geochem-agent/internal/agents/qc"
-	"github.com/pipdaniels/geochem-agent/internal/agents/sampling"
-	"github.com/pipdaniels/geochem-agent/internal/models"
+	"gnosis-agent/internal/agents"
+	"gnosis-agent/internal/agents/anomaly"
+	"gnosis-agent/internal/agents/orchestrator"
+	"gnosis-agent/internal/agents/prospectivity"
+	"gnosis-agent/internal/agents/qc"
+	"gnosis-agent/internal/agents/sampling"
+	"gnosis-agent/internal/models"
 )
 
 func TestCompleteAgentPipeline(t *testing.T) {

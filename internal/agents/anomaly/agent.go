@@ -6,9 +6,9 @@ import (
 	"math"
 	"sort"
 
-	"github.com/pipdaniels/geochem-agent/internal/config"
-	"github.com/pipdaniels/geochem-agent/internal/ml/mlpack"
-	"github.com/pipdaniels/geochem-agent/internal/models"
+	"gnosis-agent/internal/config"
+	"gnosis-agent/internal/ml/mlpack"
+	"gnosis-agent/internal/models"
 )
 
 // AnomalyAgent detects geochemical anomalies using ML algorithms

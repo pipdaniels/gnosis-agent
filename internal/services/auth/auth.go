@@ -6,12 +6,14 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"log"
 	"time"
 
+	"gnosis-agent/internal/config"
+	"gnosis-agent/internal/db"
+	"gnosis-agent/internal/models"
+
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/pipdaniels/geochem-agent/internal/config"
-	"github.com/pipdaniels/geochem-agent/internal/db"
-	"github.com/pipdaniels/geochem-agent/internal/models"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
@@ -19,9 +21,9 @@ import (
 
 // AuthService handles authentication logic
 type AuthService struct {
-	repo    db.AuthRepository
-	mongo   *db.MongoManager
-	config  *config.Config
+	repo   db.AuthRepository
+	mongo  *db.MongoManager
+	config *config.Config
 }
 
 // NewAuthService creates a new AuthService
@@ -183,6 +185,51 @@ func (s *AuthService) ValidateAPIKey(ctx context.Context, apiKey string, orgID s
 	}
 
 	return user, nil
+}
+
+// GetUserByID fetches the user from the organization's DB
+func (s *AuthService) GetUserByID(ctx context.Context, id string, orgID string) (*models.User, error) {
+	db, err := s.mongo.GetOrgDatabase(orgID)
+	if err != nil {
+		return nil, errors.New("invalid organization ID")
+	}
+
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, errors.New("invalid user ID format")
+	}
+
+	user, err := s.repo.GetUserByID(ctx, db, objID)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, errors.New("user not found")
+		}
+		return nil, err
+	}
+
+	return user, nil
+}
+
+// GetOrganization fetches the organization from the organization's DB
+func (s *AuthService) GetOrganization(ctx context.Context, orgID string) (*models.Organization, error) {
+	db, err := s.mongo.GetOrgDatabase(orgID)
+	if err != nil {
+		log.Println("Error while getting org db: ", err)
+		return nil, errors.New("invalid organization ID")
+	}
+
+	org, err := s.repo.GetOrganization(ctx, db, orgID)
+	log.Println("The organisation data returned: ", org)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			log.Println("Org not found")
+			return nil, errors.New("organization not found")
+
+		}
+		return nil, err
+	}
+
+	return org, nil
 }
 
 // Helper: Generate JWT

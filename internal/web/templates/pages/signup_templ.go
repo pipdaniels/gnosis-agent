@@ -8,8 +8,8 @@ package pages
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import "github.com/pipdaniels/geochem-agent/internal/web/templates/layout"
-import "github.com/pipdaniels/geochem-agent/internal/web/templates/components"
+import "gnosis-agent/internal/web/templates/layout"
+import "gnosis-agent/internal/web/templates/components"
 
 func Signup() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {

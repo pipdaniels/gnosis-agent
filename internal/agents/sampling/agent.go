@@ -6,8 +6,8 @@ import (
 	"math"
 	"sort"
 
-	"github.com/pipdaniels/geochem-agent/internal/config"
-	"github.com/pipdaniels/geochem-agent/internal/models"
+	"gnosis-agent/internal/config"
+	"gnosis-agent/internal/models"
 )
 
 // SamplingAgent optimizes sampling locations for maximum information gain

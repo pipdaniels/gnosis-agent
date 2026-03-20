@@ -9,7 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/pipdaniels/geochem-agent/internal/models"
+	"gnosis-agent/internal/models"
+
 	"github.com/xuri/excelize/v2"
 )
 

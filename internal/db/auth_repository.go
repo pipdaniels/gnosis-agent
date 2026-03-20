@@ -4,8 +4,10 @@ import (
 	"context"
 	"time"
 
-	"github.com/pipdaniels/geochem-agent/internal/models"
+	"gnosis-agent/internal/models"
+
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -14,7 +16,9 @@ type AuthRepository interface {
 	CreateUser(ctx context.Context, db *mongo.Database, user *models.User) error
 	GetUserByEmail(ctx context.Context, db *mongo.Database, email string) (*models.User, error)
 	GetUserByAPIKey(ctx context.Context, db *mongo.Database, apiKey string) (*models.User, error)
+	GetUserByID(ctx context.Context, db *mongo.Database, id primitive.ObjectID) (*models.User, error)
 	CreateOrganization(ctx context.Context, db *mongo.Database, org *models.Organization) error
+	GetOrganization(ctx context.Context, db *mongo.Database, id string) (*models.Organization, error)
 }
 
 // MongoAuthRepository implements AuthRepository
@@ -59,4 +63,24 @@ func (r *MongoAuthRepository) CreateOrganization(ctx context.Context, db *mongo.
 	org.CreatedAt = time.Now()
 	_, err := db.Collection("organizations").InsertOne(ctx, org)
 	return err
+}
+
+// GetUserByID retrieves a user by ID
+func (r *MongoAuthRepository) GetUserByID(ctx context.Context, db *mongo.Database, id primitive.ObjectID) (*models.User, error) {
+	var user models.User
+	err := db.Collection("users").FindOne(ctx, bson.M{"_id": id}).Decode(&user)
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
+// GetOrganization retrieves an organization by ID
+func (r *MongoAuthRepository) GetOrganization(ctx context.Context, db *mongo.Database, id string) (*models.Organization, error) {
+	var org models.Organization
+	err := db.Collection("organizations").FindOne(ctx, bson.M{"org_id": id}).Decode(&org)
+	if err != nil {
+		return nil, err
+	}
+	return &org, nil
 }
