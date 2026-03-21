@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"gnosis-agent/internal/agents"
+	"gnosis-agent/internal/agents/runtime"
 	"gnosis-agent/internal/agents/anomaly"
 	"gnosis-agent/internal/agents/orchestrator"
 	"gnosis-agent/internal/agents/prospectivity"

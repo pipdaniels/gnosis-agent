@@ -66,13 +66,13 @@ mongodb:
   uri: "mongodb://localhost:27017"
   
 llm:
-  api_key: "your-openai-api-key"  # Or set GEOAGENT_LLM_API_KEY env var
+  api_key: "your-openai-api-key"  # Or set GNOSISAGENT_LLM_API_KEY env var
 ```
 
 #### 4. Run
 
 ```bash
-./bin/geoagent-$(go env GOOS)-$(go env GOARCH) start --config configs/org.yaml
+./bin/GNOSISAGENT-$(go env GOOS)-$(go env GOARCH) start --config configs/org.yaml
 ```
 
 Access the web interface at `http://localhost:8080`
@@ -81,7 +81,7 @@ Access the web interface at `http://localhost:8080`
 
 ```
 geochem-agent/
-├── cmd/geoagent/           # Main application entry point
+├── cmd/GNOSISAGENT/           # Main application entry point
 ├── internal/
 │   ├── agents/             # Go-ADK agent implementations
 │   ├── config/             # Configuration management
@@ -104,7 +104,7 @@ geochem-agent/
 ### Database-Level Multi-Tenancy
 
 Each organization gets a dedicated MongoDB database:
-- Database naming: `geoagent_org_{org_id}`
+- Database naming: `GNOSISAGENT_org_{org_id}`
 - Complete data isolation
 - Independent backups and scaling
 
@@ -160,14 +160,14 @@ The mlpack integration requires CGo. Ensure you have:
 ./scripts/build.sh
 
 # Deploy the binary
-./bin/geoagent-* start --config configs/production.yaml
+./bin/GNOSISAGENT-* start --config configs/production.yaml
 ```
 
 ### Docker
 
 ```bash
-docker build -t geoagent:latest .
-docker run -p 8080:8080 -v ./configs:/configs geoagent:latest start --config /configs/org.yaml
+docker build -t GNOSISAGENT:latest .
+docker run -p 8080:8080 -v ./configs:/configs GNOSISAGENT:latest start --config /configs/org.yaml
 ```
 
 ### Field Deployment
@@ -179,9 +179,9 @@ The single binary can run on laptops in remote locations with no  internet conne
 See `configs/org.example.yaml` for all available options.
 
 Key environment variables:
-- `GEOAGENT_LLM_API_KEY`: OpenAI API key
-- `GEOAGENT_MONGODB_URI`: MongoDB connection string
-- `GEOAGENT_ORGANIZATION_ID`: Organization ID
+- `GNOSISAGENT_LLM_API_KEY`: OpenAI API key
+- `GNOSISAGENT_MONGODB_URI`: MongoDB connection string
+- `GNOSISAGENT_ORGANIZATION_ID`: Organization ID
 
 ## API Documentation
 

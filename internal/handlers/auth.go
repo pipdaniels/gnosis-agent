@@ -7,6 +7,7 @@ import (
 
 	"gnosis-agent/internal/services/auth"
 	"gnosis-agent/internal/web/templates/pages"
+	"gnosis-agent/internal/dto"
 
 	"github.com/labstack/echo/v4"
 )
@@ -37,7 +38,7 @@ func (h *AuthHandler) HandleSignup(c echo.Context) error {
 	confirmPassword := c.FormValue("confirm_password")
 	terms := c.FormValue("terms") == "on"
 
-	req := auth.SignupRequest{
+	req := dto.SignupRequest{
 		OrgName:         orgName,
 		Email:           email,
 		Password:        password,
@@ -69,7 +70,7 @@ func (h *AuthHandler) HandleSignin(c echo.Context) error {
 	email := c.FormValue("email")
 	password := c.FormValue("password")
 
-	req := auth.LoginRequest{
+	req := dto.LoginRequest{
 		OrgID:    orgID,
 		Email:    email,
 		Password: password,

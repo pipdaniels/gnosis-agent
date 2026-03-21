@@ -1,9 +1,9 @@
 #!/bin/bash
-# Install dependencies for GeoAgent Platform
+# Install dependencies for GNOSISAGENT Platform
 
 set -e
 
-echo "Installing Gnosis GeoAgent dependencies..."
+echo "Installing Gnosis GNOSISAGENT dependencies..."
 
 # Detect OS
 if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -44,4 +44,4 @@ echo ""
 echo "Next steps:"
 echo "  1. Configure your organization: configs/org.yaml"
 echo "  2. Build the application: ./scripts/build.sh"
-echo "  3. Run: ./bin/geoagent-* start --config configs/org.yaml"
+echo "  3. Run: ./bin/GNOSISAGENT-* start --config configs/org.yaml"

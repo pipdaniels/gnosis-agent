@@ -39,7 +39,7 @@ func setup() {
 	}
 	
 	var err error
-	testDB, err = db.NewMongoManager(mongoURI, "geoagent_test", 10)
+	testDB, err = db.NewMongoManager(mongoURI, "GNOSISAGENT_test", 10)
 	if err != nil {
 		panic("Failed to connect to test MongoDB: " + err.Error())
 	}
@@ -83,7 +83,7 @@ func getTestConfig() *config.Config {
 		},
 		MongoDB: config.MongoConfig{
 			URI:      "mongodb://localhost:27017",
-			Database: "geoagent_test",
+			Database: "GNOSISAGENT_test",
 			Timeout:  10,
 		},
 		Org: config.OrgConfig{

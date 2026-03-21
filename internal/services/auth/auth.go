@@ -18,6 +18,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
+	"gnosis-agent/internal/dto"
 )
 
 // AuthService handles authentication logic
@@ -36,32 +37,10 @@ func NewAuthService(repo db.AuthRepository, mongo *db.MongoManager, cfg *config.
 	}
 }
 
-// SignupRequest represents the data needed for signup
-type SignupRequest struct {
-	OrgName         string
-	Email           string
-	Password        string
-	ConfirmPassword string
-	Passkey         string
-	TermsAccepted   bool
-}
 
-// LoginRequest represents the data needed for login
-type LoginRequest struct {
-	OrgID    string
-	Email    string
-	Password string
-}
-
-// SignupResult contains the result of a successful signup
-type SignupResult struct {
-	OrgID  string
-	Token  string
-	APIKey string
-}
 
 // Signup processes a new organization signup
-func (s *AuthService) Signup(ctx context.Context, req SignupRequest) (*SignupResult, error) {
+func (s *AuthService) Signup(ctx context.Context, req dto.SignupRequest) (*dto.SignupResult, error) {
 
 	if !req.TermsAccepted {
 		return nil, errors.New("terms must be accepted")
@@ -98,6 +77,7 @@ func (s *AuthService) Signup(ctx context.Context, req SignupRequest) (*SignupRes
 	org := &models.Organization{
 		ID:   orgID,
 		Name: req.OrgName,
+		CreatedBy: req.Email,
 	}
 	if err := s.repo.CreateOrganization(ctx, db, org); err != nil {
 		return nil, fmt.Errorf("failed to save organization: %w", err)
@@ -135,7 +115,7 @@ func (s *AuthService) Signup(ctx context.Context, req SignupRequest) (*SignupRes
 		return nil, fmt.Errorf("failed to generate token: %w", err)
 	}
 
-	return &SignupResult{
+	return &dto.SignupResult{
 		OrgID:  orgID,
 		Token:  token,
 		APIKey: apiKey,
@@ -143,7 +123,7 @@ func (s *AuthService) Signup(ctx context.Context, req SignupRequest) (*SignupRes
 }
 
 // Login authenticates a user
-func (s *AuthService) Login(ctx context.Context, req LoginRequest) (string, error) {
+func (s *AuthService) Login(ctx context.Context, req dto.LoginRequest) (string, error) {
 	// 1. Get Org DB
 	db, err := s.mongo.GetOrgDatabase(req.OrgID)
 	if err != nil {

@@ -44,7 +44,7 @@ func Signup() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"auth-page\"><div class=\"auth-container\"><div class=\"auth-card\"><div class=\"auth-header\"><div class=\"auth-logo\">🔬</div><h1>Create Account</h1><p>Start your geochemical exploration journey</p></div><form action=\"/signup\" method=\"POST\" class=\"auth-form\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"auth-page\"><div class=\"auth-container\"><div class=\"auth-card\"><div class=\"auth-header\"><h1>Create Free Account</h1><p>Start your geochemical exploration journey</p></div><form action=\"/signup\" method=\"POST\" class=\"auth-form\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

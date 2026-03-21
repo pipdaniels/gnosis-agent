@@ -1,4 +1,4 @@
-// GeoAgent - Main Application JavaScript
+// GNOSISAGENT - Main Application JavaScript
 
 // Theme Management
 function initTheme() {

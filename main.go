@@ -10,7 +10,7 @@ import (
 	"syscall"
 	"time"
 
-	"gnosis-agent/internal/agents"
+	"gnosis-agent/internal/agents/runtime"
 	"gnosis-agent/internal/agents/anomaly"
 	"gnosis-agent/internal/config"
 	"gnosis-agent/internal/db"
@@ -37,7 +37,7 @@ func main() {
 		log.Fatal("Failed to load config:", err)
 	}
 
-	log.Printf("Starting GeoAgent Platform for organization: %s", cfg.Org.Name)
+	log.Printf("Starting GNOSISAGENT Platform for organization: %s", cfg.Org.Name)
 
 	// Initialize MongoDB with database-level multi-tenancy
 	mongoMgr, err := db.NewMongoManager(cfg.MongoDB.URI, cfg.MongoDB.Database, cfg.MongoDB.Timeout)
@@ -174,7 +174,7 @@ func main() {
 
 	api.GET("/", func(c echo.Context) error {
 		return c.JSON(200, map[string]string{
-			"message": "GeoAgent API",
+			"message": "GNOSISAGENT API",
 			"version": "0.1.0",
 		})
 	})

@@ -1,6 +1,6 @@
-// GeoAgent - IndexedDB Wrapper for Offline Storage
+// GNOSISAGENT - IndexedDB Wrapper for Offline Storage
 
-const DB_NAME = 'geoagent_db';
+const DB_NAME = 'GNOSISAGENT_db';
 const DB_VERSION = 1;
 
 class OfflineStorage {

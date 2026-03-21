@@ -122,7 +122,7 @@ func LoadConfig(configPath string) (*Config, error) {
 	v.SetDefault("server.port", 8080)
 	v.SetDefault("server.host", "0.0.0.0")
 	v.SetDefault("mongodb.uri", "mongodb://localhost:27017")
-	v.SetDefault("mongodb.database", "geoagent")
+	v.SetDefault("mongodb.database", "GNOSISAGENT")
 	v.SetDefault("mongodb.timeout", 10)
 	v.SetDefault("agents.qc.outlier_threshold", 3.0)
 	v.SetDefault("agents.qc.min_sample_size", 30)
@@ -157,7 +157,7 @@ func LoadConfig(configPath string) (*Config, error) {
 
 	// Override with environment variables
 	v.AutomaticEnv()
-	v.SetEnvPrefix("GEOAGENT")
+	v.SetEnvPrefix("GNOSISAGENT")
 
 	var config Config
 	if err := v.Unmarshal(&config); err != nil {

@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# GeoAgent Platform - Mac-Optimized Build Script
+# GNOSISAGENT Platform - Mac-Optimized Build Script
 set -e
 
 echo "================================================"
-echo "Building Gnosis GeoAgent Platform"
+echo "Building Gnosis GNOSISAGENT Platform"
 echo "================================================"
 
 # Colors
@@ -77,7 +77,7 @@ echo -e "${YELLOW}Building binaries...${NC}"
 for platform in $PLATFORMS; do
     GOOS=${platform%/*}
     GOARCH=${platform#*/}
-    output_name="geoagent-${GOOS}-${GOARCH}"
+    output_name="GNOSISAGENT-${GOOS}-${GOARCH}"
     
     echo -e "${YELLOW}Building for $GOOS/$GOARCH...${NC}"
     
