@@ -12,7 +12,7 @@ templ Signup() {
 						<h1>Create Free Account</h1>
 						<p>Start your geochemical exploration journey</p>
 					</div>
-					<form action="/signup" method="POST" class="auth-form">
+					<form hx-post="/signup" hx-target="#toast-container" hx-swap="beforeend" class="auth-form">
 						@components.Input("Organization Name", "orgName", "org_name", "text", "My Mining Corp", true, "")
 						@components.Input("Email Address", "email", "email", "email", "you@company.com", true, "")
 						@components.Input("Password", "password", "password", "password", "••••••••", true, "")
@@ -20,14 +20,14 @@ templ Signup() {
 						<div class="form-group checkbox">
 							<label class="checkbox-container">
 								<input type="checkbox" name="terms" required/>
-								<span class="checkbox-label">I accept the <a href="/terms">Terms of Service</a> and <a href="/privacy">Privacy Policy</a></span>
+								<span class="checkbox-label">I accept the <a href="/terms" hx-boost="false">Terms of Service</a> and <a href="/privacy" hx-boost="false">Privacy Policy</a></span>
 							</label>
 						</div>
 						<div class="form-actions">
 							@components.Button("Create Account", "submit", "primary", true, nil)
 						</div>
 						<div class="auth-footer">
-							<p>Already have an account? <a href="/signin">Sign In</a></p>
+							<p>Already have an account? <a href="/signin" hx-boost="false">Sign In</a></p>
 						</div>
 					</form>
 				</div>

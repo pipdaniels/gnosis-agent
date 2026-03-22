@@ -6,13 +6,19 @@ const DB_VERSION = 1;
 class OfflineStorage {
     constructor() {
         this.db = null;
+        this.initPromise = null;
     }
 
     async init() {
-        return new Promise((resolve, reject) => {
+        if (this.initPromise) return this.initPromise;
+        
+        this.initPromise = new Promise((resolve, reject) => {
             const request = indexedDB.open(DB_NAME, DB_VERSION);
 
-            request.onerror = () => reject(request.error);
+            request.onerror = () => {
+                this.initPromise = null;
+                reject(request.error);
+            };
             request.onsuccess = () => {
                 this.db = request.result;
                 resolve(this.db);
@@ -23,7 +29,7 @@ class OfflineStorage {
 
                 // Datasets store
                 if (!db.objectStoreNames.contains('datasets')) {
-                    const datasetStore = db.createObjectStore('datasets', { key Path: 'id' });
+                    const datasetStore = db.createObjectStore('datasets', { keyPath: 'id' });
                     datasetStore.createIndex('orgId', 'org_id', { unique: false });
                     datasetStore.createIndex('uploadedAt', 'uploaded_at', { unique: false });
                 }
@@ -55,6 +61,7 @@ class OfflineStorage {
     }
 
     async saveDataset(dataset) {
+        if (!this.db) await this.init();
         const tx = this.db.transaction(['datasets'], 'readwrite');
         const store = tx.objectStore('datasets');
         await store.put(dataset);
@@ -62,18 +69,21 @@ class OfflineStorage {
     }
 
     async getDataset(id) {
+        if (!this.db) await this.init();
         const tx = this.db.transaction(['datasets'], 'readonly');
         const store = tx.objectStore('datasets');
         return await store.get(id);
     }
 
     async getAllDatasets() {
+        if (!this.db) await this.init();
         const tx = this.db.transaction(['datasets'], 'readonly');
         const store = tx.objectStore('datasets');
         return await store.getAll();
     }
 
     async saveAnalysis(analysis) {
+        if (!this.db) await this.init();
         const tx = this.db.transaction(['analyses'], 'readwrite');
         const store = tx.objectStore('analyses');
         await store.put(analysis);
@@ -81,12 +91,14 @@ class OfflineStorage {
     }
 
     async getAnalysis(id) {
+        if (!this.db) await this.init();
         const tx = this.db.transaction(['analyses'], 'readonly');
         const store = tx.objectStore('analyses');
         return await store.get(id);
     }
 
     async saveDecisions(decisions) {
+        if (!this.db) await this.init();
         const tx = this.db.transaction(['decisions'], 'readwrite');
         const store = tx.objectStore('decisions');
         for (const decision of decisions.decisions) {
@@ -96,6 +108,7 @@ class OfflineStorage {
     }
 
     async getDecisionsByDataset(datasetId) {
+        if (!this.db) await this.init();
         const tx = this.db.transaction(['decisions'], 'readonly');
         const store = tx.objectStore('decisions');
         const index = store.index('datasetId');
@@ -103,6 +116,7 @@ class OfflineStorage {
     }
 
     async queueUpload(data) {
+        if (!this.db) await this.init();
         const tx = this.db.transaction(['uploadQueue'], 'readwrite');
         const store = tx.objectStore('uploadQueue');
         const item = {
@@ -115,12 +129,14 @@ class OfflineStorage {
     }
 
     async getUploadQueue() {
+        if (!this.db) await this.init();
         const tx = this.db.transaction(['uploadQueue'], 'readonly');
         const store = tx.objectStore('uploadQueue');
         return await store.getAll();
     }
 
     async removeFromQueue(id) {
+        if (!this.db) await this.init();
         const tx = this.db.transaction(['uploadQueue'], 'readwrite');
         const store = tx.objectStore('uploadQueue');
         await store.delete(id);
@@ -128,6 +144,7 @@ class OfflineStorage {
     }
 
     async syncQueued() {
+        if (!this.db) await this.init();
         const queue = await this.getUploadQueue();
         const results = [];
 
@@ -154,6 +171,7 @@ class OfflineStorage {
     }
 
     async saveReport(report) {
+        if (!this.db) await this.init();
         const tx = this.db.transaction(['reports'], 'readwrite');
         const store = tx.objectStore('reports');
         await store.put(report);
@@ -161,12 +179,14 @@ class OfflineStorage {
     }
 
     async getReport(reportId) {
+        if (!this.db) await this.init();
         const tx = this.db.transaction(['reports'], 'readonly');
         const store = tx.objectStore('reports');
         return await store.get(reportId);
     }
 
     async clearAll() {
+        if (!this.db) await this.init();
         const stores = ['datasets', 'analyses', 'decisions', 'uploadQueue', 'reports'];
         const tx = this.db.transaction(stores, 'readwrite');
 

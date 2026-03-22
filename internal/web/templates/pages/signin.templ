@@ -12,7 +12,7 @@ templ Signin() {
 						<h1>Welcome Back</h1>
 						<p>Sign in to your GNOSIS AGENT account</p>
 					</div>
-					<form action="/signin" method="POST" class="auth-form">
+					<form hx-post="/signin" hx-target="#toast-container" hx-swap="beforeend" class="auth-form">
 						@components.Input("Organization ID", "orgID", "org_id", "text", "e.g., ORG123", true, "")
 						@components.Input("Email Address", "email", "email", "email", "you@company.com", true, "")
 						@components.Input("Password", "password", "password", "password", "••••••••", true, "")
@@ -20,7 +20,7 @@ templ Signin() {
 							@components.Button("Sign In", "submit", "primary", true, nil)
 						</div>
 						<div class="auth-footer">
-							<p>Don't have an account? <a href="/signup">Create one for free</a></p>
+							<p>Don't have an account? <a href="/signup" hx-boost="false">Create one for free</a></p>
 						</div>
 					</form>
 				</div>

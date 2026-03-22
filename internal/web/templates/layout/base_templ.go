@@ -42,7 +42,7 @@ func Base(title string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " - Gnosis Agent</title><!-- PWA Manifest --><link rel=\"manifest\" href=\"/static/manifest.json\"><link rel=\"icon\" type=\"image/png\" href=\"/static/icon-192.png\"><link rel=\"apple-touch-icon\" href=\"/static/icon-512.png\"><!-- Stylesheets --><link rel=\"stylesheet\" href=\"/static/css/main.css\"><link rel=\"stylesheet\" href=\"/static/css/components.css\"><!-- Leaflet for maps --><link rel=\"stylesheet\" href=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.css\"><!-- Scripts --><script src=\"/static/js/db.js\" defer></script><script src=\"/static/js/app.js\" defer></script><script src=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.js\" defer></script><!-- Register Service Worker --><script>\n\t\t\tif ('serviceWorker' in navigator) {\n\t\t\t\tnavigator.serviceWorker.register('/sw.js');\n\t\t\t}\n\t\t</script></head><body><div class=\"app-container\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " - Gnosis Agent</title><!-- PWA Manifest --><link rel=\"manifest\" href=\"/static/manifest.json\"><link rel=\"icon\" type=\"image/png\" href=\"/static/icon-192.png\"><link rel=\"apple-touch-icon\" href=\"/static/icon-512.png\"><!-- Stylesheets --><link rel=\"stylesheet\" href=\"/static/css/main.css\"><link rel=\"stylesheet\" href=\"/static/css/components.css\"><link rel=\"stylesheet\" href=\"/static/css/notifications.css\"><link rel=\"stylesheet\" href=\"/static/css/dataset_detail.css\"><!-- Leaflet for maps --><link rel=\"stylesheet\" href=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.css\"><!-- Scripts --><script src=\"https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.11.0/proj4.js\"></script><script src=\"https://unpkg.com/htmx.org@1.9.10\"></script><script src=\"/static/js/db.js\" defer></script><script src=\"/static/js/app.js\" defer></script><script src=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.js\" defer></script><!-- Register Service Worker --><script>\n\t\t\tif ('serviceWorker' in navigator) {\n\t\t\t\tnavigator.serviceWorker.register('/sw.js');\n\t\t\t}\n\t\t</script></head><body><div class=\"app-container\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -66,7 +66,7 @@ func Base(title string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</div><div id=\"toast-container\"></div></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</div><div id=\"toast-container\"></div><div id=\"modal-container\"></div></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

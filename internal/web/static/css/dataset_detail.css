@@ -1,0 +1,412 @@
+/* =====================================================
+   Dataset Detail Page — dataset_detail.css
+   ===================================================== */
+
+/* ---- Page layout ---- */
+.ds-detail-page {
+  padding: 1.5rem 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ---- Header ---- */
+.ds-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.ds-breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary, #6b7280);
+}
+.ds-breadcrumbs a {
+  color: var(--color-primary, #1a73e8);
+  text-decoration: none;
+}
+.breadcrumb-sep { opacity: 0.5; }
+
+.ds-detail-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* ---- QC Overview Badge ---- */
+.qc-badge-score {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  background: var(--bg-card, #f3f4f6);
+  border: 1px solid #e5e7eb;
+}
+.qc-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; }
+.dot-green  { background: #22c55e; }
+.dot-amber  { background: #f59e0b; }
+.dot-red    { background: #ef4444; }
+
+/* ---- Metadata Cards ---- */
+.ds-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
+}
+.ds-meta-card {
+  background: var(--bg-card, #fff);
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 0.9rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+.ds-meta-label {
+  font-size: 0.73rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary, #6b7280);
+  font-weight: 600;
+}
+.ds-meta-value {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-primary, #111827);
+  word-break: break-word;
+}
+.ds-meta-value.mono { font-family: monospace; font-size: 0.85rem; }
+
+/* ---- QC Summary Bar ---- */
+.qc-summary-bar {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-left: 4px solid #f59e0b;
+  border-radius: 10px;
+  padding: 0.9rem 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.qc-summary-title {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  font-weight: 600;
+  color: #92400e;
+}
+.qc-total-flagged { font-size: 0.8rem; font-weight: 400; color: #78350f; }
+.qc-summary-pills { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+
+/* ---- Shared QC Pill ---- */
+.qc-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+}
+.qc-pill-outlier      { background: #fff7ed; color: #c2410c; border-color: #fed7aa; }
+.qc-pill-missing_data { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+.qc-pill-contamination{ background: #fef2f2; color: #991b1b; border-color: #fecaca; }
+
+/* ---- Table Controls ---- */
+.ds-table-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.ds-search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--bg-card, #fff);
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 0.4rem 0.75rem;
+  flex: 1;
+  max-width: 380px;
+}
+.ds-search-wrap svg { color: #9ca3af; flex-shrink: 0; }
+.ds-search-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 0.875rem;
+  width: 100%;
+  color: var(--text-primary, #111827);
+}
+.ds-controls-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.ds-label { font-size: 0.8rem; color: var(--text-secondary, #6b7280); }
+.ds-select {
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 0.35rem 0.6rem;
+  font-size: 0.85rem;
+  background: var(--bg-card, #fff);
+  color: var(--text-primary, #111827);
+  cursor: pointer;
+}
+
+/* ---- Assay Table ---- */
+.ds-table-wrapper {
+  overflow-x: auto;
+  background: var(--bg-card, #fff);
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+.ds-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.85rem;
+}
+.ds-table thead tr {
+  background: #f9fafb;
+  border-bottom: 2px solid #e5e7eb;
+}
+.ds-table th {
+  padding: 0.8rem 1rem;
+  font-weight: 600;
+  color: #374151;
+  white-space: nowrap;
+}
+.ds-table th.sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s;
+}
+.ds-table th.sortable:hover { background: #f3f4f6; }
+.ds-table th.sorted-asc .sort-icon::after  { content: " ▲"; }
+.ds-table th.sorted-desc .sort-icon::after { content: " ▼"; }
+.sort-icon { opacity: 0.4; }
+
+.ds-table td {
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid #f3f4f6;
+  color: #374151;
+  vertical-align: top;
+}
+.ds-table tr:last-child td { border-bottom: none; }
+.ds-table tr:hover td { background: #f9fafb; }
+
+/* Flagged rows */
+.ds-row-flagged td { background: #fffbeb !important; }
+.ds-row-flagged:hover td { background: #fef3c7 !important; }
+
+.mono { font-family: monospace; font-size: 0.82rem; }
+.elem-cell { max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* QC Status Badges */
+.qc-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.qc-status-badge.passed  { background: #dcfce7; color: #166534; }
+.qc-status-badge.flagged { background: #fff7ed; color: #c2410c; }
+.qc-status-badge.none    { background: #f3f4f6; color: #6b7280; }
+
+/* ---- Pagination ---- */
+.ds-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+.ds-page-btn {
+  border: 1px solid #d1d5db;
+  background: var(--bg-card, #fff);
+  color: var(--text-primary, #111827);
+  border-radius: 8px;
+  padding: 0.4rem 1.1rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.ds-page-btn:hover:not(:disabled) {
+  background: #1a73e8;
+  color: #fff;
+  border-color: #1a73e8;
+}
+.ds-page-btn:disabled { opacity: 0.4; cursor: default; }
+.ds-page-info { font-size: 0.85rem; color: var(--text-secondary, #6b7280); }
+
+/* ---- QC Result Area ---- */
+.qc-result-area { margin-top: 1rem; }
+
+/* ---- QC Result Panel ---- */
+.qc-result-panel {
+  background: var(--bg-card, #fff);
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  animation: panel-slide-in 0.4s ease;
+}
+@keyframes panel-slide-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.qc-result-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+.qc-score-ring { width: 80px; height: 80px; flex-shrink: 0; }
+.circular-chart { display: block; }
+.circle-bg {
+  fill: none;
+  stroke: #e5e7eb;
+  stroke-width: 3;
+}
+.circle {
+  fill: none;
+  stroke: #22c55e;
+  stroke-width: 3;
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.6s ease;
+}
+.percentage {
+  fill: #111827;
+  font-size: 6px;
+  font-weight: 700;
+  text-anchor: middle;
+}
+.qc-score-info h3 { margin: 0 0 0.25rem 0; font-size: 1.1rem; }
+.qc-subtitle { color: #6b7280; font-size: 0.85rem; margin: 0; }
+.qc-timestamp { color: #9ca3af; font-size: 0.78rem; margin: 0.2rem 0 0 0; }
+
+.qc-categories h4,
+.qc-table-wrapper h4 { font-size: 0.9rem; font-weight: 600; margin: 0 0 0.6rem 0; }
+.category-pills { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+.qc-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+.qc-table th {
+  padding: 0.6rem 0.8rem;
+  background: #f9fafb;
+  border-bottom: 2px solid #e5e7eb;
+  font-weight: 600;
+  color: #374151;
+  text-align: left;
+}
+.qc-table td {
+  padding: 0.6rem 0.8rem;
+  border-bottom: 1px solid #f3f4f6;
+  vertical-align: top;
+}
+.qc-row-failed td { background: #fffbeb; }
+.qc-all-pass { color: #166534; font-weight: 600; font-size: 0.9rem; }
+.qc-explanation { max-width: 320px; color: #6b7280; font-size: 0.78rem; }
+
+.qc-flag-pill {
+  display: inline-block;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  margin-right: 0.25rem;
+}
+.severity-critical { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+.severity-warning  { background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; }
+
+.qc-score-good { color: #166534; font-weight: 600; }
+.qc-score-warn { color: #92400e; font-weight: 600; }
+.qc-score-bad  { color: #991b1b; font-weight: 600; }
+
+/* ---- QC Loading Modal ---- */
+.qc-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+.qc-modal-box {
+  background: var(--bg-card, #fff);
+  border-radius: 16px;
+  padding: 2.5rem 3rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  max-width: 420px;
+  width: 90%;
+}
+.qc-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #e5e7eb;
+  border-top-color: #1a73e8;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.qc-modal-msg {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary, #111827);
+  margin: 0;
+  min-height: 1.5em;
+  transition: opacity 0.3s;
+}
+.qc-modal-sub {
+  font-size: 0.82rem;
+  color: var(--text-secondary, #6b7280);
+  margin: 0;
+}
+
+/* ---- Dark mode overrides ---- */
+@media (prefers-color-scheme: dark) {
+  .ds-meta-card,
+  .ds-table-wrapper,
+  .ds-search-wrap,
+  .qc-result-panel,
+  .qc-modal-box          { background: #1e2130; border-color: #374151; }
+  .ds-table thead tr     { background: #151825; }
+  .ds-table th           { color: #d1d5db; }
+  .ds-table td           { color: #e5e7eb; border-color: #2d3748; }
+  .ds-table tr:hover td  { background: #252a3a; }
+  .ds-row-flagged td     { background: #2d2a1a !important; }
+  .qc-summary-bar        { background: #2d2a1a; border-color: #92400e; }
+  .percentage            { fill: #e5e7eb; }
+}

@@ -1,10 +1,11 @@
 package handlers
 
 import (
+	"context"
 	"crypto/rand"
 	"encoding/json"
 	"fmt"
-	"log"
+	"log/slog"
 	"net/http"
 	"path/filepath"
 	"strings"
@@ -19,6 +20,8 @@ import (
 	"gnosis-agent/internal/services/auth"
 	"gnosis-agent/internal/services/email"
 	"gnosis-agent/internal/services/ingestion"
+	"gnosis-agent/internal/services/qc"
+	"gnosis-agent/internal/web/templates/components"
 	"gnosis-agent/internal/web/templates/pages"
 
 	"github.com/a-h/templ"
@@ -37,15 +40,125 @@ func render(c echo.Context, component templ.Component) error {
 	return component.Render(c.Request().Context(), c.Response().Writer)
 }
 
-func Dashboard(c echo.Context) error {
-	// TODO: Fetch real data
-	datasets := []dto.DatasetSummary{}
-	decisions := []dto.DecisionSummary{}
-	stats := map[string]interface{}{
-		"targets": 0.0,
-		"qc_rate": 0.0,
+// HandleDashboard displays the main overview with real data
+func (h *WebHandler) HandleDashboard(c echo.Context) error {
+	token, ok := c.Get("user").(*jwt.Token)
+	if !ok {
+		return c.Redirect(http.StatusFound, "/signin")
 	}
-	return render(c, pages.Dashboard(datasets, decisions, stats))
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return c.Redirect(http.StatusFound, "/signin")
+	}
+
+	orgID, _ := claims["org_id"].(string)
+	orgDB, err := h.mongo.GetOrgDatabase(orgID)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, "Failed to connect to organization database")
+	}
+
+	ctx := c.Request().Context()
+
+	// 1. Fetch Stats: Total Datasets
+	totalDatasets, _ := orgDB.Collection("raw_datasets").CountDocuments(ctx, bson.M{})
+
+	// 2. Fetch Stats: Total Decisions (across all datasets)
+	totalDecisions := 0
+	cursorDecs, err := orgDB.Collection("drill_decisions").Find(ctx, bson.M{})
+	if err == nil {
+		var allDrills []models.DrillDecisions
+		cursorDecs.All(ctx, &allDrills)
+		for _, d := range allDrills {
+			totalDecisions += len(d.Decisions)
+		}
+	}
+
+	// 3. Fetch Stats: Active Targets
+	totalTargets := 0
+	cursorPros, err := orgDB.Collection("prospectivity_results").Find(ctx, bson.M{})
+	if err == nil {
+		var allPros []models.ProspectivityResults
+		cursorPros.All(ctx, &allPros)
+		for _, p := range allPros {
+			totalTargets += len(p.Targets)
+		}
+	}
+
+	// 4. Fetch Stats: Avg QC Pass Rate
+	avgQC := 0.0
+	cursorQC, err := orgDB.Collection("processed_datasets").Find(ctx, bson.M{})
+	if err == nil {
+		var allProc []models.ProcessedDataset
+		cursorQC.All(ctx, &allProc)
+		// Note: We'd ideally have a separate overall QC score in a dedicated collection, 
+		// but since we want "pass rate", we'll check overall_qc if available or simulate.
+		// For now, let's try to find QCResults collection.
+		cursorQCResults, err := orgDB.Collection("qc_results").Find(ctx, bson.M{})
+		if err == nil {
+			var qcs []models.QCResults
+			cursorQCResults.All(ctx, &qcs)
+			if len(qcs) > 0 {
+				sum := 0.0
+				for _, q := range qcs {
+					sum += q.OverallQC
+				}
+				avgQC = (sum / float64(len(qcs))) * 100
+			}
+		}
+	}
+
+	// 5. Fetch Recent Datasets (Last 5)
+	var recentDatasets []dto.DatasetSummary
+	findOptions := options.Find().SetLimit(5).SetSort(bson.M{"created_at": -1})
+	cursorDS, err := orgDB.Collection("raw_datasets").Find(ctx, bson.M{}, findOptions)
+	if err == nil {
+		var raws []models.RawDataset
+		cursorDS.All(ctx, &raws)
+		for _, rd := range raws {
+			recentDatasets = append(recentDatasets, dto.DatasetSummary{
+				ID:          rd.ID.Hex(),
+				Name:        rd.Metadata.ProjectName,
+				SampleCount: len(rd.RawAssays),
+				UploadedAt:  rd.CreatedAt.Format("2006-01-02"),
+				Status:      "active", // Simplified for now
+				QCScore:     0.95,     // Placeholder if not linked
+			})
+		}
+	}
+
+	// 6. Fetch Recent Decisions (Last 5)
+	var recentDecisions []dto.DecisionSummary
+	cursorDecList, err := orgDB.Collection("drill_decisions").Find(ctx, bson.M{}, options.Find().SetLimit(5).SetSort(bson.M{"created_at": -1}))
+	if err == nil {
+		var drills []models.DrillDecisions
+		cursorDecList.All(ctx, &drills)
+		for _, d := range drills {
+			for _, decision := range d.Decisions {
+				if len(recentDecisions) >= 5 {
+					break
+				}
+				recentDecisions = append(recentDecisions, dto.DecisionSummary{
+					ID:         decision.DecisionID,
+					TargetID:   decision.TargetID,
+					Decision:   decision.Decision,
+					Confidence: decision.Confidence,
+					CreatedAt:  decision.CreatedAt.Format("2006-01-02"),
+				})
+			}
+			if len(recentDecisions) >= 5 {
+				break
+			}
+		}
+	}
+
+	stats := map[string]interface{}{
+		"total_datasets":  totalDatasets,
+		"total_decisions": totalDecisions,
+		"targets":         float64(totalTargets),
+		"qc_rate":         avgQC,
+	}
+
+	return render(c, pages.Dashboard(recentDatasets, recentDecisions, stats))
 }
 
 func Upload(c echo.Context) error {
@@ -65,10 +178,14 @@ func NewWebHandler(mongo *db.MongoManager, authService *auth.AuthService) *WebHa
 
 // HandleUpload processes a multipart file upload (CSV or XLSX) and saves
 // the parsed assays as a RawDataset in the organisation's raw_datasets collection.
-func (h *WebHandler) HandleUpload(c echo.Context) error {
+func (h *WebHandler)  HandleUpload(c echo.Context) error {
 	// 1. Extract org / user from JWT claims set by echojwt middleware.
+	slog.Info("Upload function called")
 	token, ok := c.Get("user").(*jwt.Token)
 	if !ok {
+		if c.Request().Header.Get("HX-Request") == "true" {
+			return render(c, components.Toast("Unauthorized", "Missing auth token", components.ToastError))
+		}
 		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "missing auth token"})
 	}
 	claims, ok := token.Claims.(jwt.MapClaims)
@@ -77,6 +194,8 @@ func (h *WebHandler) HandleUpload(c echo.Context) error {
 	}
 	orgID, _ := claims["org_id"].(string)
 	userID, _ := claims["user_id"].(string)
+	slog.Info("Extracted claims", "org_id", orgID, "user_id", userID)
+	
 	if orgID == "" {
 		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "org_id not found in token"})
 	}
@@ -104,7 +223,19 @@ func (h *WebHandler) HandleUpload(c echo.Context) error {
 	commodities := c.FormValue("commodities")
 	samplingDateStr := c.FormValue("sampling_date")
 
+	slog.Info("Form metadata collected",
+		"project", projectName,
+		"method", samplingMethod,
+		"lab", labName,
+		"deposit", depositType,
+		"commodities", commodities,
+		"date", samplingDateStr,
+	)
+
 	if projectName == "" {
+		if c.Request().Header.Get("HX-Request") == "true" {
+			return render(c, components.Toast("Invalid Request", "Project name is required", components.ToastError))
+		}
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "project_name is required"})
 	}
 
@@ -170,7 +301,52 @@ func (h *WebHandler) HandleUpload(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "failed to save dataset: " + err.Error()})
 	}
 
-	// 7. Return success with dataset info.
+	// 7. Auto-run QC asynchronously after successful upload
+	go func(ds models.RawDataset, oID string) {
+		bgCtx := context.Background()
+		qcResult := qc.RunQC(oID, ds)
+		db, err := h.mongo.GetOrgDatabase(oID)
+		if err != nil {
+			slog.Error("Auto-QC: could not get org db", "error", err)
+			return
+		}
+		_, err = db.Collection("qc_results").InsertOne(bgCtx, qcResult)
+		if err != nil {
+			slog.Error("Auto-QC: failed to save qc_results", "error", err)
+			return
+		}
+		// Also create a processed dataset entry ("cleaned data")
+		var procAssays []models.ProcessedAssay
+		for i, r := range qcResult.Results {
+			if r.Passed {
+				assay := ds.RawAssays[i]
+				procAssays = append(procAssays, models.ProcessedAssay{
+					SampleID:    assay.SampleID,
+					Location:    assay.Location,
+					RawElements: assay.Elements,
+				})
+			}
+		}
+
+		procID := "proc_" + generateID("", 12)
+		procDS := models.ProcessedDataset{
+			ID:              primitive.NewObjectID(),
+			OrgID:           oID,
+			DatasetID:       procID,
+			ProcessedAssays: procAssays,
+			Transformations: []string{"qc_auto"},
+			ProcessedAt:     time.Now(),
+		}
+		if _, err := db.Collection("processed_datasets").InsertOne(bgCtx, procDS); err != nil {
+			slog.Error("Auto-QC: failed to create processed_dataset", "error", err)
+		}
+		slog.Info("Auto-QC complete", "dataset_id", ds.DatasetID, "overall_qc", qcResult.OverallQC)
+	}(dataset, orgID)
+
+	// 8. Return success with dataset info.
+	if c.Request().Header.Get("HX-Request") == "true" {
+		return render(c, components.Toast("Upload Successful", fmt.Sprintf("Imported %d samples. QC analysis running in background.", len(assays)), components.ToastSuccess))
+	}
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"id":         dataset.ID.Hex(),
 		"dataset_id": dataset.DatasetID,
@@ -202,6 +378,302 @@ func generateID(orgName string, n int) string {
 	return id
 }
 
+// HandleDatasetDetail serves the /datasets/:id page with assay table and QC info.
+func (h *WebHandler) HandleDatasetDetail(c echo.Context) error {
+	token, ok := c.Get("user").(*jwt.Token)
+	if !ok {
+		return c.Redirect(http.StatusFound, "/signin")
+	}
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return c.Redirect(http.StatusFound, "/signin")
+	}
+	orgID, _ := claims["org_id"].(string)
+
+	rawID := c.Param("id")
+	objID, err := primitive.ObjectIDFromHex(rawID)
+	if err != nil {
+		return c.String(http.StatusBadRequest, "Invalid dataset ID")
+	}
+
+	orgDB, err := h.mongo.GetOrgDatabase(orgID)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, "Database error")
+	}
+	ctx := c.Request().Context()
+
+	// Fetch raw dataset
+	var dataset models.RawDataset
+	if err := orgDB.Collection("raw_datasets").FindOne(ctx, bson.M{"_id": objID}).Decode(&dataset); err != nil {
+		return c.String(http.StatusNotFound, "Dataset not found")
+	}
+
+	// Fetch uploader email
+	uploaderEmail := "Unknown"
+	var uploader models.User
+	if uID, err := primitive.ObjectIDFromHex(dataset.Metadata.UploadedBy); err == nil {
+		if err := orgDB.Collection("users").FindOne(ctx, bson.M{"_id": uID}).Decode(&uploader); err == nil {
+			uploaderEmail = uploader.Email
+		}
+	}
+
+	// Build DTO base
+	detail := dto.DatasetDetailDTO{
+		ID:              dataset.ID.Hex(),
+		DatasetID:       dataset.DatasetID,
+		ProjectName:     dataset.Metadata.ProjectName,
+		SamplingMethod:  dataset.Metadata.SamplingMethod,
+		LabName:         dataset.Metadata.GeologicalSetting,
+		DepositType:     dataset.Metadata.DepositType,
+		UploadedBy:      dataset.Metadata.UploadedBy,
+		UploadedByEmail: uploaderEmail,
+		UploadedAt:      dataset.CreatedAt.Format("2006-01-02 15:04"),
+		SampleCount:     len(dataset.RawAssays),
+	}
+
+	// Fetch QC results if available
+	var qcResults models.QCResults
+	detail.FlaggedSampleIDs = make(map[string]bool)
+	detail.QCSummary = make(map[string]int)
+
+	if err := orgDB.Collection("qc_results").FindOne(ctx, bson.M{"dataset_id": dataset.DatasetID}).Decode(&qcResults); err == nil {
+		detail.HasQC = true
+		detail.OverallQC = qcResults.OverallQC
+		for _, r := range qcResults.Results {
+			if !r.Passed {
+				detail.FlaggedSampleIDs[r.SampleID] = true
+				detail.TotalFlagged++
+				for _, f := range r.Flags {
+					detail.QCSummary[f.Type]++
+				}
+			}
+		}
+	}
+
+	return render(c, pages.DatasetDetail(dataset, detail, qcResults))
+}
+
+// HandleDatasetMap renders the geospatial map view
+func (h *WebHandler) HandleDatasetMap(c echo.Context) error {
+	token, ok := c.Get("user").(*jwt.Token)
+	if !ok {
+		return c.Redirect(http.StatusFound, "/signin")
+	}
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return c.Redirect(http.StatusFound, "/signin")
+	}
+	orgID, _ := claims["org_id"].(string)
+
+	ctx := c.Request().Context()
+	id := c.Param("id")
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return c.String(http.StatusBadRequest, "Invalid ID")
+	}
+
+	orgDB, err := h.mongo.GetOrgDatabase(orgID)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, "Database error")
+	}
+
+	var dataset models.RawDataset
+	if err := orgDB.Collection("raw_datasets").FindOne(ctx, bson.M{"_id": objID}).Decode(&dataset); err != nil {
+		return c.String(http.StatusNotFound, "Dataset not found")
+	}
+
+	var qcResults models.QCResults
+	_ = orgDB.Collection("qc_results").FindOne(ctx, bson.M{"dataset_id": dataset.DatasetID}).Decode(&qcResults)
+
+	// Build points
+	flaggedIDs := make(map[string]bool)
+	for _, res := range qcResults.Results {
+		if !res.Passed {
+			flaggedIDs[res.SampleID] = true
+		}
+	}
+
+	hasQC := qcResults.DatasetID != ""
+	points := make([]dto.MapPoint, 0)
+	for _, assay := range dataset.RawAssays {
+		if assay.Deleted {
+			continue
+		}
+		status := "none"
+		if hasQC {
+			status = "passed"
+			if flaggedIDs[assay.SampleID] {
+				status = "flagged"
+			}
+		}
+		points = append(points, dto.MapPoint{
+			SampleID: assay.SampleID,
+			Lat:      assay.Location.Latitude,
+			Lon:      assay.Location.Longitude,
+			QCStatus: status,
+			Elements: assay.Elements,
+		})
+	}
+
+	mapDTO := dto.DatasetMapDTO{
+		ID:          id,
+		DatasetID:   dataset.DatasetID,
+		ProjectName: dataset.Metadata.ProjectName,
+		Points:      points,
+	}
+
+	return render(c, pages.DatasetMap(mapDTO))
+}
+
+// HandleRunQC runs QC on the given dataset and returns the results via HTMX.
+func (h *WebHandler) HandleRunQC(c echo.Context) error {
+	token, ok := c.Get("user").(*jwt.Token)
+	if !ok {
+		return render(c, components.Toast("Unauthorized", "Missing auth token", components.ToastError))
+	}
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return render(c, components.Toast("Unauthorized", "Invalid token", components.ToastError))
+	}
+
+	if role, _ := claims["role"].(string); role == "viewer" {
+		return render(c, components.Toast("Forbidden", "Viewers cannot trigger QC runs.", components.ToastError))
+	}
+
+	orgID, _ := claims["org_id"].(string)
+	rawID := c.Param("id")
+	objID, err := primitive.ObjectIDFromHex(rawID)
+	if err != nil {
+		return render(c, components.Toast("Error", "Invalid dataset ID", components.ToastError))
+	}
+
+	orgDB, err := h.mongo.GetOrgDatabase(orgID)
+	if err != nil {
+		return render(c, components.Toast("Error", "Database error", components.ToastError))
+	}
+	ctx := c.Request().Context()
+
+	var dataset models.RawDataset
+	if err := orgDB.Collection("raw_datasets").FindOne(ctx, bson.M{"_id": objID}).Decode(&dataset); err != nil {
+		return render(c, components.Toast("Not Found", "Dataset not found", components.ToastError))
+	}
+
+	// Run QC
+	qcResult := qc.RunQC(orgID, dataset)
+
+	// Upsert QC results
+	upsertOpts := options.Replace().SetUpsert(true)
+	_, err = orgDB.Collection("qc_results").ReplaceOne(ctx, bson.M{"dataset_id": dataset.DatasetID}, qcResult, upsertOpts)
+	if err != nil {
+		return render(c, components.Toast("Error", "Failed to save QC results", components.ToastError))
+	}
+
+	// Upsert processed dataset ("cleaned data")
+	var procAssays []models.ProcessedAssay
+	for i, r := range qcResult.Results {
+		if r.Passed {
+			assay := dataset.RawAssays[i]
+			procAssays = append(procAssays, models.ProcessedAssay{
+				SampleID:    assay.SampleID,
+				Location:    assay.Location,
+				RawElements: assay.Elements,
+			})
+		}
+	}
+
+	procID := "proc_" + generateID("", 12)
+	procDS := models.ProcessedDataset{
+		ID:              primitive.NewObjectID(),
+		OrgID:           orgID,
+		DatasetID:       procID,
+		ProcessedAssays: procAssays,
+		Transformations: []string{"qc_manual"},
+		ProcessedAt:     time.Now(),
+	}
+	procOpts := options.Replace().SetUpsert(true)
+	_, err = orgDB.Collection("processed_datasets").ReplaceOne(ctx, bson.M{"dataset_id": procID}, procDS, procOpts)
+	if err != nil {
+		slog.Warn("HandleRunQC: could not upsert processed_dataset", "error", err)
+	}
+
+	slog.Info("Manual QC run complete", "dataset_id", dataset.DatasetID, "overall_qc", qcResult.OverallQC)
+	return render(c, components.QCResultPanel(qcResult))
+}
+
+// HandlePassSample marks a specific sample as passed in the QC results.
+func (h *WebHandler) HandlePassSample(c echo.Context) error {
+	token, ok := c.Get("user").(*jwt.Token)
+	if !ok {
+		return render(c, components.Toast("Unauthorized", "Missing auth token", components.ToastError))
+	}
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return render(c, components.Toast("Unauthorized", "Invalid token", components.ToastError))
+	}
+	orgID, _ := claims["org_id"].(string)
+	datasetID := c.Param("id")
+	sampleID := c.Param("sampleId")
+
+	orgDB, err := h.mongo.GetOrgDatabase(orgID)
+	if err != nil {
+		return render(c, components.Toast("Error", "Database error", components.ToastError))
+	}
+	ctx := c.Request().Context()
+
+	// Update qc_results: find sample in results array and set Passed=true, Flags=[]
+	filter := bson.M{"dataset_id": datasetID, "results.sample_id": sampleID}
+	update := bson.M{
+		"$set": bson.M{
+			"results.$.passed":      true,
+			"results.$.flags":       []models.QCFlag{},
+			"results.$.qc_score":    1.0,
+			"results.$.explanation": "Manually marked as passed",
+		},
+	}
+
+	if _, err := orgDB.Collection("qc_results").UpdateOne(ctx, filter, update); err != nil {
+		return render(c, components.Toast("Error", "Failed to update QC result", components.ToastError))
+	}
+
+	return render(c, components.Toast("Success", "Sample marked as passed", components.ToastSuccess))
+}
+
+// HandleDeleteSample soft-deletes a specific assay from the raw dataset.
+func (h *WebHandler) HandleDeleteSample(c echo.Context) error {
+	token, ok := c.Get("user").(*jwt.Token)
+	if !ok {
+		return render(c, components.Toast("Unauthorized", "Missing auth token", components.ToastError))
+	}
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return render(c, components.Toast("Unauthorized", "Invalid token", components.ToastError))
+	}
+	orgID, _ := claims["org_id"].(string)
+	datasetID := c.Param("id")
+	sampleID := c.Param("sampleId")
+
+	orgDB, err := h.mongo.GetOrgDatabase(orgID)
+	if err != nil {
+		return render(c, components.Toast("Error", "Database error", components.ToastError))
+	}
+	ctx := c.Request().Context()
+
+	// Update raw_datasets: find assay in raw_assays array and set deleted=true
+	filter := bson.M{"dataset_id": datasetID, "raw_assays.sample_id": sampleID}
+	update := bson.M{
+		"$set": bson.M{
+			"raw_assays.$.deleted": true,
+		},
+	}
+
+	if _, err := orgDB.Collection("raw_datasets").UpdateOne(ctx, filter, update); err != nil {
+		return render(c, components.Toast("Error", "Failed to delete sample", components.ToastError))
+	}
+
+	return render(c, components.Toast("Success", "Sample soft-deleted", components.ToastSuccess))
+}
+
+
 // HandleProfile displays the user profile
 func (h *WebHandler) HandleProfile(c echo.Context) error {
 	token, ok := c.Get("user").(*jwt.Token)
@@ -222,8 +694,8 @@ func (h *WebHandler) HandleProfile(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, "Failed to load user")
 	}
 
-	log.Println("User loaded successfully", user)
-	log.Println("Org ID", orgID)
+	slog.Info("User loaded successfully", "user_id", user.ID.Hex(), "email", user.Email)
+	slog.Info("Organization context", "org_id", orgID)
 	org, err := h.authService.GetOrganization(ctx, orgID)
 	if err != nil {
 		return c.String(http.StatusInternalServerError, "Failed to load organization")
@@ -372,6 +844,9 @@ func (h *WebHandler) HandleGenerateDecisions(c echo.Context) error {
 	// 1. STATE LOCKING - prevent multiple requests running GoADK LLM at the same time for the same dataset
 	lockKey := orgID + "_" + datasetID
 	if _, running := processingLocks.LoadOrStore(lockKey, true); running {
+		if c.Request().Header.Get("HX-Request") == "true" {
+			return render(c, components.Toast("Agent Busy", "Agent is currently processing this dataset.", components.ToastWarning))
+		}
 		return c.JSON(http.StatusConflict, map[string]string{"error": "Agent is currently processing this dataset."})
 	}
 	defer processingLocks.Delete(lockKey)
@@ -614,6 +1089,9 @@ func (h *WebHandler) HandleGenerateReport(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to save the technical report"})
 	}
 
+	if c.Request().Header.Get("HX-Request") == "true" {
+		return render(c, components.Toast("Report Generated", "Technical report is ready.", components.ToastSuccess))
+	}
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"success":   true,
 		"report_id": report.ReportID,
@@ -710,6 +1188,9 @@ func (h *WebHandler) HandleInviteUser(c echo.Context) error {
 	host := "http://" + c.Request().Host
 	go resendSvc.SendOrganizationInvite(reqEmail, orgID, inviteToken, host)
 
+	if c.Request().Header.Get("HX-Request") == "true" {
+		return render(c, components.Toast("Invite Sent", "Organization invite has been dispatched.", components.ToastSuccess))
+	}
 	return c.JSON(http.StatusOK, map[string]string{"success": "true"})
 }
 

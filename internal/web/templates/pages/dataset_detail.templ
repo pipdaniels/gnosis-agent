@@ -1,0 +1,494 @@
+package pages
+
+import (
+	"gnosis-agent/internal/dto"
+	"gnosis-agent/internal/models"
+	"gnosis-agent/internal/web/templates/layout"
+	"fmt"
+)
+
+templ DatasetDetail(dataset models.RawDataset, detail dto.DatasetDetailDTO, qcResults models.QCResults) {
+	@layout.Base(detail.ProjectName + " — Dataset") {
+		<div class="ds-detail-page" data-dataset-id={ detail.ID }>
+
+			<!-- ===== Page Header ===== -->
+			<div class="ds-detail-header">
+				<div class="ds-breadcrumbs">
+					<a href="/datasets">Datasets</a>
+					<span class="breadcrumb-sep">›</span>
+					<span>{ detail.ProjectName }</span>
+				</div>
+				<div class="ds-detail-actions">
+					if detail.HasQC {
+						<span class="qc-badge-score">
+							<span class={ "qc-dot " + qcScoreDotClass(detail.OverallQC) }></span>
+							{ fmt.Sprintf("QC %.0f%%", detail.OverallQC*100) }
+						</span>
+					}
+					<a href={ templ.SafeURL("/datasets/" + detail.ID + "/map") } class="btn btn-outline" style="text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+						🗺️ View Map
+					</a>
+					<button
+						class="btn btn-primary"
+						id="run-qc-btn"
+						hx-post={ "/api/datasets/" + detail.ID + "/qc" }
+						hx-target="#qc-result-area"
+						hx-swap="innerHTML"
+						hx-indicator="#qc-loading-modal"
+						onclick="openQCModal()"
+					>
+						🔬 Run QC Analysis
+					</button>
+				</div>
+			</div>
+
+			<!-- ===== Metadata Cards ===== -->
+			<div class="ds-meta-grid">
+				<div class="ds-meta-card">
+					<span class="ds-meta-label">Dataset ID</span>
+					<span class="ds-meta-value mono">{ detail.DatasetID }</span>
+				</div>
+				<div class="ds-meta-card">
+					<span class="ds-meta-label">Sampling Method</span>
+					<span class="ds-meta-value">{ detail.SamplingMethod }</span>
+				</div>
+				<div class="ds-meta-card">
+					<span class="ds-meta-label">Deposit Type</span>
+					<span class="ds-meta-value">{ detail.DepositType }</span>
+				</div>
+				<div class="ds-meta-card">
+					<span class="ds-meta-label">Total Samples</span>
+					<span class="ds-meta-value">{ fmt.Sprint(detail.SampleCount) }</span>
+				</div>
+				<div class="ds-meta-card">
+					<span class="ds-meta-label">Uploaded At</span>
+					<span class="ds-meta-value">{ detail.UploadedAt }</span>
+				</div>
+				<div class="ds-meta-card">
+					<span class="ds-meta-label">Uploaded By</span>
+					<span class="ds-meta-value">{ detail.UploadedByEmail }</span>
+				</div>
+			</div>
+
+			<!-- ===== QC Flag Summary (if QC has run) ===== -->
+			if detail.HasQC && detail.TotalFlagged > 0 {
+				<div class="qc-summary-bar" style="cursor: pointer;" onclick="openQCSummaryModal()">
+					<div class="qc-summary-title">
+						<span>⚠️ QC Flags (Click to view details)</span>
+						<span class="qc-total-flagged">{ fmt.Sprint(detail.TotalFlagged) } samples flagged</span>
+					</div>
+					<div class="qc-summary-pills">
+						for cat, count := range detail.QCSummary {
+							<span class={ "qc-pill qc-pill-" + cat }>
+								{ cat }: <strong>{ fmt.Sprint(count) }</strong>
+							</span>
+						}
+					</div>
+				</div>
+			}
+
+			<!-- ===== Table Controls ===== -->
+			<div class="ds-table-controls">
+				<div class="ds-search-wrap">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+					<input type="text" id="ds-search" placeholder="Search by Sample ID, element…" oninput="dsTableFilter()" class="ds-search-input"/>
+				</div>
+				<div class="ds-controls-right">
+					<label for="ds-rows-select" class="ds-label">Rows per page</label>
+					<select id="ds-rows-select" onchange="dsTableFilter()" class="ds-select">
+						<option value="10">10</option>
+						<option value="25" selected>25</option>
+						<option value="50">50</option>
+						<option value="100">100</option>
+					</select>
+				</div>
+			</div>
+
+			<!-- ===== Assay Table ===== -->
+			<div class="ds-table-wrapper">
+				<table class="ds-table" id="ds-assay-table">
+					<thead>
+						<tr>
+							<th class="sortable" onclick="dsSort('sampleId')" data-col="sampleId">Sample ID <span class="sort-icon">⇅</span></th>
+							<th class="sortable" onclick="dsSort('lat')" data-col="lat">Lat <span class="sort-icon">⇅</span></th>
+							<th class="sortable" onclick="dsSort('lon')" data-col="lon">Lon <span class="sort-icon">⇅</span></th>
+							<th class="sortable" onclick="dsSort('lab')" data-col="lab">Lab <span class="sort-icon">⇅</span></th>
+							<th>Elements (key values)</th>
+							<th class="sortable" onclick="dsSort('qcStatus')" data-col="qcStatus">QC Status <span class="sort-icon">⇅</span></th>
+						</tr>
+					</thead>
+					<tbody id="ds-tbody">
+						for _, assay := range dataset.RawAssays {
+							if !assay.Deleted {
+								if detail.FlaggedSampleIDs[assay.SampleID] {
+									<tr class="ds-row ds-row-flagged"
+										style="cursor: pointer;"
+										onclick="openSampleModal(this)"
+										data-sample={ assay.SampleID }
+										data-lat={ fmt.Sprintf("%.4f", assay.Location.Latitude) }
+										data-lon={ fmt.Sprintf("%.4f", assay.Location.Longitude) }
+										data-lab={ assay.LabName }
+										data-elements={ elementFullList(assay.Elements) }
+										data-qc-status="flagged"
+										data-qc-reason={ getQCReason(qcResults, assay.SampleID) }
+									>
+										<td class="mono">{ assay.SampleID }</td>
+										<td>{ fmt.Sprintf("%.4f", assay.Location.Latitude) }</td>
+										<td>{ fmt.Sprintf("%.4f", assay.Location.Longitude) }</td>
+										<td>{ assay.LabName }</td>
+										<td class="elem-cell">{ elementsSnippet(assay.Elements) }</td>
+										<td data-qcstatus="1"><span class="qc-status-badge flagged">⚠ Flagged</span></td>
+									</tr>
+								} else {
+									<tr class="ds-row"
+										style="cursor: pointer;"
+										onclick="openSampleModal(this)"
+										data-sample={ assay.SampleID }
+										data-lat={ fmt.Sprintf("%.4f", assay.Location.Latitude) }
+										data-lon={ fmt.Sprintf("%.4f", assay.Location.Longitude) }
+										data-lab={ assay.LabName }
+										data-elements={ elementFullList(assay.Elements) }
+										data-qc-status={ fmt.Sprintf("%v", detail.HasQC) }
+										data-qc-reason="Passed all automated checks."
+									>
+										<td class="mono">{ assay.SampleID }</td>
+										<td>{ fmt.Sprintf("%.4f", assay.Location.Latitude) }</td>
+										<td>{ fmt.Sprintf("%.4f", assay.Location.Longitude) }</td>
+										<td>{ assay.LabName }</td>
+										<td class="elem-cell">{ elementsSnippet(assay.Elements) }</td>
+										if detail.HasQC {
+											<td data-qcstatus="0"><span class="qc-status-badge passed">✓ Passed</span></td>
+										} else {
+											<td data-qcstatus="2"><span class="qc-status-badge none">—</span></td>
+										}
+									</tr>
+								}
+							}
+						}
+					</tbody>
+				</table>
+			</div>
+
+			<!-- ===== Pagination Controls ===== -->
+			<div class="ds-pagination" id="ds-pagination">
+				<button class="ds-page-btn" id="ds-prev-btn" onclick="dsChangePage(-1)" disabled>← Prev</button>
+				<span id="ds-page-info" class="ds-page-info">Page 1</span>
+				<button class="ds-page-btn" id="ds-next-btn" onclick="dsChangePage(1)">Next →</button>
+			</div>
+
+			<!-- ===== QC Result Area (swapped by HTMX) ===== -->
+			<div id="qc-result-area" class="qc-result-area"></div>
+
+			<!-- ===== QC Loading Modal ===== -->
+			<div id="qc-loading-modal" class="qc-modal-backdrop" style="display:none">
+				<div class="qc-modal-box">
+					<div class="qc-spinner"></div>
+					<p id="qc-modal-msg" class="qc-modal-msg">Initialising QC engine…</p>
+					<p class="qc-modal-sub">This may take a moment for large datasets</p>
+				</div>
+			</div>
+
+			<!-- ===== Sample Detail Modal ===== -->
+			<div id="sample-modal" class="qc-modal-backdrop" style="display:none" onclick="if(event.target==this) closeSampleModal()">
+				<div class="qc-modal-box" style="text-align: left; align-items: stretch; max-width: 600px; padding: 2rem;">
+					<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid #eee; padding-bottom: 1rem;">
+						<h3 id="modal-sample-id" style="margin: 0; font-family: monospace;">Sample Details</h3>
+						<button onclick="closeSampleModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #9ca3af;">&times;</button>
+					</div>
+					
+					<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+						<div>
+							<label style="font-size: 0.75rem; color: #6b7280; text-transform: uppercase; font-weight: 600;">Location</label>
+							<div id="modal-location" style="font-size: 0.9rem; margin-top: 0.2rem;"></div>
+						</div>
+						<div>
+							<label style="font-size: 0.75rem; color: #6b7280; text-transform: uppercase; font-weight: 600;">Laboratory</label>
+							<div id="modal-lab" style="font-size: 0.9rem; margin-top: 0.2rem;"></div>
+						</div>
+					</div>
+
+					<div style="margin-bottom: 1.5rem;">
+						<label style="font-size: 0.75rem; color: #6b7280; text-transform: uppercase; font-weight: 600;">QC Status & Reason</label>
+						<div id="modal-qc-status" style="margin-top: 0.4rem;"></div>
+						<p id="modal-qc-reason" style="font-size: 0.85rem; background: #f9fafb; padding: 0.75rem; border-radius: 6px; border: 1px solid #e5e7eb; margin-top: 0.5rem;"></p>
+					</div>
+
+					<div style="margin-bottom: 1.5rem; max-height: 200px; overflow-y: auto;">
+						<label style="font-size: 0.75rem; color: #6b7280; text-transform: uppercase; font-weight: 600;">Assay Results</label>
+						<div id="modal-elements" style="font-size: 0.82rem; font-family: monospace; margin-top: 0.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 1rem;"></div>
+					</div>
+
+					<div id="modal-actions" style="display: flex; gap: 1rem; margin-top: 1rem; padding-top: 1.5rem; border-top: 1px solid #eee;">
+						<!-- Action buttons will be inserted here -->
+					</div>
+				</div>
+			</div>
+
+			<!-- ===== QC Flag Summary Modal ===== -->
+			<div id="qc-summary-modal" class="qc-modal-backdrop" style="display:none" onclick="if(event.target==this) closeQCSummaryModal()">
+				<div class="qc-modal-box" style="text-align: left; align-items: stretch; max-width: 700px; padding: 2rem;">
+					<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid #eee; padding-bottom: 1rem;">
+						<h3 style="margin: 0;">QC Flags Detailed Summary</h3>
+						<button onclick="closeQCSummaryModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #9ca3af;">&times;</button>
+					</div>
+					
+					<div style="max-height: 400px; overflow-y: auto;">
+						<table class="qc-table" style="width: 100%; border-collapse: collapse;">
+							<thead>
+								<tr style="text-align: left; border-bottom: 2px solid #eee;">
+									<th style="padding: 0.5rem;">Sample ID</th>
+									<th style="padding: 0.5rem;">Flag Reason</th>
+								</tr>
+							</thead>
+							<tbody>
+								for _, res := range qcResults.Results {
+									if !res.Passed {
+										<tr style="border-bottom: 1px solid #f3f4f6;">
+											<td style="padding: 0.5rem; font-family: monospace; font-size: 0.85rem;">{ res.SampleID }</td>
+											<td style="padding: 0.5rem; font-size: 0.85rem; color: #c2410c;">{ res.Explanation }</td>
+										</tr>
+									}
+								}
+							</tbody>
+						</table>
+					</div>
+					
+					<div style="margin-top: 1.5rem; text-align: right;">
+						<button class="btn btn-outline btn-sm" onclick="closeQCSummaryModal()">Close</button>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+		<!-- Table + Modal JS -->
+		<script>
+		(function(){
+			// ---- Table state ----
+			let allRows = [], filtered = [], currentPage = 1, rowsPerPage = 25;
+			let sortCol = null, sortDir = 1;
+
+			function init() {
+				allRows = Array.from(document.querySelectorAll('#ds-tbody .ds-row'));
+				filtered = allRows;
+				render();
+			}
+
+			window.dsTableFilter = function() {
+				const q = document.getElementById('ds-search').value.toLowerCase();
+				rowsPerPage = parseInt(document.getElementById('ds-rows-select').value);
+				currentPage = 1;
+				filtered = allRows.filter(r => {
+					return r.dataset.sample.toLowerCase().includes(q) ||
+						   r.dataset.elements.toLowerCase().includes(q) ||
+						   r.dataset.lab.toLowerCase().includes(q);
+				});
+				render();
+			};
+
+			window.dsSort = function(col) {
+				if (sortCol === col) { sortDir *= -1; } else { sortCol = col; sortDir = 1; }
+				document.querySelectorAll('th[data-col]').forEach(th => th.classList.remove('sorted-asc','sorted-desc'));
+				const th = document.querySelector('th[data-col="'+col+'"]');
+				if (th) th.classList.add(sortDir === 1 ? 'sorted-asc' : 'sorted-desc');
+				filtered.sort((a, b) => {
+					let av, bv;
+					if (col === 'qcStatus') {
+						av = a.querySelector('td:last-child').dataset.qcstatus || '9';
+						bv = b.querySelector('td:last-child').dataset.qcstatus || '9';
+					} else {
+						av = (a.dataset[col] || '').toLowerCase();
+						bv = (b.dataset[col] || '').toLowerCase();
+					}
+					return av < bv ? -sortDir : av > bv ? sortDir : 0;
+				});
+				currentPage = 1;
+				render();
+			};
+
+			window.dsChangePage = function(delta) {
+				const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
+				currentPage = Math.min(totalPages, Math.max(1, currentPage + delta));
+				render();
+			};
+
+			function render() {
+				const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
+				const start = (currentPage - 1) * rowsPerPage;
+				const end = start + rowsPerPage;
+				allRows.forEach(r => r.style.display = 'none');
+				filtered.slice(start, end).forEach(r => r.style.display = '');
+				document.getElementById('ds-page-info').textContent =
+					'Page ' + currentPage + ' of ' + totalPages + '  (' + filtered.length + ' rows)';
+				document.getElementById('ds-prev-btn').disabled = currentPage <= 1;
+				document.getElementById('ds-next-btn').disabled = currentPage >= totalPages;
+			}
+
+			document.addEventListener('DOMContentLoaded', init);
+
+			// ---- Sample Modal Logic ----
+			window.openSampleModal = function(row) {
+				const modal = document.getElementById('sample-modal');
+				document.getElementById('modal-sample-id').textContent = 'Sample: ' + row.dataset.sample;
+				document.getElementById('modal-location').textContent = row.dataset.lat + ', ' + row.dataset.lon;
+				document.getElementById('modal-lab').textContent = row.dataset.lab;
+				
+				const statusBox = document.getElementById('modal-qc-status');
+				statusBox.innerHTML = row.querySelector('td:last-child').innerHTML;
+				
+				document.getElementById('modal-qc-reason').textContent = row.dataset.qcReason;
+				
+				const elemsDiv = document.getElementById('modal-elements');
+				elemsDiv.innerHTML = '';
+				row.dataset.elements.split(',').forEach(pair => {
+					const div = document.createElement('div');
+					div.style.background = '#f3f4f6';
+					div.style.padding = '0.3rem 0.5rem';
+					div.style.borderRadius = '4px';
+					div.textContent = pair.trim();
+					elemsDiv.appendChild(div);
+				});
+
+				// Actions
+				const actionsDiv = document.getElementById('modal-actions');
+				actionsDiv.innerHTML = '';
+				
+				let passBtn = null;
+				if (row.dataset.qcStatus === 'flagged') {
+					passBtn = document.createElement('button');
+					passBtn.className = 'btn btn-success btn-sm';
+					passBtn.innerHTML = '✓ Mark as Passed';
+					passBtn.setAttribute('hx-post', '/api/datasets/[DATASET_ID]/samples/' + row.dataset.sample + '/pass');
+					passBtn.setAttribute('hx-target', 'body');
+					passBtn.setAttribute('hx-swap', 'none');
+					passBtn.onclick = () => { if(confirm('Mark this sample as passed?')) { setTimeout(()=>location.reload(), 1000); } };
+					actionsDiv.appendChild(passBtn);
+					
+					// Re-process htmx for the new button
+					htmx.process(passBtn);
+				}
+				
+				const deleteBtn = document.createElement('button');
+				deleteBtn.className = 'btn btn-outline btn-sm';
+				deleteBtn.style.color = '#dc2626';
+				deleteBtn.style.borderColor = '#fca5a5';
+				deleteBtn.innerHTML = '🗑 Delete Sample';
+				deleteBtn.setAttribute('hx-delete', '/api/datasets/[DATASET_ID]/samples/' + row.dataset.sample);
+				deleteBtn.setAttribute('hx-target', 'body');
+				deleteBtn.setAttribute('hx-swap', 'none');
+				deleteBtn.onclick = () => { if(confirm('Soft-delete this sample?')) { setTimeout(()=>location.reload(), 1000); } };
+				actionsDiv.appendChild(deleteBtn);
+				htmx.process(deleteBtn);
+
+				// Fetch Dataset Hex ID from data attribute on page container
+				const hexID = document.querySelector('.ds-detail-page').dataset.datasetId;
+				[passBtn, deleteBtn].forEach(btn => {
+					if(btn) {
+						btn.setAttribute('hx-post', (btn.getAttribute('hx-post')||'').replace('[DATASET_ID]', hexID));
+						btn.setAttribute('hx-delete', (btn.getAttribute('hx-delete')||'').replace('[DATASET_ID]', hexID));
+						htmx.process(btn);
+					}
+				});
+
+				modal.style.display = 'flex';
+			};
+
+			window.closeSampleModal = function() {
+				document.getElementById('sample-modal').style.display = 'none';
+			};
+
+			window.openQCSummaryModal = function() {
+				document.getElementById('qc-summary-modal').style.display = 'flex';
+			};
+			window.closeQCSummaryModal = function() {
+				document.getElementById('qc-summary-modal').style.display = 'none';
+			};
+
+			// ---- QC Loading Modal ----
+			const msgs = [
+				'Initialising QC engine…',
+				'Scanning element concentrations…',
+				'Running Z-score outlier analysis…',
+				'Checking for below-detection values…',
+				'Evaluating contamination proxies…',
+				'Computing overall QC score…',
+				'Finalising results…',
+			];
+			let msgIdx = 0, msgTimer = null;
+
+			window.openQCModal = function() {
+				const modal = document.getElementById('qc-loading-modal');
+				const msg   = document.getElementById('qc-modal-msg');
+				msgIdx = 0;
+				msg.textContent = msgs[0];
+				modal.style.display = 'flex';
+				msgTimer = setInterval(() => {
+					msgIdx = (msgIdx + 1) % msgs.length;
+					msg.textContent = msgs[msgIdx];
+				}, 1400);
+			};
+
+			document.addEventListener('htmx:afterSwap', function(e) {
+				if (e.detail.target && e.detail.target.id === 'qc-result-area') {
+					clearInterval(msgTimer);
+					document.getElementById('qc-loading-modal').style.display = 'none';
+					document.getElementById('qc-result-area').scrollIntoView({ behavior: 'smooth' });
+					setTimeout(() => location.reload(), 3000);
+				}
+			});
+		})();
+		</script>
+	}
+}
+
+func getQCReason(qc models.QCResults, sampleID string) string {
+	for _, r := range qc.Results {
+		if r.SampleID == sampleID {
+			if r.Explanation != "" {
+				return r.Explanation
+			}
+			return "No specific reason provided."
+		}
+	}
+	return "No QC results for this sample."
+}
+
+func elementFullList(elems map[string]float64) string {
+	count := 0
+	out := ""
+	for k, v := range elems {
+		if count > 0 {
+			out += ", "
+		}
+		out += fmt.Sprintf("%s:%.2f", k, v)
+		count++
+	}
+	return out
+}
+
+// elementsSnippet returns a short comma-separated string of top 4 element readings.
+func elementsSnippet(elems map[string]float64) string {
+	count := 0
+	out := ""
+	for k, v := range elems {
+		if count >= 4 {
+			out += "…"
+			break
+		}
+		if count > 0 {
+			out += ", "
+		}
+		out += fmt.Sprintf("%s:%.2f", k, v)
+		count++
+	}
+	return out
+}
+
+func qcScoreDotClass(score float64) string {
+	if score >= 0.8 {
+		return "dot-green"
+	} else if score >= 0.5 {
+		return "dot-amber"
+	}
+	return "dot-red"
+}

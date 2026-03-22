@@ -1,0 +1,127 @@
+package components
+
+import (
+	"gnosis-agent/internal/models"
+	"fmt"
+)
+
+// QCResultPanel is returned via HTMX after a QC run completes.
+templ QCResultPanel(result models.QCResults) {
+	<div id="qc-result-panel" class="qc-result-panel">
+		<div class="qc-result-header">
+			<div class="qc-score-ring" data-score={ fmt.Sprintf("%.0f", result.OverallQC*100) }>
+				<svg viewBox="0 0 36 36" class="circular-chart">
+					<path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+					<path class="circle" stroke-dasharray={ fmt.Sprintf("%.0f, 100", result.OverallQC*100) } d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+					<text x="18" y="20.35" class="percentage">{ fmt.Sprintf("%.0f%%", result.OverallQC*100) }</text>
+				</svg>
+			</div>
+			<div class="qc-score-info">
+				<h3>QC Analysis Complete</h3>
+				<p class="qc-subtitle">{ fmt.Sprintf("%d samples analysed · %d passed", len(result.Results), countPassed(result.Results)) }</p>
+				<p class="qc-timestamp">Run at { result.CreatedAt.Format("2006-01-02 15:04 UTC") }</p>
+			</div>
+		</div>
+
+		<!-- Flag summary by category -->
+		<div class="qc-categories">
+			<h4>Flag Categories</h4>
+			<div class="category-pills">
+				for cat, count := range summariseFlags(result.Results) {
+					<span class={ "qc-pill qc-pill-" + cat }>
+						{ qcIcon(cat) } { cat } <strong>{ fmt.Sprint(count) }</strong>
+					</span>
+				}
+			</div>
+		</div>
+
+		<!-- Per-sample breakdown -->
+		<div class="qc-table-wrapper">
+			<h4>Flagged Samples</h4>
+			if countFailed(result.Results) == 0 {
+				<p class="qc-all-pass">🎉 All samples passed QC checks!</p>
+			} else {
+				<table class="qc-table">
+					<thead>
+						<tr>
+							<th>Sample ID</th>
+							<th>QC Score</th>
+							<th>Flags</th>
+							<th>Notes</th>
+						</tr>
+					</thead>
+					<tbody>
+						for _, r := range result.Results {
+							if !r.Passed {
+								<tr class="qc-row-failed">
+									<td class="mono">{ r.SampleID }</td>
+									<td>
+										<span class={ qcScoreClass(r.QCScore) }>{ fmt.Sprintf("%.2f", r.QCScore) }</span>
+									</td>
+									<td>
+										for _, f := range r.Flags {
+											<span class={ "qc-flag-pill severity-" + f.Severity }>{ f.Type }</span>
+										}
+									</td>
+									<td class="qc-explanation">{ r.Explanation }</td>
+								</tr>
+							}
+						}
+					</tbody>
+				</table>
+			}
+		</div>
+	</div>
+}
+
+func countPassed(results []models.QCResult) int {
+	n := 0
+	for _, r := range results {
+		if r.Passed {
+			n++
+		}
+	}
+	return n
+}
+
+func countFailed(results []models.QCResult) int {
+	n := 0
+	for _, r := range results {
+		if !r.Passed {
+			n++
+		}
+	}
+	return n
+}
+
+func summariseFlags(results []models.QCResult) map[string]int {
+	m := make(map[string]int)
+	for _, r := range results {
+		for _, f := range r.Flags {
+			m[f.Type]++
+		}
+	}
+	return m
+}
+
+func qcIcon(cat string) string {
+	switch cat {
+	case "outlier":
+		return "📈"
+	case "missing_data":
+		return "❓"
+	case "contamination":
+		return "⚠️"
+	default:
+		return "🔍"
+	}
+}
+
+func qcScoreClass(score float64) string {
+	if score >= 0.8 {
+		return "qc-score-good"
+	} else if score >= 0.5 {
+		return "qc-score-warn"
+	}
+	return "qc-score-bad"
+}

@@ -128,7 +128,7 @@ function formatBytes(bytes) {
     return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
 }
 
-// Form Submission
+// Upload data Submission
 function initUploadForm() {
     const form = document.getElementById('upload-form');
     if (!form) return;
@@ -196,8 +196,8 @@ function showProgress() {
 
     if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.querySelector('.btn-text').style.display = 'none';
-        submitBtn.querySelector('.btn-loader').style.display = 'inline';
+        submitBtn.dataset.originalText = submitBtn.textContent;
+        submitBtn.textContent = 'Uploading...';
     }
 }
 
@@ -209,8 +209,7 @@ function hideProgress() {
 
     if (submitBtn) {
         submitBtn.disabled = false;
-        submitBtn.querySelector('.btn-text').style.display = 'inline';
-        submitBtn.querySelector('.btn-loader').style.display = 'none';
+        submitBtn.textContent = submitBtn.dataset.originalText || 'Upload & Analyze';
     }
 }
 
@@ -239,36 +238,85 @@ function animateProgress() {
 }
 
 // Toast Notifications
-function showToast(message, type = 'info') {
-    const container = document.getElementById('toast-container') || createToastContainer();
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', () => {
+    initTheme();
+    updateConnectionStatus();
+    initFileUpload();
+    initUploadForm();
+
+    // Handle auto-dismissal for toasts added via HTMX
+    document.body.addEventListener('htmx:afterSwap', (event) => {
+        if (event.detail.target.id === 'toast-container') {
+            const lastToast = event.detail.target.lastElementChild;
+            if (lastToast && lastToast.classList.contains('toast')) {
+                // Remove duplicates if any
+                const message = lastToast.querySelector('.toast-message')?.textContent;
+                const toasts = event.detail.target.querySelectorAll('.toast');
+                toasts.forEach(t => {
+                    if (t !== lastToast && t.querySelector('.toast-message')?.textContent === message) {
+                        t.remove();
+                    }
+                });
+
+                // Auto remove after 5s
+                setTimeout(() => {
+                    dismissToast(lastToast);
+                }, 4700);
+            }
+        }
+    });
+});
+
+function dismissToast(toast) {
+    if (!toast || !toast.parentElement) return;
+    toast.classList.add('removing');
+    setTimeout(() => {
+        if (toast.parentElement) toast.remove();
+    }, 300);
+}
+
+// Update showToast to use dismissToast
+function showToast(message, type = 'info', title = '') {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+
+    // Prevent spam: remove existing toasts with the same message
+    const existingToasts = container.querySelectorAll('.toast');
+    existingToasts.forEach(t => {
+        if (t.querySelector('.toast-message')?.textContent === message) {
+            t.remove();
+        }
+    });
 
     const toast = document.createElement('div');
-    toast.className = `toast toast-${type}`;
+    toast.className = `toast ${type}`;
+    toast.setAttribute('role', 'alert');
+    
+    const icon = getToastIcon(type);
+    
     toast.innerHTML = `
-		<span class="toast-icon">${getToastIcon(type)}</span>
-		<span class="toast-message">${message}</span>
-		<button class="toast-close" onclick="this.parentElement.remove()">✕</button>
-	`;
+        <div class="toast-icon">${icon}</div>
+        <div class="toast-content">
+            ${title ? `<div class="toast-title">${title}</div>` : ''}
+            <div class="toast-message">${message}</div>
+        </div>
+        <button class="toast-close" onclick="dismissToast(this.parentElement)" aria-label="Close">&times;</button>
+    `;
 
     container.appendChild(toast);
 
-    setTimeout(() => toast.remove(), 5000);
-}
-
-function createToastContainer() {
-    const container = document.createElement('div');
-    container.id = 'toast-container';
-    container.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 9999;';
-    document.body.appendChild(container);
-    return container;
+    setTimeout(() => {
+        dismissToast(toast);
+    }, 4700);
 }
 
 function getToastIcon(type) {
     const icons = {
-        success: '✓',
-        error: '✕',
-        warning: '⚠',
-        info: 'ℹ'
+        success: '✅',
+        error: '❌',
+        warning: '⚠️',
+        info: 'ℹ️'
     };
     return icons[type] || icons.info;
 }
@@ -284,11 +332,3 @@ function toggleSection(id) {
         if (toggle) toggle.textContent = isVisible ? '▶' : '▼';
     }
 }
-
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', () => {
-    initTheme();
-    updateConnectionStatus();
-    initFileUpload();
-    initUploadForm();
-});

@@ -1,0 +1,194 @@
+package pages
+
+import (
+	"gnosis-agent/internal/dto"
+	"gnosis-agent/internal/web/templates/layout"
+	"encoding/json"
+)
+
+templ DatasetMap(data dto.DatasetMapDTO) {
+	@layout.Base(data.ProjectName + " — Geospatial Map") {
+		<div class="ds-map-page">
+			
+			<!-- ===== Map Header ===== -->
+			<div class="ds-map-header">
+				<div class="ds-breadcrumbs">
+					<a href="/datasets">Datasets</a>
+					<span class="breadcrumb-sep">›</span>
+					<a href={ templ.SafeURL("/datasets/" + data.ID) }>{ data.ProjectName }</a>
+					<span class="breadcrumb-sep">›</span>
+					<span>Map view</span>
+				</div>
+				<h1 class="ds-map-title">Geospatial Distribution — { data.DatasetID }</h1>
+			</div>
+
+			<!-- ===== Map Container ===== -->
+			<div class="ds-map-wrapper">
+				<div id="dataset-map" class="dataset-map" data-points={ jsonMapData(data.Points) }></div>
+				
+				<!-- Map Overlays -->
+				// <div class="map-legend">
+				// 	<h4>QC Status</h4>
+				// 	<div class="legend-item"><span class="legend-dot dot-passed"></span> Passed QC</div>
+				// 	<div class="legend-item"><span class="legend-dot dot-flagged"></span> Flagged</div>
+				// 	<div class="legend-item"><span class="legend-dot dot-none"></span> No QC Run</div>
+				// </div>
+
+				<div class="map-coordinates" id="map-coords-display">
+					0.0000, 0.0000
+				</div>
+			</div>
+
+		</div>
+
+		<!-- Leaflet CSS/JS are in layout.Base, so we just need our component CSS and script -->
+		<link rel="stylesheet" href="/static/css/dataset_map.css"/>
+		
+		<script>
+		// UTM Mapping Logic using Proj4js
+		function getUTMCoords(lat, lon) {
+			try {
+				const zone = Math.floor((lon + 180) / 6) + 1;
+				const utmCode = `+proj=utm +zone=${zone} +datum=WGS84 +units=m +no_defs`;
+				const [easting, northing] = proj4(utmCode, [lon, lat]);
+				return {
+					zone: zone,
+					easting: easting.toFixed(0),
+					northing: northing.toFixed(0),
+					formatted: `Zone ${zone} | E: ${easting.toFixed(0)} | N: ${northing.toFixed(0)}`
+				};
+			} catch (e) {
+				console.error("Proj4 conversion error:", e);
+				return { formatted: "Coord error" };
+			}
+		}
+
+		(function(){
+			function initMap() {
+				const mapEl = document.getElementById('dataset-map');
+				const pointsData = mapEl.dataset.points;
+				if (!pointsData) return;
+				
+				const points = JSON.parse(pointsData);
+				if (points.length === 0) return;
+
+				// Calculate center
+				let avgLat = 0, avgLon = 0;
+				points.forEach(p => { avgLat += p.lat; avgLon += p.lon; });
+				avgLat /= points.length;
+				avgLon /= points.length;
+
+				// --- 1. Define Base Layers ---
+				const topo = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+					maxZoom: 19, attribution: 'Esri Topo'
+				});
+				const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+					maxZoom: 19, attribution: 'Esri Satellite'
+				});
+				const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+					maxZoom: 19, attribution: 'OSM'
+				});
+				const light = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+					maxZoom: 19, attribution: 'Carto Light'
+				});
+				const dark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+					maxZoom: 19, attribution: 'Carto Dark'
+				});
+
+				// Initialize map with default (topo)
+				const map = L.map('dataset-map', {
+					center: [avgLat, avgLon],
+					zoom: 13,
+					layers: [topo]
+				});
+
+				// --- 2. Layer Control ---
+				const baseMaps = {
+					"⛰️ Contours & Topo": topo,
+					"🛰️ Satellite": satellite,
+					"🗺️ Standard Map": osm,
+					"⚪ Light View": light,
+					"⚫ Dark Mode": dark
+				};
+				L.control.layers(baseMaps, null, { collapsed: false }).addTo(map);
+
+				// Add Scale
+				L.control.scale({ position: 'bottomleft', imperial: false }).addTo(map);
+
+				// Coordinate display on mouse move
+				const coordsDiv = document.getElementById('map-coords-display');
+				map.on('mousemove', function(e) {
+					const { lat, lng } = e.latlng;
+					const utm = getUTMCoords(lat, lng);
+					coordsDiv.innerHTML = `Lat: ${lat.toFixed(5)}, Lon: ${lng.toFixed(5)}<br/><small>${utm.formatted}</small>`;
+				});
+
+				// Colors
+				const colors = {
+					passed: '#10b981', 
+					flagged: '#ef4444', 
+					none: '#9ca3af'    
+				};
+
+				points.forEach(p => {
+					const circle = L.circleMarker([p.lat, p.lon], {
+						radius: 8,
+						fillColor: colors[p.qcStatus] || colors.none,
+						color: '#fff',
+						weight: 2,
+						opacity: 1,
+						fillOpacity: 0.8
+					}).addTo(map);
+
+					// Tooltip content
+					let elementsHtml = '<div class="map-popup-elements">';
+					let count = 0;
+					for(const [k, v] of Object.entries(p.elements)) {
+						if(count >= 5) break;
+						elementsHtml += `<span><strong>${k}:</strong> ${v.toFixed(2)}</span>`;
+						count++;
+					}
+					elementsHtml += '</div>';
+
+					const utm = getUTMCoords(p.lat, p.lon);
+					const popupContent = `
+						<div class="map-popup">
+							<div class="map-popup-header">Sample: ${p.sampleID}</div>
+							<div class="map-popup-body">
+								<div style="font-size: 0.75rem; color: #666; font-family: monospace;">${utm.formatted}</div>
+								<div class="map-popup-status status-${p.qcStatus}">Status: ${p.qcStatus.toUpperCase()}</div>
+								${elementsHtml}
+							</div>
+						</div>
+					`;
+
+					circle.bindPopup(popupContent, { closeButton: false });
+					
+					// Hover effect
+					circle.on('mouseover', function(e) {
+						this.openPopup();
+						this.setStyle({ weight: 4, radius: 10 });
+					});
+					circle.on('mouseout', function(e) {
+						this.closePopup();
+						this.setStyle({ weight: 2, radius: 8 });
+					});
+				});
+
+				// Fit bounds
+				if (points.length > 1) {
+					const latLats = points.map(p => [p.lat, p.lon]);
+					map.fitBounds(L.latLngBounds(latLats), { padding: [50, 50] });
+				}
+			}
+
+			window.addEventListener('DOMContentLoaded', initMap);
+		})();
+		</script>
+	}
+}
+
+func jsonMapData(points []dto.MapPoint) string {
+	b, _ := json.Marshal(points)
+	return string(b)
+}

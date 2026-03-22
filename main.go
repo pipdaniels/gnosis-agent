@@ -10,13 +10,15 @@ import (
 	"syscall"
 	"time"
 
-	"gnosis-agent/internal/agents/runtime"
 	"gnosis-agent/internal/agents/anomaly"
+	agents "gnosis-agent/internal/agents/runtime"
 	"gnosis-agent/internal/config"
 	"gnosis-agent/internal/db"
 	"gnosis-agent/internal/handlers"
 	"gnosis-agent/internal/services/auth"
 	"gnosis-agent/internal/web"
+
+	"log/slog"
 
 	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
@@ -37,7 +39,15 @@ func main() {
 		log.Fatal("Failed to load config:", err)
 	}
 
-	log.Printf("Starting GNOSISAGENT Platform for organization: %s", cfg.Org.Name)
+	// Initialize Logging
+	if cfg.Logging.Format == "json" {
+		handler := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+			Level: slog.LevelInfo,
+		})
+		slog.SetDefault(slog.New(handler))
+	}
+
+	slog.Info("Starting GNOSISAGENT Platform", "organization", cfg.Org.Name)
 
 	// Initialize MongoDB with database-level multi-tenancy
 	mongoMgr, err := db.NewMongoManager(cfg.MongoDB.URI, cfg.MongoDB.Database, cfg.MongoDB.Timeout)
@@ -48,14 +58,14 @@ func main() {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 		if err := mongoMgr.Close(ctx); err != nil {
-			log.Printf("Error closing MongoDB connection: %v", err)
+			slog.Error("Error closing MongoDB connection", "error", err)
 		}
 	}()
 
 	// Create organization database if it doesn't exist
 	ctx := context.Background()
 	if err := mongoMgr.CreateOrgDatabase(ctx, cfg.Org.ID); err != nil {
-		log.Printf("Warning: Could not create org database: %v", err)
+		slog.Warn("Could not create org database", "error", err)
 	}
 
 	// Initialize Echo web framework
@@ -63,16 +73,29 @@ func main() {
 	e.HideBanner = true
 
 	// Middleware
-	e.Use(middleware.Logger())
+	if cfg.Logging.Format == "json" {
+		e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+			Format: `{"time":"${time_rfc3339_nano}","id":"${id}","remote_ip":"${remote_ip}",` +
+				`"host":"${host}","method":"${method}","uri":"${uri}","user_agent":"${user_agent}",` +
+				`"status":${status},"error":"${error}","latency":${latency},"latency_human":"${latency_human}",` +
+				`"bytes_in":${bytes_in},"bytes_out":${bytes_out}}` + "\n",
+		}))
+	} else {
+		e.Use(middleware.Logger())
+	}
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORS())
 
 	// Serve static files from embedded filesystem
 	e.GET("/static/*", echo.WrapHandler(http.StripPrefix("/static/", http.FileServer(web.GetStaticFS()))))
 
-	// Serve service worker
+	// Serve service worker and manifest from the correct internal path
 	e.GET("/sw.js", func(c echo.Context) error {
-		return c.File("web/static/sw.js")
+		return c.File("internal/web/static/sw.js")
+	})
+
+	e.GET("/manifest.json", func(c echo.Context) error {
+		return c.File("internal/web/static/manifest.json")
 	})
 
 	// Health check endpoint
@@ -90,9 +113,9 @@ func main() {
 	// Initialize MLPack bridge by registering the anomaly agent which uses it
 	anomalyAgent := anomaly.NewAnomalyAgent(&cfg.Agents.Anomaly)
 	if err := agentRuntime.Register(anomalyAgent); err != nil {
-		log.Printf("Warning: Failed to register anomaly agent: %v", err)
+		slog.Warn("Failed to register anomaly agent", "error", err)
 	} else {
-		log.Printf("Registered Anomaly Agent (MLPack enabled)")
+		slog.Info("Registered Anomaly Agent", "mlpack_enabled", true)
 	}
 
 	// Initialize Auth Components
@@ -127,9 +150,14 @@ func main() {
 		},
 	}))
 
-	protected.GET("/dashboard", handlers.Dashboard)
+	protected.GET("/dashboard", webHandler.HandleDashboard)
 	protected.GET("/profile", webHandler.HandleProfile)
 	protected.GET("/datasets", webHandler.HandleDatasets)
+	protected.GET("/datasets/:id", webHandler.HandleDatasetDetail)
+	protected.GET("/datasets/:id/map", webHandler.HandleDatasetMap)
+	protected.POST("/api/datasets/:id/qc", webHandler.HandleRunQC)
+	protected.POST("/api/datasets/:id/samples/:sampleId/pass", webHandler.HandlePassSample)
+	protected.DELETE("/api/datasets/:id/samples/:sampleId", webHandler.HandleDeleteSample)
 	protected.GET("/targets", webHandler.HandleTargets)
 	protected.GET("/decisions", webHandler.HandleDecisions)
 	protected.POST("/api/decisions/generate", webHandler.HandleGenerateDecisions)
@@ -150,27 +178,27 @@ func main() {
 	// Uses API Key from Header
 	api := e.Group("/api")
 
-		api.Use(middleware.KeyAuthWithConfig(middleware.KeyAuthConfig{
-			KeyLookup: "header:" + cfg.Security.APIKeyHeader,
-			Validator: func(key string, c echo.Context) (bool, error) {
-				// We need OrgID to validate key, usually passed in header or encoded in key
-				// For now, let's assume we search all orgs or we require X-Org-ID header
-				// Simple approach: Check X-Org-ID header
-				orgID := c.Request().Header.Get("X-Org-ID")
-				if orgID == "" {
-					return false, fmt.Errorf("missing X-Org-ID header")
-				}
-				
-				user, err := authService.ValidateAPIKey(c.Request().Context(), key, orgID)
-				if err != nil {
-					return false, err
-				}
-				
-				// Set user context
-				c.Set("user", user)
-				return true, nil
-			},
-		}))
+	api.Use(middleware.KeyAuthWithConfig(middleware.KeyAuthConfig{
+		KeyLookup: "header:" + cfg.Security.APIKeyHeader,
+		Validator: func(key string, c echo.Context) (bool, error) {
+			// We need OrgID to validate key, usually passed in header or encoded in key
+			// For now, let's assume we search all orgs or we require X-Org-ID header
+			// Simple approach: Check X-Org-ID header
+			orgID := c.Request().Header.Get("X-Org-ID")
+			if orgID == "" {
+				return false, fmt.Errorf("missing X-Org-ID header")
+			}
+
+			user, err := authService.ValidateAPIKey(c.Request().Context(), key, orgID)
+			if err != nil {
+				return false, err
+			}
+
+			// Set user context
+			c.Set("user", user)
+			return true, nil
+		},
+	}))
 
 	api.GET("/", func(c echo.Context) error {
 		return c.JSON(200, map[string]string{
@@ -181,12 +209,12 @@ func main() {
 
 	// Start server
 	address := fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port)
-	log.Printf("Server starting on %s", address)
+	slog.Info("Server starting", "address", address)
 
 	// Graceful shutdown
 	go func() {
 		if err := e.Start(address); err != nil {
-			log.Printf("Server stopped: %v", err)
+			slog.Error("Server stopped", "error", err)
 		}
 	}()
 
@@ -195,13 +223,14 @@ func main() {
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 
-	log.Println("Shutting down server...")
+	slog.Info("Shutting down server")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	if err := e.Shutdown(ctx); err != nil {
-		log.Fatal("Server forced to shutdown:", err)
+		slog.Error("Server forced to shutdown", "error", err)
+		os.Exit(1)
 	}
 
-	log.Println("Server exited")
+	slog.Info("Server exited")
 }

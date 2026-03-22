@@ -44,7 +44,7 @@ func Signup() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"auth-page\"><div class=\"auth-container\"><div class=\"auth-card\"><div class=\"auth-header\"><h1>Create Free Account</h1><p>Start your geochemical exploration journey</p></div><form action=\"/signup\" method=\"POST\" class=\"auth-form\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"auth-page\"><div class=\"auth-container\"><div class=\"auth-card\"><div class=\"auth-header\"><h1>Create Free Account</h1><p>Start your geochemical exploration journey</p></div><form hx-post=\"/signup\" hx-target=\"#toast-container\" hx-swap=\"beforeend\" class=\"auth-form\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -64,7 +64,7 @@ func Signup() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"form-group checkbox\"><label class=\"checkbox-container\"><input type=\"checkbox\" name=\"terms\" required> <span class=\"checkbox-label\">I accept the <a href=\"/terms\">Terms of Service</a> and <a href=\"/privacy\">Privacy Policy</a></span></label></div><div class=\"form-actions\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"form-group checkbox\"><label class=\"checkbox-container\"><input type=\"checkbox\" name=\"terms\" required> <span class=\"checkbox-label\">I accept the <a href=\"/terms\" hx-boost=\"false\">Terms of Service</a> and <a href=\"/privacy\" hx-boost=\"false\">Privacy Policy</a></span></label></div><div class=\"form-actions\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -72,7 +72,7 @@ func Signup() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div><div class=\"auth-footer\"><p>Already have an account? <a href=\"/signin\">Sign In</a></p></div></form></div></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div><div class=\"auth-footer\"><p>Already have an account? <a href=\"/signin\" hx-boost=\"false\">Sign In</a></p></div></form></div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

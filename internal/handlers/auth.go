@@ -7,6 +7,7 @@ import (
 
 	"gnosis-agent/internal/services/auth"
 	"gnosis-agent/internal/web/templates/pages"
+	"gnosis-agent/internal/web/templates/components"
 	"gnosis-agent/internal/dto"
 
 	"github.com/labstack/echo/v4"
@@ -48,7 +49,9 @@ func (h *AuthHandler) HandleSignup(c echo.Context) error {
 
 	result, err := h.service.Signup(c.Request().Context(), req)
 	if err != nil {
-		// TODO: Render with error message
+		if c.Request().Header.Get("HX-Request") == "true" {
+			return render(c, components.Toast("Signup Failed", err.Error(), components.ToastError))
+		}
 		return c.String(http.StatusBadRequest, fmt.Sprintf("Signup failed: %v", err))
 	}
 
@@ -61,6 +64,10 @@ func (h *AuthHandler) HandleSignup(c echo.Context) error {
 	cookie.Path = "/"
 	c.SetCookie(cookie)
 
+	if c.Request().Header.Get("HX-Request") == "true" {
+		c.Response().Header().Set("HX-Redirect", "/dashboard")
+		return c.NoContent(http.StatusOK)
+	}
 	return c.Redirect(http.StatusFound, "/dashboard")
 }
 
@@ -78,7 +85,9 @@ func (h *AuthHandler) HandleSignin(c echo.Context) error {
 
 	token, err := h.service.Login(c.Request().Context(), req)
 	if err != nil {
-		// TODO: Render with error message
+		if c.Request().Header.Get("HX-Request") == "true" {
+			return render(c, components.Toast("Signin Failed", "Invalid credentials", components.ToastError))
+		}
 		return c.String(http.StatusUnauthorized, "Invalid credentials")
 	}
 
@@ -91,6 +100,10 @@ func (h *AuthHandler) HandleSignin(c echo.Context) error {
 	cookie.Path = "/"
 	c.SetCookie(cookie)
 
+	if c.Request().Header.Get("HX-Request") == "true" {
+		c.Response().Header().Set("HX-Redirect", "/dashboard")
+		return c.NoContent(http.StatusOK)
+	}
 	return c.Redirect(http.StatusFound, "/dashboard")
 }
 

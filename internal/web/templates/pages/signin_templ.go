@@ -44,7 +44,7 @@ func Signin() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"auth-page\"><div class=\"auth-container\"><div class=\"auth-card\"><div class=\"auth-header\"><h1>Welcome Back</h1><p>Sign in to your GNOSIS AGENT account</p></div><form action=\"/signin\" method=\"POST\" class=\"auth-form\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"auth-page\"><div class=\"auth-container\"><div class=\"auth-card\"><div class=\"auth-header\"><h1>Welcome Back</h1><p>Sign in to your GNOSIS AGENT account</p></div><form hx-post=\"/signin\" hx-target=\"#toast-container\" hx-swap=\"beforeend\" class=\"auth-form\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -68,7 +68,7 @@ func Signin() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div><div class=\"auth-footer\"><p>Don't have an account? <a href=\"/signup\">Create one for free</a></p></div></form></div></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div><div class=\"auth-footer\"><p>Don't have an account? <a href=\"/signup\" hx-boost=\"false\">Create one for free</a></p></div></form></div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
