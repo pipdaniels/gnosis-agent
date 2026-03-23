@@ -60,6 +60,6 @@ security:
 
 llm:
   provider: "gemini"
-  api_key: ${GEMINI_API_KEY}  # Set via environment variable GEOAGENT_LLM_API_KEY
+  api_key: ${GEMINI_API_KEY}  # Set via environment variable GNOSISAGENT_LLM_API_KEY
   model: "gemini-2.5-flash"
   max_tokens: 4000

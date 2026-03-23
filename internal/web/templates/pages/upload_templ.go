@@ -44,7 +44,7 @@ func Upload() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"upload-page\"><div class=\"screen-header\"><div><h1>Upload Geochemical Data</h1><p class=\"subtitle\">Upload CSV or Excel files with sample assay data</p></div></div><div class=\"upload-container\"><form id=\"upload-form\" enctype=\"multipart/form-data\"><!-- File Drop Zone --><div class=\"upload-section\"><h2>1. Select File</h2><div class=\"drop-zone\" id=\"dropZone\"><div class=\"drop-zone-content\"><div class=\"upload-icon\">📁</div><h3>Drag and drop file here</h3><p>or click to browse</p><p class=\"file-types\">Supported: CSV, XLSX (max 50MB)</p><input type=\"file\" id=\"fileInput\" accept=\".csv,.xlsx\" hidden>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"upload-page\"><div class=\"screen-header\"><div><h1>Upload Geochemical Data</h1><p class=\"subtitle\">Upload CSV or Excel files with assay data</p></div></div><div class=\"upload-container\"><form id=\"upload-form\" enctype=\"multipart/form-data\"><!-- File Drop Zone --><div class=\"upload-section\"><h2>1. Select File</h2><div class=\"drop-zone\" id=\"dropZone\"><div class=\"drop-zone-content\"><div class=\"upload-icon\">📁</div><h3>Drag and drop file here</h3><p>or click to browse</p><p class=\"file-types\">Supported: CSV, XLSX (max 50MB)</p><input type=\"file\" id=\"fileInput\" accept=\".csv,.xlsx\" hidden>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

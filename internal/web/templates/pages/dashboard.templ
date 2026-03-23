@@ -22,15 +22,15 @@ templ Dashboard(datasets []dto.DatasetSummary, recentDecisions []dto.DecisionSum
 				<div class="stat-card primary">
 					<div class="stat-icon">📊</div>
 					<div class="stat-content">
-						<h3 class="stat-value">{ fmt.Sprint(len(datasets)) }</h3>
+						<h3 class="stat-value">{ fmt.Sprint(stats["total_datasets"]) }</h3>
 						<p class="stat-label">Active Datasets</p>
 					</div>
 				</div>
 				<div class="stat-card success">
 					<div class="stat-icon">✓</div>
 					<div class="stat-content">
-						<h3 class="stat-value">{ fmt.Sprint(len(recentDecisions)) }</h3>
-						<p class="stat-label">Recent Decisions</p>
+						<h3 class="stat-value">{ fmt.Sprint(stats["total_decisions"]) }</h3>
+						<p class="stat-label">Active Decisions</p>
 					</div>
 				</div>
 				<div class="stat-card warning">

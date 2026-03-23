@@ -10,7 +10,7 @@ type Organization struct {
 	Name      string    `bson:"name" json:"name"`
 	CreatedAt time.Time `bson:"created_at" json:"created_at"`
 	UpdatedAt time.Time `bson:"updated_at" json:"updated_at"`
-	CreatedBy User      `bson:"created_by" json:"created_by"`
-	UpdatedBy User      `bson:"updated_by" json:"updated_by"`
+	CreatedBy string    `bson:"created_by" json:"created_by"`
+	UpdatedBy string    `bson:"updated_by" json:"updated_by"`
 	Members   []User    `bson:"members" json:"members"`
 }

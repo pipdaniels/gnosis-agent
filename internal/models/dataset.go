@@ -21,6 +21,7 @@ type Assay struct {
 	LabName     string             `bson:"lab_name" json:"lab_name"`
 	CollectedAt time.Time          `bson:"collected_at" json:"collected_at"`
 	Comments    string             `bson:"comments,omitempty" json:"comments,omitempty"`
+	Deleted     bool               `bson:"deleted,omitempty" json:"deleted,omitempty"`
 }
 
 // DatasetMetadata holds metadata about a dataset

@@ -81,7 +81,7 @@ func (s *Service) GenerateReport(ctx context.Context, orgID, datasetID string) (
 		Sections:         sections,
 		Recommendations:  s.generateRecommendations(results),
 		Metadata: models.ReportMetadata{
-			Author:       "GeoAgent AI",
+			Author:       "GNOSISAGENT AI",
 			ProjectName:  results.ProjectName,
 			TotalSamples: results.TotalSamples,
 			AnalysisDate: results.AnalysisDate,

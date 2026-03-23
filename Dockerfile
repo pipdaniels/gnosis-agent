@@ -1,4 +1,4 @@
-# Multi-stage build for GeoAgent Platform
+# Multi-stage build for GNOSISAGENT Platform
 
 # Stage 1: Build environment
 FROM golang:1.23-alpine AS builder
@@ -42,8 +42,8 @@ RUN if [ -f anomaly_detector.cpp ]; then \
 WORKDIR /app
 RUN CGO_ENABLED=1 go build \
     -ldflags="-w -s" \
-    -o /app/bin/geoagent \
-    ./cmd/geoagent
+    -o /app/bin/GNOSISAGENT \
+    ./cmd/GNOSISAGENT
 
 # Stage 2: Runtime environment
 FROM alpine:latest
@@ -56,23 +56,23 @@ RUN apk add --no-cache \
     libstdc++
 
 # Create app user
-RUN addgroup -g 1000 geoagent && \
-    adduser -D -u 1000 -G geoagent geoagent
+RUN addgroup -g 1000 GNOSISAGENT && \
+    adduser -D -u 1000 -G GNOSISAGENT GNOSISAGENT
 
 # Set working directory
 WORKDIR /app
 
 # Copy binary from builder
-COPY --from=builder /app/bin/geoagent /usr/local/bin/geoagent
+COPY --from=builder /app/bin/GNOSISAGENT /usr/local/bin/GNOSISAGENT
 
 # Copy configuration (optional, can be mounted)
 COPY configs/org.example.yaml /app/config/org.yaml
 
 # Change ownership
-RUN chown -R geoagent:geoagent /app
+RUN chown -R GNOSISAGENT:GNOSISAGENT /app
 
 # Switch to app user
-USER geoagent
+USER GNOSISAGENT
 
 # Expose port
 EXPOSE 8080
@@ -82,5 +82,5 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost:8080/health || exit 1
 
 # Run the application
-ENTRYPOINT ["/usr/local/bin/geoagent"]
+ENTRYPOINT ["/usr/local/bin/GNOSISAGENT"]
 CMD ["start", "--config", "/app/config/org.yaml"]

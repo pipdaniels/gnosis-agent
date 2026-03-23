@@ -1,12 +1,12 @@
-# Makefile for GeoAgent Platform
+# Makefile for GNOSISAGENT Platform
 
 .PHONY: help build run test clean docker-build docker-up docker-down install-deps
 
 # Variables
-BINARY_NAME=geoagent
+BINARY_NAME=GNOSISAGENT
 VERSION?=1.0.0
 BUILD_DIR=bin
-DOCKER_IMAGE=geoagent
+DOCKER_IMAGE=GNOSISAGENT
 DOCKER_TAG=latest
 
 # Colors
@@ -83,7 +83,7 @@ docker-up: ## Start Docker Compose services
 	@echo "${YELLOW}Starting services...${NC}"
 	@docker-compose up -d
 	@echo "${GREEN}Services started${NC}"
-	@echo "GeoAgent: http://localhost:8080"
+	@echo "GNOSISAGENT: http://localhost:8080"
 	@echo "MongoDB Admin: http://localhost:8081 (use --profile admin)"
 
 docker-down: ## Stop Docker Compose services
@@ -130,10 +130,10 @@ db-seed: ## Seed database with sample data (placeholder)
 release: clean build-all ## Create a release build
 	@echo "${YELLOW}Creating release...${NC}"
 	@mkdir -p release
-	@cd $(BUILD_DIR) && tar -czf ../release/geoagent-$(VERSION)-linux-amd64.tar.gz geoagent-linux-amd64
-	@cd $(BUILD_DIR) && tar -czf ../release/geoagent-$(VERSION)-darwin-amd64.tar.gz geoagent-darwin-amd64
-	@cd $(BUILD_DIR) && tar -czf ../release/geoagent-$(VERSION)-darwin-arm64.tar.gz geoagent-darwin-arm64
-	@cd $(BUILD_DIR) && zip ../release/geoagent-$(VERSION)-windows-amd64.zip geoagent-windows-amd64.exe
+	@cd $(BUILD_DIR) && tar -czf ../release/GNOSISAGENT-$(VERSION)-linux-amd64.tar.gz GNOSISAGENT-linux-amd64
+	@cd $(BUILD_DIR) && tar -czf ../release/GNOSISAGENT-$(VERSION)-darwin-amd64.tar.gz GNOSISAGENT-darwin-amd64
+	@cd $(BUILD_DIR) && tar -czf ../release/GNOSISAGENT-$(VERSION)-darwin-arm64.tar.gz GNOSISAGENT-darwin-arm64
+	@cd $(BUILD_DIR) && zip ../release/GNOSISAGENT-$(VERSION)-windows-amd64.zip GNOSISAGENT-windows-amd64.exe
 	@echo "${GREEN}Release created in release/${NC}"
 
 .DEFAULT_GOAL := help

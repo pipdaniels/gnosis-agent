@@ -1,0 +1,48 @@
+package components
+
+type ModalType string
+
+const (
+	ModalSuccess ModalType = "success"
+	ModalWarning ModalType = "warning"
+	ModalError   ModalType = "error"
+	ModalInfo    ModalType = "info"
+)
+
+templ Modal(title, message string, modalType ModalType, actions templ.Component) {
+	<div id="modal-overlay" onclick="if(event.target === this) this.remove()">
+		<div class={ "modal", string(modalType) }>
+			<div class="modal-header">
+				<h2 class="modal-title">
+					<span class="modal-icon">
+						if modalType == ModalSuccess {
+							✅
+						} else if modalType == ModalWarning {
+							⚠️
+						} else if modalType == ModalError {
+							❌
+						} else {
+							ℹ️
+						}
+					</span>
+					{ title }
+				</h2>
+				<button class="btn-icon" onclick="document.getElementById('modal-overlay').remove()">
+					&times;
+				</button>
+			</div>
+			<div class="modal-body">
+				<p>{ message }</p>
+			</div>
+			<div class="modal-footer">
+				if actions != nil {
+					@actions
+				} else {
+					<button class="btn btn-secondary" onclick="document.getElementById('modal-overlay').remove()">
+						Close
+					</button>
+				}
+			</div>
+		</div>
+	</div>
+}

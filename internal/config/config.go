@@ -14,6 +14,12 @@ type Config struct {
 	Agents   AgentConfig    `mapstructure:"agents"`
 	Security SecurityConfig `mapstructure:"security"`
 	LLM      LLMConfig      `mapstructure:"llm"`
+	Logging  LoggingConfig  `mapstructure:"logging"`
+}
+
+type LoggingConfig struct {
+	Level  string `mapstructure:"level"`
+	Format string `mapstructure:"format"`
 }
 
 // ServerConfig holds HTTP server configuration
@@ -122,7 +128,7 @@ func LoadConfig(configPath string) (*Config, error) {
 	v.SetDefault("server.port", 8080)
 	v.SetDefault("server.host", "0.0.0.0")
 	v.SetDefault("mongodb.uri", "mongodb://localhost:27017")
-	v.SetDefault("mongodb.database", "geoagent")
+	v.SetDefault("mongodb.database", "GNOSISAGENT")
 	v.SetDefault("mongodb.timeout", 10)
 	v.SetDefault("agents.qc.outlier_threshold", 3.0)
 	v.SetDefault("agents.qc.min_sample_size", 30)
@@ -143,6 +149,8 @@ func LoadConfig(configPath string) (*Config, error) {
 	v.SetDefault("llm.model", "gemini-2.5-flash")
 	v.SetDefault("llm.max_tokens", 4000)
 	v.SetDefault("llm.api_key", "[ENCRYPTION_KEY]")
+	v.SetDefault("logging.level", "info")
+	v.SetDefault("logging.format", "text")
 	v.SetDefault("org.id", "default")
 	v.SetDefault("org.name", "Admin_Organization")
 	v.SetDefault("org.deposit_models", []string{"epithermal", "porphyry", "orogenic"})
@@ -157,7 +165,11 @@ func LoadConfig(configPath string) (*Config, error) {
 
 	// Override with environment variables
 	v.AutomaticEnv()
-	v.SetEnvPrefix("GEOAGENT")
+	v.SetEnvPrefix("GNOSISAGENT")
+	
+	// Bind top-level ENV variables directly if they don't follow the section prefix
+	v.BindEnv("logging.level", "LOG_LEVEL")
+	v.BindEnv("logging.format", "LOG_FORMAT")
 
 	var config Config
 	if err := v.Unmarshal(&config); err != nil {

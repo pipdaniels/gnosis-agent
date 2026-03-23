@@ -40,13 +40,13 @@ func NewMongoManager(uri, databasePrefix string, timeout int) (*MongoManager, er
 }
 
 // GetOrgDatabase returns the MongoDB database for a specific organization
-// Database naming: {prefix}_org_{orgID}
+// Database naming: GNA_{orgID}
 func (m *MongoManager) GetOrgDatabase(orgID string) (*mongo.Database, error) {
 	if orgID == "" {
 		return nil, fmt.Errorf("orgID cannot be empty")
 	}
 
-	dbName := fmt.Sprintf("%s_org_%s", m.databasePrefix, orgID)
+	dbName := fmt.Sprintf("GNA_%s", orgID)
 	return m.client.Database(dbName), nil
 }
 
@@ -162,7 +162,7 @@ func (m *MongoManager) ListOrgDatabases(ctx context.Context) ([]string, error) {
 	}
 
 	var orgDatabases []string
-	prefix := fmt.Sprintf("%s_org_", m.databasePrefix)
+	prefix := "GNA_"
 	for _, dbName := range databases {
 		if len(dbName) > len(prefix) && dbName[:len(prefix)] == prefix {
 			orgDatabases = append(orgDatabases, dbName)

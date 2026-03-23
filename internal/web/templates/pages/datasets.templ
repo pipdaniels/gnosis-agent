@@ -41,11 +41,12 @@ templ Datasets(rawDatasets []models.RawDataset, processedDatasets []models.Proce
 										<th style="padding: 1rem; font-weight: 600; font-size: 0.875rem; color: #4b5563;">Method</th>
 										<th style="padding: 1rem; font-weight: 600; font-size: 0.875rem; color: #4b5563;">Samples</th>
 										<th style="padding: 1rem; font-weight: 600; font-size: 0.875rem; color: #4b5563;">Date Uploaded</th>
+										<th style="padding: 1rem; font-weight: 600; font-size: 0.875rem; color: #4b5563;">Actions</th>
 									</tr>
 								</thead>
 								<tbody>
 									for _, ds := range rawDatasets {
-										<tr style="border-bottom: 1px solid #e5e7eb; transition: background 0.15s;">
+										<tr style="border-bottom: 1px solid #e5e7eb; transition: background 0.15s; cursor: pointer;">
 											<td style="padding: 1rem; color: #2563eb; font-family: monospace; font-size: 0.9rem;">{ ds.DatasetID }</td>
 											<td style="padding: 1rem; color: #111827; font-weight: 500;">{ ds.Metadata.ProjectName }</td>
 											<td style="padding: 1rem; color: #4b5563; font-size: 0.9rem; text-transform: capitalize;">{ ds.Metadata.SamplingMethod }</td>
@@ -55,6 +56,9 @@ templ Datasets(rawDatasets []models.RawDataset, processedDatasets []models.Proce
 												</span>
 											</td>
 											<td style="padding: 1rem; color: #6b7280; font-size: 0.9rem;">{ ds.CreatedAt.Format(time.RFC822) }</td>
+											<td style="padding: 1rem;">
+												<a href={ templ.SafeURL("/datasets/" + ds.ID.Hex()) } style="color: #1a73e8; font-weight: 600; text-decoration: none; font-size: 0.85rem;">View →</a>
+											</td>
 										</tr>
 									}
 								</tbody>

@@ -1,6 +1,6 @@
 {
-	"name": "GeoAgent Platform",
-	"short_name": "GeoAgent",
+	"name": "GNOSISAGENT Platform",
+	"short_name": "GNOSISAGENT",
 	"description": "AI-Powered Geochemical Analysis Platform",
 	"start_url": "/",
 	"display": "standalone",
@@ -21,7 +21,11 @@
 			"purpose": "maskable any"
 		}
 	],
-	"categories": ["business", "productivity", "utilities"],
+	"categories": [
+		"business",
+		"productivity",
+		"utilities"
+	],
 	"screenshots": [
 		{
 			"src": "/static/screenshot-1.png",

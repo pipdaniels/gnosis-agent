@@ -1,4 +1,4 @@
-const CACHE_NAME = 'geoagent-v1';
+const CACHE_NAME = 'GNOSISAGENT-v1';
 const URLS_TO_CACHE = [
     '/',
     '/static/css/main.css',
