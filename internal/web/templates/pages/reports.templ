@@ -7,13 +7,13 @@ templ Reports(processedDatasets []models.ProcessedDataset, technicalReports []mo
 	@layout.Base("Reports") {
 		<div class="page-container" style="max-width: 1400px; margin: 2rem auto; padding: 0 1rem; font-family: sans-serif;">
 			<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-				<h1 style="margin: 0; font-size: 1.8rem; color: #111827;">Technical Reports Configuration</h1>
+				<h1 style="margin: 0; font-size: 1.8rem; color: var(--text-primary);">Technical Reports Configuration</h1>
 			</div>
 
 			<div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; margin-bottom: 3rem;">
 				<!-- Agent Config Form -->
-				<div class="card" style="background: white; border-radius: 12px; border: 1px solid #e5e7eb; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); padding: 1.5rem; height: fit-content;">
-					<h3 style="margin-top: 0; color: #111827; font-size: 1.2rem; border-bottom: 1px solid #f3f4f6; padding-bottom: 0.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+				<div class="card" style="background: var(--bg-primary); border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); padding: 1.5rem; height: fit-content;">
+					<h3 style="margin-top: 0; color: var(--text-primary); font-size: 1.2rem; border-bottom: 1px solid var(--bg-tertiary); padding-bottom: 0.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
 						<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bot"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
 						Agent Generation Setup
 					</h3>
@@ -24,8 +24,8 @@ templ Reports(processedDatasets []models.ProcessedDataset, technicalReports []mo
 						<form id="report-generator-form" style="display: flex; flex-direction: column; gap: 1.25rem;">
 							
 							<div>
-								<label style="display: block; margin-bottom: 0.3rem; font-weight: 500; font-size: 0.85rem; color: #374151;">Processed Dataset Context</label>
-								<select name="dataset_id" id="dataset_id" style="width: 100%; padding: 0.6rem; border-radius: 6px; border: 1px solid #d1d5db; background: #f9fafb;">
+								<label style="display: block; margin-bottom: 0.3rem; font-weight: 500; font-size: 0.85rem; color: var(--text-secondary);">Processed Dataset Context</label>
+								<select name="dataset_id" id="dataset_id" style="width: 100%; padding: 0.6rem; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-secondary); color: var(--text-primary);">
 									for _, ds := range processedDatasets {
 										<option value={ds.DatasetID}>{ds.DatasetID}</option>
 									}
@@ -45,12 +45,12 @@ templ Reports(processedDatasets []models.ProcessedDataset, technicalReports []mo
 
 							<div>
 								<label style="display: block; margin-bottom: 0.3rem; font-weight: 500; font-size: 0.85rem; color: #374151;">Business/Brand Logo URL</label>
-								<input type="url" id="logo_url" placeholder="https://example.com/logo.png" style="width: 100%; box-sizing: border-box; padding: 0.6rem; border-radius: 6px; border: 1px solid #d1d5db;" />
+									<input type="url" id="logo_url" placeholder="https://example.com/logo.png" style="width: 100%; box-sizing: border-box; padding: 0.6rem; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-primary); color: var(--text-primary);" />
 							</div>
 
 							<div>
 								<label style="display: block; margin-bottom: 0.3rem; font-weight: 500; font-size: 0.85rem; color: #374151;">Template Color Scheme</label>
-								<select id="color_scheme" style="width: 100%; padding: 0.6rem; border-radius: 6px; border: 1px solid #d1d5db;">
+								<select id="color_scheme" style="width: 100%; padding: 0.6rem; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-primary); color: var(--text-primary);">
 									<option value="#1a73e8">Corporate Blue</option>
 									<option value="#047857">Exploration Emerald</option>
 									<option value="#b91c1c">Geochemistry Crimson</option>
@@ -61,7 +61,7 @@ templ Reports(processedDatasets []models.ProcessedDataset, technicalReports []mo
 							<div>
 								<label style="display: block; margin-bottom: 0.3rem; font-weight: 500; font-size: 0.85rem; color: #374151;">Report Structure / TOC Prompt</label>
 								<p style="font-size: 0.8rem; color: #6b7280; margin-top: 0; margin-bottom: 0.5rem;">Define the exact sections the AI should draft.</p>
-								<textarea id="sections" rows="4" style="width: 100%; box-sizing: border-box; padding: 0.6rem; border-radius: 6px; border: 1px solid #d1d5db; font-family: sans-serif; resize: vertical;" required>1. Executive Summary
+								<textarea id="sections" rows="4" style="width: 100%; box-sizing: border-box; padding: 0.6rem; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-primary); color: var(--text-primary); font-family: sans-serif; resize: vertical;" required>1. Executive Summary
 2. Geological Anomalies Profile (Pathfinders)
 3. Drilling Decisions & Cost-Benefit Rationale
 4. Conclusion & Operational Recommendations</textarea>
@@ -79,9 +79,9 @@ templ Reports(processedDatasets []models.ProcessedDataset, technicalReports []mo
 
 				<!-- Archives List -->
 				<div>
-					<h3 style="margin-top: 0; color: #111827; font-size: 1.2rem; margin-bottom: 1.5rem;">Generated Reports Archive</h3>
+					<h3 style="margin-top: 0; color: var(--text-primary); font-size: 1.2rem; margin-bottom: 1.5rem;">Generated Reports Archive</h3>
 					if len(technicalReports) == 0 {
-						<div class="empty-state" style="text-align: center; padding: 3rem 2rem; background: #f9fafb; border: 1px dashed #d1d5db; border-radius: 12px;">
+						<div class="empty-state" style="text-align: center; padding: 3rem 2rem; background: var(--bg-secondary); border: 1px dashed var(--border); border-radius: 12px;">
 							<div style="display: inline-flex; align-items: center; justify-content: center; width: 50px; height: 50px; border-radius: 50%; background: #e0e7ff; color: #4f46e5; margin-bottom: 1rem;">
 								<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-text"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
 							</div>
@@ -91,8 +91,8 @@ templ Reports(processedDatasets []models.ProcessedDataset, technicalReports []mo
 					} else {
 						<div style="display: flex; flex-direction: column; gap: 1rem;">
 							for _, doc := range technicalReports {
-								<div style="background: white; border-radius: 12px; border: 1px solid #e5e7eb; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); padding: 1.5rem;">
-									<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; border-bottom: 1px solid #f3f4f6; padding-bottom: 1rem;">
+								<div style="background: var(--bg-primary); border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); padding: 1.5rem;">
+									<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; border-bottom: 1px solid var(--bg-tertiary); padding-bottom: 1rem;">
 										<div style="display: flex; align-items: center; gap: 1rem;">
 											if len(doc.Visualizations) > 0 && doc.Visualizations[0].FilePath != "" {
 												<img src={doc.Visualizations[0].FilePath} style="height: 40px; width: 40px; object-fit: contain; background: #f9fafb; border-radius: 6px; border: 1px solid #e5e7eb;"/>
@@ -100,8 +100,8 @@ templ Reports(processedDatasets []models.ProcessedDataset, technicalReports []mo
 												<div style="height: 40px; width: 40px; background: #f3f4f6; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #9ca3af; font-weight: 700; font-size: 0.8rem;">LOGO</div>
 											}
 											<div>
-												<h4 style="margin: 0; color: #111827; font-size: 1.1rem;">{ doc.Title }</h4>
-												<div style="font-size: 0.85rem; color: #6b7280; margin-top: 0.2rem;">Author: <span style="font-weight: 500; color: #374151;">{ doc.Metadata.Author }</span> &bull; { doc.GeneratedAt.Format("Jan 02, 2006 (15:04)") }</div>
+												<h4 style="margin: 0; color: var(--text-primary); font-size: 1.1rem;">{ doc.Title }</h4>
+												<div style="font-size: 0.85rem; color: var(--text-tertiary); margin-top: 0.2rem;">Author: <span style="font-weight: 500; color: var(--text-secondary);">{ doc.Metadata.Author }</span> &bull; { doc.GeneratedAt.Format("Jan 02, 2006 (15:04)") }</div>
 											</div>
 										</div>
 										<span style="background: #eff6ff; color: #1d4ed8; font-size: 0.75rem; font-weight: 600; padding: 0.3rem 0.6rem; border-radius: 99px;">
@@ -113,9 +113,9 @@ templ Reports(processedDatasets []models.ProcessedDataset, technicalReports []mo
 										for _, section := range doc.Sections {
 											<div style="margin-bottom: 1.5rem;">
 												if len(doc.Visualizations) > 1 {
-													<h5 style="margin: 0 0 0.5rem 0; font-size: 1rem; color: #111827; border-left: 4px solid var(--theme-color); padding-left: 0.5rem;" data-theme={doc.Visualizations[1].Description}>{ section.Title }</h5>
+													<h5 style="margin: 0 0 0.5rem 0; font-size: 1rem; color: var(--text-primary); border-left: 4px solid var(--theme-color); padding-left: 0.5rem;" data-theme={doc.Visualizations[1].Description}>{ section.Title }</h5>
 												} else {
-													<h5 style="margin: 0 0 0.5rem 0; font-size: 1rem; color: #111827; border-left: 4px solid #1a73e8; padding-left: 0.5rem;">{ section.Title }</h5>
+													<h5 style="margin: 0 0 0.5rem 0; font-size: 1rem; color: var(--text-primary); border-left: 4px solid #1a73e8; padding-left: 0.5rem;">{ section.Title }</h5>
 												}
 												<div style="font-size: 0.9rem; color: #4b5563; line-height: 1.5; white-space: pre-line;">{ section.Content }</div>
 											</div>
@@ -123,7 +123,7 @@ templ Reports(processedDatasets []models.ProcessedDataset, technicalReports []mo
 									</div>
 
 									<div style="display: flex; gap: 0.8rem; margin-top: 1rem;">
-										<button class="btn btn-outline" style="border: 1px solid #d1d5db; background: white; padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.85rem; font-weight: 500; cursor: pointer;">Download PDF</button>
+										<button class="btn btn-outline" style="border: 1px solid var(--border); background: var(--bg-primary); color: var(--text-primary); padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.85rem; font-weight: 500; cursor: pointer;">Download PDF</button>
 										<button class="btn btn-outline" style="border: 1px solid #e0e7ff; background: #eff6ff; color: #4f46e5; padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.85rem; font-weight: 500; cursor: pointer;">Share Report</button>
 									</div>
 								</div>

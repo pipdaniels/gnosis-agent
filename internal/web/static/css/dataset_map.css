@@ -19,7 +19,7 @@
   margin: 0.5rem 0 0;
   font-size: 1.5rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary);
 }
 
 /* ---- Map Wrapper ---- */
@@ -28,14 +28,14 @@
   position: relative;
   border-radius: 12px;
   overflow: hidden;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .dataset-map {
   width: 100%;
   height: 100%;
-  background: #f9fafb;
+  background: var(--bg-secondary);
 }
 
 /* ---- Legend Overlay ---- */
@@ -44,11 +44,11 @@
   top: 1.5rem;
   right: 1.5rem;
   z-index: 1000;
-  background: white;
+  background: var(--bg-primary);
   padding: 1rem;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border);
   min-width: 140px;
 }
 .map-legend h4 {
@@ -56,7 +56,7 @@
   font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #6b7280;
+  color: var(--text-tertiary);
 }
 .legend-item {
   display: flex;
@@ -64,7 +64,7 @@
   gap: 0.75rem;
   font-size: 0.9rem;
   margin-bottom: 0.5rem;
-  color: #374151;
+  color: var(--text-secondary);
 }
 .legend-dot {
   width: 12px;
@@ -84,15 +84,15 @@
   bottom: 1.5rem;
   right: 1.5rem;
   z-index: 1000;
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--bg-primary);
   padding: 0.5rem 0.75rem;
   border-radius: 6px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   font-family: monospace;
   font-size: 0.8rem;
-  color: #374151;
+  color: var(--text-secondary);
   text-align: right;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border);
   pointer-events: none;
 }
 
@@ -109,7 +109,7 @@
 .leaflet-control-layers label {
   margin-bottom: 0.5rem;
   font-size: 0.9rem;
-  color: #374151;
+  color: var(--text-secondary);
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -121,7 +121,7 @@
   top: 1.5rem;
   left: 1.5rem;
   z-index: 1000;
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--bg-primary);
   width: 40px;
   height: 60px;
   display: flex;
@@ -135,13 +135,13 @@
 .north-arrow-icon {
   font-weight: 900;
   font-size: 1.2rem;
-  color: #111827;
+  color: var(--text-primary);
   margin-top: -4px;
 }
 .north-arrow-line {
   width: 2px;
   height: 20px;
-  background: #111827;
+  background: var(--text-primary);
   position: relative;
 }
 .north-arrow-line::after {
@@ -151,7 +151,7 @@
   left: -4px;
   border-left: 5px solid transparent;
   border-right: 5px solid transparent;
-  border-bottom: 8px solid #111827;
+  border-bottom: 8px solid var(--text-primary);
 }
 
 /* ---- Popup Styles ---- */
@@ -161,7 +161,7 @@
 }
 .map-popup-header {
   font-weight: 700;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border);
   padding-bottom: 0.4rem;
   margin-bottom: 0.5rem;
   font-family: monospace;

@@ -45,7 +45,7 @@ func Profile(user *models.User, org *models.Organization) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"page-container\" style=\"max-width: 800px; margin: 2rem auto; padding: 0 1rem; font-family: sans-serif;\"><div class=\"card\" style=\"padding: 2.5rem; background: var(--bg-card, #fff); border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #eaeaea;\"><div style=\"display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f3f4f6; padding-bottom: 1.5rem; margin-bottom: 2rem;\"><h1 style=\"margin: 0; font-size: 1.8rem; color: #111827;\">User Profile</h1><a href=\"/logout\" class=\"btn btn-outline\" style=\"display: flex; align-items: center; gap: 0.5rem; text-decoration: none; color: #dc2626; border: 1px solid #fecaca; padding: 0.5rem 1rem; border-radius: 6px; font-weight: 500; transition: all 0.2s;\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-log-out\"><path d=\"M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4\"></path><polyline points=\"16 17 21 12 16 7\"></polyline><line x1=\"21\" x2=\"9\" y1=\"12\" y2=\"12\"></line></svg> Logout</a></div><div style=\"margin-bottom: 3rem;\"><h2 style=\"font-size: 1.25rem; margin-bottom: 1.5rem; color: #4f46e5; border-left: 4px solid #4f46e5; padding-left: 0.75rem;\">Personal Information</h2><div style=\"display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;\"><div class=\"form-group\"><label style=\"font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 0.5rem; color: #374151;\">First Name</label><div style=\"padding: 0.75rem; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; color: #111827;\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"page-container\" style=\"max-width: 800px; margin: 2rem auto; padding: 0 1rem; font-family: sans-serif;\"><div class=\"card\" style=\"padding: 2.5rem; background: var(--bg-primary); border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid var(--border);\"><div style=\"display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--bg-tertiary); padding-bottom: 1.5rem; margin-bottom: 2rem;\"><h1 style=\"margin: 0; font-size: 1.8rem; color: var(--text-primary);\">User Profile</h1><a href=\"/logout\" class=\"btn btn-outline\" style=\"display: flex; align-items: center; gap: 0.5rem; text-decoration: none; color: var(--danger); border: 1px solid var(--danger); opacity: 0.8; padding: 0.5rem 1rem; border-radius: 6px; font-weight: 500; transition: all 0.2s;\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-log-out\"><path d=\"M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4\"></path><polyline points=\"16 17 21 12 16 7\"></polyline><line x1=\"21\" x2=\"9\" y1=\"12\" y2=\"12\"></line></svg> Logout</a></div><div style=\"margin-bottom: 3rem;\"><h2 style=\"font-size: 1.25rem; margin-bottom: 1.5rem; color: #4f46e5; border-left: 4px solid #4f46e5; padding-left: 0.75rem;\">Personal Information</h2><div style=\"display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;\"><div class=\"form-group\"><label style=\"font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 0.5rem; color: var(--text-secondary);\">First Name</label><div style=\"padding: 0.75rem; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px; color: var(--text-primary);\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -98,27 +98,27 @@ func Profile(user *models.User, org *models.Organization) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div></div><div class=\"form-group\"><label style=\"font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 0.5rem; color: #374151;\">Role</label><div style=\"padding: 0.75rem; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; color: #111827; text-transform: capitalize;\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div></div><div class=\"form-group\"><label style=\"font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 0.5rem; color: #374151;\">Role</label><div style=\"padding: 0.75rem; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px; color: var(--text-tertiary); text-transform: capitalize;\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(user.Role)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/profile.templ`, Line: 48, Col: 161}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/profile.templ`, Line: 48, Col: 192}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</div></div><div class=\"form-group\"><label style=\"font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 0.5rem; color: #374151;\">Joined At</label><div style=\"padding: 0.75rem; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; color: #6b7280;\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</div></div><div class=\"form-group\"><label style=\"font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 0.5rem; color: var(--text-secondary);\">Joined At</label><div style=\"padding: 0.75rem; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px; color: var(--text-tertiary);\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(user.CreatedAt.Format(time.RFC822))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/profile.templ`, Line: 52, Col: 158}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/profile.templ`, Line: 52, Col: 189}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
@@ -137,14 +137,14 @@ func Profile(user *models.User, org *models.Organization) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</div></div><div class=\"form-group\"><label style=\"font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 0.5rem; color: #374151;\">Organization ID</label><div style=\"padding: 0.75rem; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; color: #4b5563; font-family: monospace;\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</div></div><div class=\"form-group\"><label style=\"font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 0.5rem; color: #374151;\">Organization ID</label><div style=\"padding: 0.75rem; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px; color: var(--text-secondary); font-family: monospace;\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(org.ID)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/profile.templ`, Line: 66, Col: 154}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/profile.templ`, Line: 66, Col: 186}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {

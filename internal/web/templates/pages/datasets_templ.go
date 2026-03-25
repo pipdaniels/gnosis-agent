@@ -10,8 +10,8 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import "gnosis-agent/internal/web/templates/layout"
 import "gnosis-agent/internal/models"
-import "time"
 import "fmt"
+import "time"
 
 func Datasets(rawDatasets []models.RawDataset, processedDatasets []models.ProcessedDataset) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
@@ -46,82 +46,82 @@ func Datasets(rawDatasets []models.RawDataset, processedDatasets []models.Proces
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"page-container\" style=\"max-width: 1200px; margin: 2rem auto; padding: 0 1rem; font-family: sans-serif;\"><div style=\"display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;\"><h1 style=\"margin: 0; font-size: 1.8rem; color: #111827;\">Datasets</h1><a href=\"/upload\" class=\"btn btn-primary\" style=\"display: flex; align-items: center; gap: 0.5rem; text-decoration: none; background: #1a73e8; color: white; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: 500; transition: background 0.2s;\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-plus\"><path d=\"M5 12h14\"></path><path d=\"M12 5v14\"></path></svg> New Dataset</a></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"page-container\" style=\"max-width: 1200px; margin: 2rem auto; padding: 0 1rem; font-family: sans-serif;\"><div style=\"display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;\"><h1 style=\"margin: 0; font-size: 1.8rem; color: var(--text-primary);\">Datasets</h1><a href=\"/upload\" class=\"btn btn-primary\" style=\"display: flex; align-items: center; gap: 0.5rem; text-decoration: none; background: #1a73e8; color: white; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: 500; transition: background 0.2s;\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-plus\"><path d=\"M5 12h14\"></path><path d=\"M12 5v14\"></path></svg> New Dataset</a></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if len(rawDatasets) == 0 && len(processedDatasets) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"empty-state\" style=\"text-align: center; padding: 4rem 2rem; background: #f9fafb; border: 1px dashed #d1d5db; border-radius: 12px; margin-top: 2rem;\"><div style=\"display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 50%; background: #e0e7ff; color: #4f46e5; margin-bottom: 1.5rem;\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"32\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-database\"><ellipse cx=\"12\" cy=\"5\" rx=\"9\" ry=\"3\"></ellipse><path d=\"M3 5V19A9 3 0 0 0 21 19V5\"></path><path d=\"M3 12A9 3 0 0 0 21 12\"></path></svg></div><h3 style=\"font-size: 1.25rem; margin-bottom: 0.5rem; color: #111827;\">No Datasets Found</h3><p style=\"color: #6b7280; max-width: 400px; margin: 0 auto 2rem auto; line-height: 1.5;\">You haven't uploaded any geochemical datasets yet. Upload your first dataset to start analyzing targets.</p><a href=\"/upload\" class=\"btn btn-primary\" style=\"display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none; background: #1a73e8; color: white; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: 500;\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-upload\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"></path><polyline points=\"17 8 12 3 7 8\"></polyline><line x1=\"12\" x2=\"12\" y1=\"3\" y2=\"15\"></line></svg> Upload Dataset</a></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"empty-state\" style=\"text-align: center; padding: 4rem 2rem; background: var(--bg-secondary); border: 1px dashed var(--border); border-radius: 12px; margin-top: 2rem;\"><div style=\"display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 50%; background: #e0e7ff; color: #4f46e5; margin-bottom: 1.5rem;\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"32\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-database\"><ellipse cx=\"12\" cy=\"5\" rx=\"9\" ry=\"3\"></ellipse><path d=\"M3 5V19A9 3 0 0 0 21 19V5\"></path><path d=\"M3 12A9 3 0 0 0 21 12\"></path></svg></div><h3 style=\"font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--text-primary);\">No Datasets Found</h3><p style=\"color: #6b7280; max-width: 400px; margin: 0 auto 2rem auto; line-height: 1.5;\">You haven't uploaded any geochemical datasets yet. Upload your first dataset to start analyzing targets.</p><a href=\"/upload\" class=\"btn btn-primary\" style=\"display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none; background: #1a73e8; color: white; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: 500;\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-upload\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"></path><polyline points=\"17 8 12 3 7 8\"></polyline><line x1=\"12\" x2=\"12\" y1=\"3\" y2=\"15\"></line></svg> Upload Dataset</a></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
 				if len(rawDatasets) > 0 {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div style=\"margin-bottom: 3rem;\"><h2 style=\"font-size: 1.25rem; font-weight: 600; color: #374151; margin-bottom: 1rem; border-left: 4px solid #1a73e8; padding-left: 0.75rem;\">Raw Datasets</h2><div class=\"table-responsive\" style=\"overflow-x: auto; background: white; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);\"><table style=\"width: 100%; border-collapse: collapse; text-align: left;\"><thead><tr style=\"background: #f9fafb; border-bottom: 1px solid #e5e7eb;\"><th style=\"padding: 1rem; font-weight: 600; font-size: 0.875rem; color: #4b5563;\">Dataset ID</th><th style=\"padding: 1rem; font-weight: 600; font-size: 0.875rem; color: #4b5563;\">Project Name</th><th style=\"padding: 1rem; font-weight: 600; font-size: 0.875rem; color: #4b5563;\">Method</th><th style=\"padding: 1rem; font-weight: 600; font-size: 0.875rem; color: #4b5563;\">Samples</th><th style=\"padding: 1rem; font-weight: 600; font-size: 0.875rem; color: #4b5563;\">Date Uploaded</th><th style=\"padding: 1rem; font-weight: 600; font-size: 0.875rem; color: #4b5563;\">Actions</th></tr></thead> <tbody>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div style=\"margin-bottom: 3rem;\"><h2 style=\"font-size: 1.25rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 1rem; border-left: 4px solid #1a73e8; padding-left: 0.75rem;\">Raw Datasets</h2><div class=\"table-responsive\" style=\"overflow-x: auto; background: var(--bg-primary); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);\"><table style=\"width: 100%; border-collapse: collapse; text-align: left;\"><thead><tr style=\"background: #f9fafb; border-bottom: 1px solid #e5e7eb;\"><th style=\"padding: 1rem; font-weight: 600; font-size: 0.875rem; color: var(--text-primary);\">Dataset ID</th><th style=\"padding: 1rem; font-weight: 600; font-size: 0.875rem; color: var(--text-primary);\">Project Name</th><th style=\"padding: 1rem; font-weight: 600; font-size: 0.875rem; color: var(--text-primary);\">Method</th><th style=\"padding: 1rem; font-weight: 600; font-size: 0.875rem; color: var(--text-primary);\">Samples</th><th style=\"padding: 1rem; font-weight: 600; font-size: 0.875rem; color: var(--text-primary);\">Date Uploaded</th><th style=\"padding: 1rem; font-weight: 600; font-size: 0.875rem; color: var(--text-primary);\">Actions</th></tr></thead> <tbody>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					for _, ds := range rawDatasets {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<tr style=\"border-bottom: 1px solid #e5e7eb; transition: background 0.15s; cursor: pointer;\"><td style=\"padding: 1rem; color: #2563eb; font-family: monospace; font-size: 0.9rem;\">")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<tr style=\"border-bottom: 1px solid #e5e7eb; transition: background 0.15s; cursor: pointer;\"><td style=\"padding: 1rem; color: var(--primary); font-family: monospace; font-size: 0.9rem;\">")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 						var templ_7745c5c3_Var3 string
 						templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(ds.DatasetID)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/datasets.templ`, Line: 50, Col: 111}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/datasets.templ`, Line: 49, Col: 118}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</td><td style=\"padding: 1rem; color: #111827; font-weight: 500;\">")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</td><td style=\"padding: 1rem; color: var(--text-primary); font-weight: 500;\">")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 						var templ_7745c5c3_Var4 string
 						templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(ds.Metadata.ProjectName)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/datasets.templ`, Line: 51, Col: 97}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/datasets.templ`, Line: 50, Col: 109}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</td><td style=\"padding: 1rem; color: #4b5563; font-size: 0.9rem; text-transform: capitalize;\">")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</td><td style=\"padding: 1rem; color: var(--text-secondary); font-size: 0.9rem; text-transform: capitalize;\">")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 						var templ_7745c5c3_Var5 string
 						templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(ds.Metadata.SamplingMethod)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/datasets.templ`, Line: 52, Col: 129}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/datasets.templ`, Line: 51, Col: 143}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</td><td style=\"padding: 1rem; color: #4b5563; font-size: 0.9rem;\"><span style=\"background: #eff6ff; color: #1d4ed8; padding: 0.25rem 0.5rem; border-radius: 999px; font-weight: 500;\">")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</td><td style=\"padding: 1rem; color: var(--text-secondary); font-size: 0.9rem;\"><span style=\"background: #eff6ff; color: #1d4ed8; padding: 0.25rem 0.5rem; border-radius: 999px; font-weight: 500;\">")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 						var templ_7745c5c3_Var6 string
 						templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(ds.RawAssays)))
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/datasets.templ`, Line: 55, Col: 51}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/datasets.templ`, Line: 54, Col: 51}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</span></td><td style=\"padding: 1rem; color: #6b7280; font-size: 0.9rem;\">")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</span></td><td style=\"padding: 1rem; color: var(--text-tertiary); font-size: 0.9rem;\">")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 						var templ_7745c5c3_Var7 string
 						templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(ds.CreatedAt.Format(time.RFC822))
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/datasets.templ`, Line: 58, Col: 107}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/datasets.templ`, Line: 57, Col: 120}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 						if templ_7745c5c3_Err != nil {
@@ -134,13 +134,13 @@ func Datasets(rawDatasets []models.RawDataset, processedDatasets []models.Proces
 						var templ_7745c5c3_Var8 templ.SafeURL
 						templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/datasets/" + ds.ID.Hex()))
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/datasets.templ`, Line: 60, Col: 63}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/datasets.templ`, Line: 59, Col: 63}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\" style=\"color: #1a73e8; font-weight: 600; text-decoration: none; font-size: 0.85rem;\">View →</a></td></tr>")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\" style=\"color: var(--primary); font-weight: 600; text-decoration: none; font-size: 0.85rem;\">View →</a></td></tr>")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -155,25 +155,25 @@ func Datasets(rawDatasets []models.RawDataset, processedDatasets []models.Proces
 					return templ_7745c5c3_Err
 				}
 				if len(processedDatasets) > 0 {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<div><h2 style=\"font-size: 1.25rem; font-weight: 600; color: #374151; margin-bottom: 1rem; border-left: 4px solid #10b981; padding-left: 0.75rem;\">Processed Datasets</h2><div class=\"table-responsive\" style=\"overflow-x: auto; background: white; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);\"><table style=\"width: 100%; border-collapse: collapse; text-align: left;\"><thead><tr style=\"background: #f9fafb; border-bottom: 1px solid #e5e7eb;\"><th style=\"padding: 1rem; font-weight: 600; font-size: 0.875rem; color: #4b5563;\">Dataset ID</th><th style=\"padding: 1rem; font-weight: 600; font-size: 0.875rem; color: #4b5563;\">Transformations</th><th style=\"padding: 1rem; font-weight: 600; font-size: 0.875rem; color: #4b5563;\">Samples</th><th style=\"padding: 1rem; font-weight: 600; font-size: 0.875rem; color: #4b5563;\">Date Processed</th></tr></thead> <tbody>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<div><h2 style=\"font-size: 1.25rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 1rem; border-left: 4px solid #10b981; padding-left: 0.75rem;\">Processed Datasets</h2><div class=\"table-responsive\" style=\"overflow-x: auto; background: var(--bg-primary); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);\"><table style=\"width: 100%; border-collapse: collapse; text-align: left;\"><thead><tr><th style=\"background: var(--bg-secondary); border-bottom: 1px solid var(--border);\">Dataset ID</th><th style=\"background: var(--bg-secondary); border-bottom: 1px solid var(--border);\">Transformations</th><th style=\"background: var(--bg-secondary); border-bottom: 1px solid var(--border);\">Samples</th>s<th style=\"padding: 1rem; font-weight: 600; font-size: 0.875rem; color: var(--text-tertiary);\">Date Processed</th></tr></thead> <tbody>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					for _, pds := range processedDatasets {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<tr style=\"border-bottom: 1px solid #e5e7eb; transition: background 0.15s;\"><td style=\"padding: 1rem; color: #2563eb; font-family: monospace; font-size: 0.9rem;\">")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<tr style=\"border-bottom: 1px solid #e5e7eb; transition: background 0.15s;\"><td style=\"padding: 1rem; color: var(--primary); font-family: monospace; font-size: 0.9rem;\">")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 						var templ_7745c5c3_Var9 string
 						templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(pds.DatasetID)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/datasets.templ`, Line: 86, Col: 112}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/datasets.templ`, Line: 84, Col: 119}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</td><td style=\"padding: 1rem; color: #4b5563; font-size: 0.9rem;\">")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</td><td style=\"padding: 1rem; color: var(--text-secondary); font-size: 0.9rem;\">")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -186,7 +186,7 @@ func Datasets(rawDatasets []models.RawDataset, processedDatasets []models.Proces
 								var templ_7745c5c3_Var10 string
 								templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(t)
 								if templ_7745c5c3_Err != nil {
-									return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/datasets.templ`, Line: 90, Col: 229}
+									return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/datasets.templ`, Line: 88, Col: 229}
 								}
 								_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 								if templ_7745c5c3_Err != nil {
@@ -198,32 +198,32 @@ func Datasets(rawDatasets []models.RawDataset, processedDatasets []models.Proces
 								}
 							}
 						} else {
-							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<span style=\"color: #9ca3af; font-style: italic;\">None</span>")
+							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<span style=\"color: var(--text-tertiary); font-style: italic;\">None</span>")
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</td><td style=\"padding: 1rem; color: #4b5563; font-size: 0.9rem;\"><span style=\"background: #eff6ff; color: #1d4ed8; padding: 0.25rem 0.5rem; border-radius: 999px; font-weight: 500;\">")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</td><td style=\"padding: 1rem; color: var(--text-secondary); font-size: 0.9rem;\"><span style=\"background: #eff6ff; color: #1d4ed8; padding: 0.25rem 0.5rem; border-radius: 999px; font-weight: 500;\">")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 						var templ_7745c5c3_Var11 string
 						templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(pds.ProcessedAssays)))
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/datasets.templ`, Line: 98, Col: 58}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/datasets.templ`, Line: 96, Col: 58}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "</span></td><td style=\"padding: 1rem; color: #6b7280; font-size: 0.9rem;\">")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "</span></td><td style=\"padding: 1rem; color: var(--text-tertiary); font-size: 0.9rem;\">")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 						var templ_7745c5c3_Var12 string
 						templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(pds.ProcessedAt.Format(time.RFC822))
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/datasets.templ`, Line: 101, Col: 110}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/datasets.templ`, Line: 99, Col: 123}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 						if templ_7745c5c3_Err != nil {

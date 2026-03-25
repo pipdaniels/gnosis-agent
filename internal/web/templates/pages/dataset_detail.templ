@@ -191,34 +191,34 @@ templ DatasetDetail(dataset models.RawDataset, detail dto.DatasetDetailDTO, qcRe
 			<!-- ===== Sample Detail Modal ===== -->
 			<div id="sample-modal" class="qc-modal-backdrop" style="display:none" onclick="if(event.target==this) closeSampleModal()">
 				<div class="qc-modal-box" style="text-align: left; align-items: stretch; max-width: 600px; padding: 2rem;">
-					<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid #eee; padding-bottom: 1rem;">
-						<h3 id="modal-sample-id" style="margin: 0; font-family: monospace;">Sample Details</h3>
-						<button onclick="closeSampleModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #9ca3af;">&times;</button>
+					<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
+						<h3 id="modal-sample-id" style="margin: 0; font-family: monospace; color: var(--text-primary);">Sample Details</h3>
+						<button onclick="closeSampleModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-tertiary);">&times;</button>
 					</div>
 					
 					<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
 						<div>
-							<label style="font-size: 0.75rem; color: #6b7280; text-transform: uppercase; font-weight: 600;">Location</label>
-							<div id="modal-location" style="font-size: 0.9rem; margin-top: 0.2rem;"></div>
+							<label style="font-size: 0.75rem; color: var(--text-tertiary); text-transform: uppercase; font-weight: 600;">Location</label>
+							<div id="modal-location" style="font-size: 0.9rem; margin-top: 0.2rem; color: var(--text-primary);"></div>
 						</div>
 						<div>
-							<label style="font-size: 0.75rem; color: #6b7280; text-transform: uppercase; font-weight: 600;">Laboratory</label>
-							<div id="modal-lab" style="font-size: 0.9rem; margin-top: 0.2rem;"></div>
+							<label style="font-size: 0.75rem; color: var(--text-tertiary); text-transform: uppercase; font-weight: 600;">Laboratory</label>
+							<div id="modal-lab" style="font-size: 0.9rem; margin-top: 0.2rem; color: var(--text-primary);"></div>
 						</div>
 					</div>
 
 					<div style="margin-bottom: 1.5rem;">
-						<label style="font-size: 0.75rem; color: #6b7280; text-transform: uppercase; font-weight: 600;">QC Status & Reason</label>
+						<label style="font-size: 0.75rem; color: var(--text-tertiary); text-transform: uppercase; font-weight: 600;">QC Status & Reason</label>
 						<div id="modal-qc-status" style="margin-top: 0.4rem;"></div>
-						<p id="modal-qc-reason" style="font-size: 0.85rem; background: #f9fafb; padding: 0.75rem; border-radius: 6px; border: 1px solid #e5e7eb; margin-top: 0.5rem;"></p>
+						<p id="modal-qc-reason" style="font-size: 0.85rem; background: var(--bg-secondary); padding: 0.75rem; border-radius: 6px; border: 1px solid var(--border); margin-top: 0.5rem; color: var(--text-primary);"></p>
 					</div>
 
 					<div style="margin-bottom: 1.5rem; max-height: 200px; overflow-y: auto;">
-						<label style="font-size: 0.75rem; color: #6b7280; text-transform: uppercase; font-weight: 600;">Assay Results</label>
+						<label style="font-size: 0.75rem; color: var(--text-tertiary); text-transform: uppercase; font-weight: 600;">Assay Results</label>
 						<div id="modal-elements" style="font-size: 0.82rem; font-family: monospace; margin-top: 0.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 1rem;"></div>
 					</div>
 
-					<div id="modal-actions" style="display: flex; gap: 1rem; margin-top: 1rem; padding-top: 1.5rem; border-top: 1px solid #eee;">
+					<div id="modal-actions" style="display: flex; gap: 1rem; margin-top: 1rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
 						<!-- Action buttons will be inserted here -->
 					</div>
 				</div>
@@ -227,15 +227,15 @@ templ DatasetDetail(dataset models.RawDataset, detail dto.DatasetDetailDTO, qcRe
 			<!-- ===== QC Flag Summary Modal ===== -->
 			<div id="qc-summary-modal" class="qc-modal-backdrop" style="display:none" onclick="if(event.target==this) closeQCSummaryModal()">
 				<div class="qc-modal-box" style="text-align: left; align-items: stretch; max-width: 700px; padding: 2rem;">
-					<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid #eee; padding-bottom: 1rem;">
-						<h3 style="margin: 0;">QC Flags Detailed Summary</h3>
-						<button onclick="closeQCSummaryModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #9ca3af;">&times;</button>
+					<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
+						<h3 style="margin: 0; color: var(--text-primary);">QC Flags Detailed Summary</h3>
+						<button onclick="closeQCSummaryModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-tertiary);">&times;</button>
 					</div>
 					
 					<div style="max-height: 400px; overflow-y: auto;">
 						<table class="qc-table" style="width: 100%; border-collapse: collapse;">
 							<thead>
-								<tr style="text-align: left; border-bottom: 2px solid #eee;">
+								<tr style="text-align: left; border-bottom: 2px solid var(--border); color: var(--text-secondary);">
 									<th style="padding: 0.5rem;">Sample ID</th>
 									<th style="padding: 0.5rem;">Flag Reason</th>
 								</tr>
@@ -243,8 +243,8 @@ templ DatasetDetail(dataset models.RawDataset, detail dto.DatasetDetailDTO, qcRe
 							<tbody>
 								for _, res := range qcResults.Results {
 									if !res.Passed {
-										<tr style="border-bottom: 1px solid #f3f4f6;">
-											<td style="padding: 0.5rem; font-family: monospace; font-size: 0.85rem;">{ res.SampleID }</td>
+										<tr style="border-bottom: 1px solid var(--bg-tertiary);">
+											<td style="padding: 0.5rem; font-family: monospace; font-size: 0.85rem; color: var(--text-primary);">{ res.SampleID }</td>
 											<td style="padding: 0.5rem; font-size: 0.85rem; color: #c2410c;">{ res.Explanation }</td>
 										</tr>
 									}
@@ -342,7 +342,8 @@ templ DatasetDetail(dataset models.RawDataset, detail dto.DatasetDetailDTO, qcRe
 				elemsDiv.innerHTML = '';
 				row.dataset.elements.split(',').forEach(pair => {
 					const div = document.createElement('div');
-					div.style.background = '#f3f4f6';
+					div.style.background = 'var(--bg-tertiary)';
+					div.style.color = 'var(--text-primary)';
 					div.style.padding = '0.3rem 0.5rem';
 					div.style.borderRadius = '4px';
 					div.textContent = pair.trim();

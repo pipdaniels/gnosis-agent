@@ -26,129 +26,121 @@ class OfflineStorage {
 
             request.onupgradeneeded = (event) => {
                 const db = event.target.result;
-
-                // Datasets store
                 if (!db.objectStoreNames.contains('datasets')) {
                     const datasetStore = db.createObjectStore('datasets', { keyPath: 'id' });
                     datasetStore.createIndex('orgId', 'org_id', { unique: false });
                     datasetStore.createIndex('uploadedAt', 'uploaded_at', { unique: false });
                 }
-
-                // Analyses store
                 if (!db.objectStoreNames.contains('analyses')) {
                     const analysisStore = db.createObjectStore('analyses', { keyPath: 'id' });
                     analysisStore.createIndex('datasetId', 'dataset_id', { unique: false });
                 }
-
-                // Decisions store
                 if (!db.objectStoreNames.contains('decisions')) {
                     const decisionStore = db.createObjectStore('decisions', { keyPath: 'decision_id' });
                     decisionStore.createIndex('datasetId', 'dataset_id', { unique: false });
                 }
-
-                // Upload queue for offline support
                 if (!db.objectStoreNames.contains('uploadQueue')) {
                     db.createObjectStore('uploadQueue', { keyPath: 'id', autoIncrement: true });
                 }
-
-                // Reports store
                 if (!db.objectStoreNames.contains('reports')) {
                     const reportStore = db.createObjectStore('reports', { keyPath: 'report_id' });
                     reportStore.createIndex('datasetId', 'dataset_id', { unique: false });
                 }
             };
         });
+        return this.initPromise;
+    }
+
+    // Helper to wrap IDBRequest in a Promise
+    _request(request) {
+        return new Promise((resolve, reject) => {
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    // Helper for transactions
+    async _transaction(stores, mode, callback) {
+        if (!this.db) await this.init();
+        return new Promise((resolve, reject) => {
+            const tx = this.db.transaction(stores, mode);
+            tx.oncomplete = () => resolve();
+            tx.onerror = () => reject(tx.error);
+            callback(tx);
+        });
     }
 
     async saveDataset(dataset) {
-        if (!this.db) await this.init();
-        const tx = this.db.transaction(['datasets'], 'readwrite');
-        const store = tx.objectStore('datasets');
-        await store.put(dataset);
-        return tx.complete;
+        await this._transaction(['datasets'], 'readwrite', tx => {
+            tx.objectStore('datasets').put(dataset);
+        });
     }
 
     async getDataset(id) {
         if (!this.db) await this.init();
         const tx = this.db.transaction(['datasets'], 'readonly');
-        const store = tx.objectStore('datasets');
-        return await store.get(id);
+        return this._request(tx.objectStore('datasets').get(id));
     }
 
     async getAllDatasets() {
         if (!this.db) await this.init();
         const tx = this.db.transaction(['datasets'], 'readonly');
-        const store = tx.objectStore('datasets');
-        return await store.getAll();
+        return this._request(tx.objectStore('datasets').getAll());
     }
 
     async saveAnalysis(analysis) {
-        if (!this.db) await this.init();
-        const tx = this.db.transaction(['analyses'], 'readwrite');
-        const store = tx.objectStore('analyses');
-        await store.put(analysis);
-        return tx.complete;
+        await this._transaction(['analyses'], 'readwrite', tx => {
+            tx.objectStore('analyses').put(analysis);
+        });
     }
 
     async getAnalysis(id) {
         if (!this.db) await this.init();
         const tx = this.db.transaction(['analyses'], 'readonly');
-        const store = tx.objectStore('analyses');
-        return await store.get(id);
+        return this._request(tx.objectStore('analyses').get(id));
     }
 
     async saveDecisions(decisions) {
-        if (!this.db) await this.init();
-        const tx = this.db.transaction(['decisions'], 'readwrite');
-        const store = tx.objectStore('decisions');
-        for (const decision of decisions.decisions) {
-            await store.put(decision);
-        }
-        return tx.complete;
+        await this._transaction(['decisions'], 'readwrite', tx => {
+            const store = tx.objectStore('decisions');
+            (decisions.decisions || []).forEach(d => store.put(d));
+        });
     }
 
     async getDecisionsByDataset(datasetId) {
         if (!this.db) await this.init();
         const tx = this.db.transaction(['decisions'], 'readonly');
-        const store = tx.objectStore('decisions');
-        const index = store.index('datasetId');
-        return await index.getAll(datasetId);
+        const index = tx.objectStore('decisions').index('datasetId');
+        return this._request(index.getAll(datasetId));
     }
 
     async queueUpload(data) {
-        if (!this.db) await this.init();
-        const tx = this.db.transaction(['uploadQueue'], 'readwrite');
-        const store = tx.objectStore('uploadQueue');
-        const item = {
-            data: data,
-            timestamp: Date.now(),
-            status: 'pending'
-        };
-        await store.add(item);
-        return tx.complete;
+        await this._transaction(['uploadQueue'], 'readwrite', tx => {
+            tx.objectStore('uploadQueue').add({
+                data: data,
+                timestamp: Date.now(),
+                status: 'pending'
+            });
+        });
     }
 
     async getUploadQueue() {
         if (!this.db) await this.init();
         const tx = this.db.transaction(['uploadQueue'], 'readonly');
-        const store = tx.objectStore('uploadQueue');
-        return await store.getAll();
+        return this._request(tx.objectStore('uploadQueue').getAll());
     }
 
     async removeFromQueue(id) {
-        if (!this.db) await this.init();
-        const tx = this.db.transaction(['uploadQueue'], 'readwrite');
-        const store = tx.objectStore('uploadQueue');
-        await store.delete(id);
-        return tx.complete;
+        await this._transaction(['uploadQueue'], 'readwrite', tx => {
+            tx.objectStore('uploadQueue').delete(id);
+        });
     }
 
     async syncQueued() {
-        if (!this.db) await this.init();
         const queue = await this.getUploadQueue();
         const results = [];
 
-        for (const item of queue) {
+        for (const item of (queue || [])) {
             try {
                 const response = await fetch('/api/upload', {
                     method: 'POST',
@@ -166,37 +158,28 @@ class OfflineStorage {
                 results.push({ success: false, id: item.id, error: error.message });
             }
         }
-
         return results;
     }
 
     async saveReport(report) {
-        if (!this.db) await this.init();
-        const tx = this.db.transaction(['reports'], 'readwrite');
-        const store = tx.objectStore('reports');
-        await store.put(report);
-        return tx.complete;
+        await this._transaction(['reports'], 'readwrite', tx => {
+            tx.objectStore('reports').put(report);
+        });
     }
 
     async getReport(reportId) {
         if (!this.db) await this.init();
         const tx = this.db.transaction(['reports'], 'readonly');
-        const store = tx.objectStore('reports');
-        return await store.get(reportId);
+        return this._request(tx.objectStore('reports').get(reportId));
     }
 
     async clearAll() {
-        if (!this.db) await this.init();
         const stores = ['datasets', 'analyses', 'decisions', 'uploadQueue', 'reports'];
-        const tx = this.db.transaction(stores, 'readwrite');
-
-        for (const storeName of stores) {
-            const store = tx.objectStore(storeName);
-            await store.clear();
-        }
-
-        return tx.complete;
+        await this._transaction(stores, 'readwrite', tx => {
+            stores.forEach(s => tx.objectStore(s).clear());
+        });
     }
+}
 }
 
 // Initialize storage on page load

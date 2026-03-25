@@ -2,62 +2,61 @@ package pages
 
 import "gnosis-agent/internal/web/templates/layout"
 import "gnosis-agent/internal/models"
-import "time"
 import "fmt"
+import "time"
 
 templ Datasets(rawDatasets []models.RawDataset, processedDatasets []models.ProcessedDataset) {
 	@layout.Base("Datasets") {
 		<div class="page-container" style="max-width: 1200px; margin: 2rem auto; padding: 0 1rem; font-family: sans-serif;">
 			<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-				<h1 style="margin: 0; font-size: 1.8rem; color: #111827;">Datasets</h1>
+				<h1 style="margin: 0; font-size: 1.8rem; color: var(--text-primary);">Datasets</h1>
 				<a href="/upload" class="btn btn-primary" style="display: flex; align-items: center; gap: 0.5rem; text-decoration: none; background: #1a73e8; color: white; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: 500; transition: background 0.2s;">
-					<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+					<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
 					New Dataset
 				</a>
 			</div>
-
 			if len(rawDatasets) == 0 && len(processedDatasets) == 0 {
-				<div class="empty-state" style="text-align: center; padding: 4rem 2rem; background: #f9fafb; border: 1px dashed #d1d5db; border-radius: 12px; margin-top: 2rem;">
+				<div class="empty-state" style="text-align: center; padding: 4rem 2rem; background: var(--bg-secondary); border: 1px dashed var(--border); border-radius: 12px; margin-top: 2rem;">
 					<div style="display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 50%; background: #e0e7ff; color: #4f46e5; margin-bottom: 1.5rem;">
-						<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-database"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></svg>
+						<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-database"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M3 5V19A9 3 0 0 0 21 19V5"></path><path d="M3 12A9 3 0 0 0 21 12"></path></svg>
 					</div>
-					<h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: #111827;">No Datasets Found</h3>
+					<h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--text-primary);">No Datasets Found</h3>
 					<p style="color: #6b7280; max-width: 400px; margin: 0 auto 2rem auto; line-height: 1.5;">You haven't uploaded any geochemical datasets yet. Upload your first dataset to start analyzing targets.</p>
 					<a href="/upload" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none; background: #1a73e8; color: white; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: 500;">
-						<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-upload"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+						<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-upload"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" x2="12" y1="3" y2="15"></line></svg>
 						Upload Dataset
 					</a>
 				</div>
 			} else {
 				if len(rawDatasets) > 0 {
 					<div style="margin-bottom: 3rem;">
-						<h2 style="font-size: 1.25rem; font-weight: 600; color: #374151; margin-bottom: 1rem; border-left: 4px solid #1a73e8; padding-left: 0.75rem;">Raw Datasets</h2>
-						<div class="table-responsive" style="overflow-x: auto; background: white; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+						<h2 style="font-size: 1.25rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 1rem; border-left: 4px solid #1a73e8; padding-left: 0.75rem;">Raw Datasets</h2>
+						<div class="table-responsive" style="overflow-x: auto; background: var(--bg-primary); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
 							<table style="width: 100%; border-collapse: collapse; text-align: left;">
 								<thead>
 									<tr style="background: #f9fafb; border-bottom: 1px solid #e5e7eb;">
-										<th style="padding: 1rem; font-weight: 600; font-size: 0.875rem; color: #4b5563;">Dataset ID</th>
-										<th style="padding: 1rem; font-weight: 600; font-size: 0.875rem; color: #4b5563;">Project Name</th>
-										<th style="padding: 1rem; font-weight: 600; font-size: 0.875rem; color: #4b5563;">Method</th>
-										<th style="padding: 1rem; font-weight: 600; font-size: 0.875rem; color: #4b5563;">Samples</th>
-										<th style="padding: 1rem; font-weight: 600; font-size: 0.875rem; color: #4b5563;">Date Uploaded</th>
-										<th style="padding: 1rem; font-weight: 600; font-size: 0.875rem; color: #4b5563;">Actions</th>
+										<th style="padding: 1rem; font-weight: 600; font-size: 0.875rem; color: var(--text-primary);">Dataset ID</th>
+										<th style="padding: 1rem; font-weight: 600; font-size: 0.875rem; color: var(--text-primary);">Project Name</th>
+										<th style="padding: 1rem; font-weight: 600; font-size: 0.875rem; color: var(--text-primary);">Method</th>
+										<th style="padding: 1rem; font-weight: 600; font-size: 0.875rem; color: var(--text-primary);">Samples</th>
+										<th style="padding: 1rem; font-weight: 600; font-size: 0.875rem; color: var(--text-primary);">Date Uploaded</th>
+										<th style="padding: 1rem; font-weight: 600; font-size: 0.875rem; color: var(--text-primary);">Actions</th>
 									</tr>
 								</thead>
 								<tbody>
 									for _, ds := range rawDatasets {
 										<tr style="border-bottom: 1px solid #e5e7eb; transition: background 0.15s; cursor: pointer;">
-											<td style="padding: 1rem; color: #2563eb; font-family: monospace; font-size: 0.9rem;">{ ds.DatasetID }</td>
-											<td style="padding: 1rem; color: #111827; font-weight: 500;">{ ds.Metadata.ProjectName }</td>
-											<td style="padding: 1rem; color: #4b5563; font-size: 0.9rem; text-transform: capitalize;">{ ds.Metadata.SamplingMethod }</td>
-											<td style="padding: 1rem; color: #4b5563; font-size: 0.9rem;">
+											<td style="padding: 1rem; color: var(--primary); font-family: monospace; font-size: 0.9rem;">{ ds.DatasetID }</td>
+											<td style="padding: 1rem; color: var(--text-primary); font-weight: 500;">{ ds.Metadata.ProjectName }</td>
+											<td style="padding: 1rem; color: var(--text-secondary); font-size: 0.9rem; text-transform: capitalize;">{ ds.Metadata.SamplingMethod }</td>
+											<td style="padding: 1rem; color: var(--text-secondary); font-size: 0.9rem;">
 												<span style="background: #eff6ff; color: #1d4ed8; padding: 0.25rem 0.5rem; border-radius: 999px; font-weight: 500;">
 													{ fmt.Sprintf("%d", len(ds.RawAssays)) }
 												</span>
 											</td>
-											<td style="padding: 1rem; color: #6b7280; font-size: 0.9rem;">{ ds.CreatedAt.Format(time.RFC822) }</td>
+											<td style="padding: 1rem; color: var(--text-tertiary); font-size: 0.9rem;">{ ds.CreatedAt.Format(time.RFC822) }</td>
 											<td style="padding: 1rem;">
-												<a href={ templ.SafeURL("/datasets/" + ds.ID.Hex()) } style="color: #1a73e8; font-weight: 600; text-decoration: none; font-size: 0.85rem;">View →</a>
+												<a href={ templ.SafeURL("/datasets/" + ds.ID.Hex()) } style="color: var(--primary); font-weight: 600; text-decoration: none; font-size: 0.85rem;">View →</a>
 											</td>
 										</tr>
 									}
@@ -66,39 +65,38 @@ templ Datasets(rawDatasets []models.RawDataset, processedDatasets []models.Proce
 						</div>
 					</div>
 				}
-
 				if len(processedDatasets) > 0 {
 					<div>
-						<h2 style="font-size: 1.25rem; font-weight: 600; color: #374151; margin-bottom: 1rem; border-left: 4px solid #10b981; padding-left: 0.75rem;">Processed Datasets</h2>
-						<div class="table-responsive" style="overflow-x: auto; background: white; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+						<h2 style="font-size: 1.25rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 1rem; border-left: 4px solid #10b981; padding-left: 0.75rem;">Processed Datasets</h2>
+						<div class="table-responsive" style="overflow-x: auto; background: var(--bg-primary); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
 							<table style="width: 100%; border-collapse: collapse; text-align: left;">
 								<thead>
-									<tr style="background: #f9fafb; border-bottom: 1px solid #e5e7eb;">
-										<th style="padding: 1rem; font-weight: 600; font-size: 0.875rem; color: #4b5563;">Dataset ID</th>
-										<th style="padding: 1rem; font-weight: 600; font-size: 0.875rem; color: #4b5563;">Transformations</th>
-										<th style="padding: 1rem; font-weight: 600; font-size: 0.875rem; color: #4b5563;">Samples</th>
-										<th style="padding: 1rem; font-weight: 600; font-size: 0.875rem; color: #4b5563;">Date Processed</th>
+									<tr>
+										<th style="background: var(--bg-secondary); border-bottom: 1px solid var(--border);">Dataset ID</th>
+										<th style="background: var(--bg-secondary); border-bottom: 1px solid var(--border);">Transformations</th>
+										<th style="background: var(--bg-secondary); border-bottom: 1px solid var(--border);">Samples</th>s
+										<th style="padding: 1rem; font-weight: 600; font-size: 0.875rem; color: var(--text-tertiary);">Date Processed</th>
 									</tr>
 								</thead>
 								<tbody>
 									for _, pds := range processedDatasets {
 										<tr style="border-bottom: 1px solid #e5e7eb; transition: background 0.15s;">
-											<td style="padding: 1rem; color: #2563eb; font-family: monospace; font-size: 0.9rem;">{ pds.DatasetID }</td>
-											<td style="padding: 1rem; color: #4b5563; font-size: 0.9rem;">
+											<td style="padding: 1rem; color: var(--primary); font-family: monospace; font-size: 0.9rem;">{ pds.DatasetID }</td>
+											<td style="padding: 1rem; color: var(--text-secondary); font-size: 0.9rem;">
 												if len(pds.Transformations) > 0 {
 													for _, t := range pds.Transformations {
 														<span style="display: inline-block; background: #ecfdf5; color: #047857; margin-right: 0.25rem; margin-bottom: 0.25rem; padding: 0.2rem 0.5rem; border-radius: 4px; border: 1px solid #a7f3d0; font-size: 0.75rem;">{ t }</span>
 													}
 												} else {
-													<span style="color: #9ca3af; font-style: italic;">None</span>
+													<span style="color: var(--text-tertiary); font-style: italic;">None</span>
 												}
 											</td>
-											<td style="padding: 1rem; color: #4b5563; font-size: 0.9rem;">
+											<td style="padding: 1rem; color: var(--text-secondary); font-size: 0.9rem;">
 												<span style="background: #eff6ff; color: #1d4ed8; padding: 0.25rem 0.5rem; border-radius: 999px; font-weight: 500;">
 													{ fmt.Sprintf("%d", len(pds.ProcessedAssays)) }
 												</span>
 											</td>
-											<td style="padding: 1rem; color: #6b7280; font-size: 0.9rem;">{ pds.ProcessedAt.Format(time.RFC822) }</td>
+											<td style="padding: 1rem; color: var(--text-tertiary); font-size: 0.9rem;">{ pds.ProcessedAt.Format(time.RFC822) }</td>
 										</tr>
 									}
 								</tbody>

@@ -14,61 +14,66 @@ templ Targets(processedDatasets []models.ProcessedDataset, anomalies []models.An
 
 		<div class="page-container" style="max-width: 1400px; margin: 2rem auto; padding: 0 1rem; font-family: sans-serif;">
 			if len(processedDatasets) == 0 {
-				<div class="empty-state" style="text-align: center; padding: 4rem 2rem; background: #f9fafb; border: 1px dashed #d1d5db; border-radius: 12px; margin-top: 2rem;">
+				<div class="empty-state" style="text-align: center; padding: 4rem 2rem; background: var(--bg-secondary); border: 1px dashed var(--border); border-radius: 12px; margin-top: 2rem;">
 					<div style="display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 50%; background: #e0e7ff; color: #4f46e5; margin-bottom: 1.5rem;">
 						<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-radar"><path d="M19.07 4.93A10 10 0 0 0 6.99 3.34"/><path d="M4 6h.01"/><path d="M2.29 9.62A10 10 0 1 0 21.31 8.35"/><path d="M16.24 7.76A6 6 0 1 0 8.23 16.67"/><path d="M12 18h.01"/><path d="M17.99 11.66A6 6 0 0 1 15.77 16.67"/><circle cx="12" cy="12" r="2"/><path d="m13.41 10.59 5.66-5.66"/></svg>
 					</div>
-					<h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: #111827;">No Analyzed Targets Available</h3>
-					<p style="color: #6b7280; max-width: 400px; margin: 0 auto 2rem auto; line-height: 1.5;">Process your raw geochemical datasets through our ML pipeline to generate robust anomaly and prospectivity targets.</p>
-					<a href="/upload" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none; background: #1a73e8; color: white; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: 500;">
-						Upload Raw Data
-					</a>
+					<h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--text-primary);">No Analyzed Targets Available</h3>
+					<p style="color: #6b7280; max-width: 400px; margin: 0 auto 2rem auto; line-height: 1.5;">To generate targets, go to your uploaded datasets and click <strong>Run QC & Analysis</strong> to trigger the ML pipeline.</p>
+					<div style="display: flex; gap: 1rem; justify-content: center;">
+						<a href="/datasets" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none; background: var(--primary); color: white; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: 500;">
+							View Datasets
+						</a>
+						<a href="/upload" class="btn btn-outline" style="display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none; border: 1px solid var(--primary); color: var(--primary); padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: 500;">
+							Upload New
+						</a>
+					</div>
 				</div>
 			} else {
 				<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-					<h1 style="margin: 0; font-size: 1.8rem; color: #111827;">Mineral Targets Visualizer</h1>
-					<select id="dataset-selector" class="form-select" style="padding: 0.5rem 1rem; border-radius: 6px; border: 1px solid #d1d5db; background: white; font-weight: 500; cursor: pointer; min-width: 200px;">
+					<h1 style="margin: 0; font-size: 1.8rem; color: var(--text-primary);">Mineral Targets Visualizer</h1>
+					<select id="dataset-selector" class="form-select" style="padding: 0.5rem 1rem; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-primary); color: var(--text-primary); font-weight: 500; cursor: pointer; min-width: 200px;">
 						for _, ds := range processedDatasets {
 							<option value={ ds.DatasetID }>{ ds.DatasetID }</option>
 						}
 					</select>
 				</div>
 				<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
-					<div class="card" style="background: white; border-radius: 12px; border: 1px solid #e5e7eb; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); padding: 1.5rem;">
+					<div class="card" style="background: var(--bg-primary); border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); padding: 1.5rem;">
 						<div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f3f4f6; padding-bottom: 0.5rem; margin-bottom: 1rem;">
-							<h3 style="margin: 0; color: #374151; font-size: 1.1rem;">3D Spatial Multi-Dimensional Target Map</h3>
+								<h3 style="margin: 0; color: var(--text-secondary); font-size: 1.1rem;">3D Spatial Multi-Dimensional Target Map</h3>
 							<span style="background: #fef3c7; color: #92400e; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">MDS VISUALIZATION</span>
 						</div>
 						<div id="plot-3d" style="width: 100%; height: 500px;"></div>
 					</div>
 					<div style="display: flex; flex-direction: column; gap: 1.5rem;">
-						<div class="card" style="background: white; border-radius: 12px; border: 1px solid #e5e7eb; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); padding: 1.5rem; flex: 1;">
-							<div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f3f4f6; padding-bottom: 0.5rem; margin-bottom: 1rem;">
-								<h3 style="margin: 0; color: #374151; font-size: 1.1rem;">Anomaly Intensity Profile</h3>
+						<div class="card" style="background: var(--bg-primary); border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); padding: 1.5rem; flex: 1;">
+							<div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+								<h3 style="margin: 0; color: var(--text-secondary); font-size: 1.1rem;">Anomaly Intensity Profile</h3>
 								<span style="background: #e0e7ff; color: #3730a3; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Z-SCORE</span>
 							</div>
 							<div id="plot-bar" style="width: 100%; height: 200px;"></div>
 						</div>
-						<div class="card" style="background: white; border-radius: 12px; border: 1px solid #e5e7eb; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); padding: 1.5rem; flex: 1; overflow-y: auto;">
-							<div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f3f4f6; padding-bottom: 0.5rem; margin-bottom: 1rem;">
-								<h3 style="margin: 0; color: #374151; font-size: 1.1rem;">Exploration Rationale</h3>
+						<div class="card" style="background: var(--bg-primary); border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); padding: 1.5rem; flex: 1; overflow-y: auto;">
+							<div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+								<h3 style="margin: 0; color: var(--text-secondary); font-size: 1.1rem;">Exploration Rationale</h3>
 								<span style="background: #ecebff; color: #4338ca; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">TEXT MINING</span>
 							</div>
 							<div id="rationale-tags" style="display: flex; flex-wrap: wrap; gap: 0.5rem;"></div>
 						</div>
 					</div>
 				</div>
-				<div class="card" style="background: white; border-radius: 12px; border: 1px solid #e5e7eb; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); padding: 1.5rem;">
-					<h3 style="margin-top: 0; color: #374151; font-size: 1.1rem; border-bottom: 1px solid #f3f4f6; padding-bottom: 0.5rem; margin-bottom: 1rem;">Prospectivity Decision Matrix</h3>
+				<div class="card" style="background: var(--bg-primary); border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); padding: 1.5rem;">
+					<h3 style="margin-top: 0; color: var(--text-secondary); font-size: 1.1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 1rem;">Prospectivity Decision Matrix</h3>
 					<div class="table-responsive">
 						<table style="width: 100%; border-collapse: collapse; text-align: left;" id="targets-table">
 							<thead>
-								<tr style="background: #f9fafb; border-bottom: 1px solid #e5e7eb;">
-									<th style="padding: 1rem; font-size: 0.85rem; color: #4b5563; font-weight: 600;">Target ID</th>
-									<th style="padding: 1rem; font-size: 0.85rem; color: #4b5563; font-weight: 600;">Status Indicator</th>
-									<th style="padding: 1rem; font-size: 0.85rem; color: #4b5563; font-weight: 600;">Prospectivity Score</th>
-									<th style="padding: 1rem; font-size: 0.85rem; color: #4b5563; font-weight: 600;">Confidence Level</th>
-									<th style="padding: 1rem; font-size: 0.85rem; color: #4b5563; font-weight: 600;">Action</th>
+								<tr style="background: var(--bg-secondary); border-bottom: 1px solid var(--border);">
+									<th style="padding: 1rem; font-size: 0.85rem; color: var(--text-tertiary); font-weight: 600;">Target ID</th>
+									<th style="padding: 1rem; font-size: 0.85rem; color: var(--text-tertiary); font-weight: 600;">Status Indicator</th>
+									<th style="padding: 1rem; font-size: 0.85rem; color: var(--text-tertiary); font-weight: 600;">Prospectivity Score</th>
+									<th style="padding: 1rem; font-size: 0.85rem; color: var(--text-tertiary); font-weight: 600;">Confidence Level</th>
+									<th style="padding: 1rem; font-size: 0.85rem; color: var(--text-tertiary); font-weight: 600;">Action</th>
 								</tr>
 							</thead>
 							<tbody id="targets-tbody">
@@ -84,22 +89,34 @@ templ Targets(processedDatasets []models.ProcessedDataset, anomalies []models.An
                         const prDataStr = document.getElementById("pr-data").textContent;
                         
                         let processed = []; let anomalies = []; let prospectivities = [];
-                        try { processed = JSON.parse(pDataStr); } catch(e){}
-                        try { anomalies = JSON.parse(aDataStr); } catch(e){}
-                        try { prospectivities = JSON.parse(prDataStr); } catch(e){}
+                        try { processed = JSON.parse(pDataStr) || []; } catch(e){ processed = []; }
+                        try { anomalies = JSON.parse(aDataStr) || []; } catch(e){ anomalies = []; }
+                        try { prospectivities = JSON.parse(prDataStr) || []; } catch(e){ prospectivities = []; }
+                        
+                        console.log("Processed Datasets (from backend):", processed);
+                        console.log("Anomaly Results (from backend):", anomalies);
+                        console.log("Prospectivity Results (from backend):", prospectivities);
                         
                         const selector = document.getElementById("dataset-selector");
                         
                         function renderDashboard(datasetID) {
                             if(!datasetID) return;
                             
+                            console.log("Rendering dashboard for Dataset ID:", datasetID);
+                            
                             // Find corresponding anomaly & prospectivity
-                            const anom = anomalies.find(a => a.dataset_id === datasetID);
-                            const pros = prospectivities.find(p => p.dataset_id === datasetID);
+                            const anom = (anomalies || []).find(a => a.dataset_id === datasetID);
+                            const pros = (prospectivities || []).find(p => p.dataset_id === datasetID);
+                            
+                            console.log("Found Anomaly data:", anom);
+                            console.log("Found Prospectivity data:", pros);
                             
                             // fallback logic if missing
                             const targets = pros ? (pros.targets || []) : [];
                             const results = anom ? (anom.results || []) : [];
+                            
+                            console.log("Targets array length:", targets.length);
+                            console.log("Anomaly results array length:", results.length);
                             
                             // 1. Build 3D Scatter (X, Y, Z coordinates + sizes based on Confidence/Score)
                             let x = [], y = [], z = [], sizes = [], texts = [], colors = [];
@@ -128,13 +145,14 @@ templ Targets(processedDatasets []models.ProcessedDataset, anomalies []models.An
                                 hoverinfo: 'text',
                                 type: 'scatter3d'
                             };
-                            let layout3d = { 
+                             let layout3d = { 
                                 margin: { l:0, r:0, b:0, t:0 }, 
                                 paper_bgcolor: 'transparent',
+                                font: { color: 'var(--text-secondary)' },
                                 scene: {
-                                    xaxis: { title: 'Easting / Lon' },
-                                    yaxis: { title: 'Northing / Lat' },
-                                    zaxis: { title: 'Elevation' }
+                                    xaxis: { title: 'Easting / Lon', gridcolor: 'var(--border)' },
+                                    yaxis: { title: 'Northing / Lat', gridcolor: 'var(--border)' },
+                                    zaxis: { title: 'Elevation', gridcolor: 'var(--border)' }
                                 }
                             };
                             Plotly.newPlot('plot-3d', [trace], layout3d, {responsive: true});
@@ -154,12 +172,13 @@ templ Targets(processedDatasets []models.ProcessedDataset, anomalies []models.An
                                     border: { width: 1, color: '#333' }
                                 } 
                             };
-                            let barLayout = { 
+                             let barLayout = { 
                                 margin: { l:30, r:10, b:40, t:10 }, 
                                 paper_bgcolor: 'transparent',
                                 plot_bgcolor: 'transparent',
-                                xaxis: { type: 'category', tickangle: -45, title: 'Sample ID' },
-                                yaxis: { title: 'Intensity' }
+                                font: { color: 'var(--text-secondary)' },
+                                xaxis: { type: 'category', tickangle: -45, title: 'Sample ID', gridcolor: 'var(--border)' },
+                                yaxis: { title: 'Intensity', gridcolor: 'var(--border)' }
                             };
                             Plotly.newPlot('plot-bar', [barTrace], barLayout, {responsive: true});
                             
@@ -171,7 +190,16 @@ templ Targets(processedDatasets []models.ProcessedDataset, anomalies []models.An
                             
                             if (targets.length === 0) {
                                 tagsDiv.innerHTML = "<p style='color:#6b7280; font-size:0.9rem;'>No text mining rationale data to display for this model.</p>";
-                                tbody.innerHTML = "<tr><td colspan='5' style='padding:1.5rem;color:#6b7280;text-align:center;'>Awaiting processing. No targets found for this spatial dataset.</td></tr>";
+                                tbody.innerHTML = `
+                                    <tr>
+                                        <td colspan="5" style="padding:4rem 2rem; text-align:center;">
+                                            <div style="color:#6b7280; margin-bottom: 1.5rem;">Awaiting processing. No targets found for this spatial dataset.</div>
+                                            <button onclick="runAnalysis('${datasetID}')" id="analyze-btn" class="btn btn-primary" style="background: var(--primary); color: white; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: 500; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem;">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="m16.2 7.8 2.9-2.9"/><path d="M18 12h4"/><path d="m16.2 16.2 2.9 2.9"/><path d="M12 18v4"/><path d="m4.9 19.1 2.9-2.9"/><path d="M2 12h4"/><path d="m4.9 4.9 2.9 2.9"/></svg>
+                                                Run ML Analysis Pipeline
+                                            </button>
+                                        </td>
+                                    </tr>`;
                                 return;
                             }
                             
@@ -179,7 +207,7 @@ templ Targets(processedDatasets []models.ProcessedDataset, anomalies []models.An
                             targets.forEach(t => {
                                 // Add table row
                                 let tr = document.createElement("tr");
-                                tr.style.borderBottom = "1px solid #e5e7eb";
+                                tr.style.borderBottom = "1px solid var(--border)";
                                 let score = t.prospectivity_score || 0;
                                 let isDrill = score >= 0.65; // Mineral threshold logic
                                 
@@ -190,7 +218,7 @@ templ Targets(processedDatasets []models.ProcessedDataset, anomalies []models.An
                                 tr.innerHTML = `
                                     <td style="padding: 1rem; font-weight: 500; font-family: monospace;">${t.target_id}</td>
                                     <td style="padding: 1rem;">${badge}</td>
-                                    <td style="padding: 1rem; font-weight: 500; color: #111827;">${(score * 100).toFixed(1)}%</td>
+                                    <td style="padding: 1rem; font-weight: 500; color: var(--text-primary);">${(score * 100).toFixed(1)}%</td>
                                     <td style="padding: 1rem;">${(t.confidence||0).toFixed(2)}</td>
                                     <td style="padding: 1rem;"><button class="btn btn-outline btn-sm" onclick="alert('Viewing comprehensive lithological details for ${t.target_id}')" style="font-size: 0.8rem; padding: 0.4rem 0.8rem;">Investigate</button></td>
                                 `;
@@ -237,12 +265,45 @@ templ Targets(processedDatasets []models.ProcessedDataset, anomalies []models.An
                             }
                         }
                         
+                        async function runAnalysis(procID) {
+                            const btn = document.getElementById("analyze-btn");
+                            if(!btn) return;
+                            
+                            const originalText = btn.innerHTML;
+                            btn.disabled = true;
+                            btn.innerHTML = '<svg class="animate-spin" style="margin-right: 8px; width: 18px; height: 18px;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" style="opacity: 0.25;"></circle><path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Analyzing...';
+
+                            try {
+                                const response = await fetch(`/api/processed-datasets/${procID}/analyze`, {
+                                    method: 'POST'
+                                });
+                                
+                                if (response.ok) {
+                                    const result = await response.json();
+                                    console.log("Analysis success:", result);
+                                    window.location.reload(); // Refresh to show results
+                                } else {
+                                    const err = await response.json();
+                                    alert("Analysis failed: " + (err.error || "Unknown error"));
+                                    btn.disabled = false;
+                                    btn.innerHTML = originalText;
+                                }
+                            } catch (e) {
+                                console.error("Analysis trigger error:", e);
+                                alert("Failed to connect to analysis engine.");
+                                btn.disabled = false;
+                                btn.innerHTML = originalText;
+                            }
+                        }
+                        window.runAnalysis = runAnalysis;
+
                         selector.addEventListener("change", (e) => {
                             renderDashboard(e.target.value);
                         });
                         
                         // Default render sequence
                         if (processed.length > 0) {
+                            // Ensure we use the JSON property name 'dataset_id'
                             renderDashboard(processed[0].dataset_id);
                         }
                     });

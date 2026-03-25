@@ -9,8 +9,8 @@ templ TeamSettings(users []models.User, currentUserID string) {
 		<div class="team-settings">
 			<div class="screen-header">
 				<div>
-					<h1>Team Management</h1>
-					<p class="subtitle">Manage organization members and roles</p>
+					<h1 style="color: var(--text-primary);">Team Management</h1>
+					<p class="subtitle" style="color: var(--text-secondary);">Manage organization members and roles</p>
 				</div>
 				<button class="btn btn-primary" onclick="openInviteModal()">
 					<span class="icon">+</span> Invite Member
@@ -46,7 +46,7 @@ templ TeamSettings(users []models.User, currentUserID string) {
 														if user.FirstName != "" {
 															{ user.FirstName } { user.LastName }
 														} else {
-															<span class="text-muted">Pending Join</span>
+														<span style="color: var(--text-tertiary); font-style: italic;">Pending Join</span>
 														}
 													</div>
 												</div>
@@ -253,7 +253,7 @@ templ TeamSettings(users []models.User, currentUserID string) {
 				margin-right: 0.5rem;
 			}
 			.status-indicator.active { background: #10b981; }
-			.status-indicator.inactive { background: #9ca3af; }
+			.status-indicator.inactive { background: var(--text-tertiary); }
 			.status-indicator.pending { background: #f59e0b; }
 			
 			.action-buttons {
@@ -290,7 +290,7 @@ templ TeamSettings(users []models.User, currentUserID string) {
 				backdrop-filter: blur(4px);
 			}
 			.modal {
-				background: var(--bg-card);
+				background: var(--bg-primary);
 				border-radius: 12px;
 				width: 100%;
 				max-width: 450px;
@@ -299,7 +299,7 @@ templ TeamSettings(users []models.User, currentUserID string) {
 			}
 			.modal-header {
 				padding: 1.25rem;
-				border-bottom: 1px solid var(--border-color);
+				border-bottom: 1px solid var(--border);
 				display: flex;
 				justify-content: space-between;
 				align-items: center;
@@ -309,14 +309,14 @@ templ TeamSettings(users []models.User, currentUserID string) {
 				border: none;
 				font-size: 1.5rem;
 				cursor: pointer;
-				color: var(--text-muted);
+				color: var(--text-tertiary);
 			}
 			.modal-body {
 				padding: 1.25rem;
 			}
 			.modal-footer {
 				padding: 1.25rem;
-				border-top: 1px solid var(--border-color);
+				border-top: 1px solid var(--border);
 				display: flex;
 				justify-content: flex-end;
 				gap: 0.75rem;
@@ -328,18 +328,19 @@ templ TeamSettings(users []models.User, currentUserID string) {
 				display: block;
 				margin-bottom: 0.5rem;
 				font-weight: 500;
+				color: var(--text-primary);
 			}
 			.form-group input, .form-group select {
 				width: 100%;
 				padding: 0.625rem;
-				border: 1px solid var(--border-color);
+				border: 1px solid var(--border);
 				border-radius: 6px;
 				background: var(--bg-primary);
 				color: var(--text-primary);
 			}
 			.help-text {
 				font-size: 0.8rem;
-				color: var(--text-muted);
+				color: var(--text-tertiary);
 				margin-top: 0.4rem;
 			}
 		</style>

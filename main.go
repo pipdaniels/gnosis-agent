@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"gnosis-agent/internal/agents/anomaly"
+	"gnosis-agent/internal/agents/prospectivity"
 	agents "gnosis-agent/internal/agents/runtime"
 	"gnosis-agent/internal/config"
 	"gnosis-agent/internal/db"
@@ -118,6 +119,13 @@ func main() {
 		slog.Info("Registered Anomaly Agent", "mlpack_enabled", true)
 	}
 
+	prospectivityAgent := prospectivity.NewProspectivityAgent(&cfg.Agents.Prospectivity)
+	if err := agentRuntime.Register(prospectivityAgent); err != nil {
+		slog.Warn("Failed to register prospectivity agent", "error", err)
+	} else {
+		slog.Info("Registered Prospectivity Agent")
+	}
+
 	// Initialize Auth Components
 	authRepo := db.NewMongoAuthRepository()
 	authService := auth.NewAuthService(authRepo, mongoMgr, cfg)
@@ -133,7 +141,7 @@ func main() {
 	e.POST("/signin", authHandler.HandleSignin)
 	e.GET("/logout", authHandler.Logout)
 
-	webHandler := handlers.NewWebHandler(mongoMgr, authService)
+	webHandler := handlers.NewWebHandler(mongoMgr, authService, anomalyAgent, prospectivityAgent)
 
 	// Invite Routes (Public)
 	e.GET("/invite", webHandler.HandleAcceptInviteView)
@@ -156,6 +164,7 @@ func main() {
 	protected.GET("/datasets/:id", webHandler.HandleDatasetDetail)
 	protected.GET("/datasets/:id/map", webHandler.HandleDatasetMap)
 	protected.POST("/api/datasets/:id/qc", webHandler.HandleRunQC)
+	protected.POST("/api/processed-datasets/:id/analyze", webHandler.HandleAnalyzeDataset)
 	protected.POST("/api/datasets/:id/samples/:sampleId/pass", webHandler.HandlePassSample)
 	protected.DELETE("/api/datasets/:id/samples/:sampleId", webHandler.HandleDeleteSample)
 	protected.GET("/targets", webHandler.HandleTargets)

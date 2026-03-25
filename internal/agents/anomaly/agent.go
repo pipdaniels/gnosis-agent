@@ -3,6 +3,7 @@ package anomaly
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"math"
 	"sort"
 
@@ -68,16 +69,22 @@ func (a *AnomalyAgent) Execute(ctx context.Context, input interface{}) (interfac
 // DetectAnomalies performs anomaly detection using multiple methods
 func (a *AnomalyAgent) DetectAnomalies(dataset *models.ProcessedDataset, qcResults *models.QCResults) (*models.AnomalyResults, error) {
 	// Filter to QC-passed samples
+	slog.Info("DetectAnomalies: filtering to QC-passed samples")
 	passedSamples := make([]models.ProcessedAssay, 0)
+	slog.Info("DetectAnomalies: passedSamples", "passedSamples", passedSamples)
 	passedMap := make(map[string]bool)
-	
+
 	for _, qcResult := range qcResults.Results {
+		slog.Info("DetectAnomalies: qcResult", "qcResult", qcResult)
 		if qcResult.Passed {
 			passedMap[qcResult.SampleID] = true
 		}
 	}
 
+	slog.Info("DetectAnomalies: passedMap", "passedMap", passedMap)
+
 	for _, assay := range dataset.ProcessedAssays {
+		slog.Info("DetectAnomalies: assay", "assay", assay)
 		if passedMap[assay.SampleID] {
 			passedSamples = append(passedSamples, assay)
 		}
@@ -89,18 +96,24 @@ func (a *AnomalyAgent) DetectAnomalies(dataset *models.ProcessedDataset, qcResul
 
 	// Prepare data matrix for ML algorithms
 	data, elements := a.prepareDataMatrix(passedSamples)
+	slog.Info("DetectAnomalies: data", "data", data)
+	
 
 	// Method 1: Isolation Forest
 	iforestScores := a.runIsolationForest(data)
+	slog.Info("DetectAnomalies: iforestScores", "iforestScores", iforestScores)
 
 	// Method 2: LOF
 	lofScores := a.runLOF(data)
+	slog.Info("DetectAnomalies: lofScores", "lofScores", lofScores)
 
 	// Combine scores
 	combinedScores := a.combineScores(iforestScores, lofScores)
+	slog.Info("DetectAnomalies: combinedScores", "combinedScores", combinedScores)
 
 	// Calculate pathfinder scores
 	pathfinderScores := a.calculatePathfinderScores(passedSamples, elements)
+	slog.Info("DetectAnomalies: pathfinderScores", "pathfinderScores", pathfinderScores)
 
 	// Create anomaly results
 	results := make([]models.AnomalyResult, 0, len(passedSamples))
@@ -140,23 +153,29 @@ func (a *AnomalyAgent) DetectAnomalies(dataset *models.ProcessedDataset, qcResul
 
 // prepareDataMatrix converts assays to matrix format for ML
 func (a *AnomalyAgent) prepareDataMatrix(assays []models.ProcessedAssay) ([][]float64, []string) {
+	slog.Info("prepareDataMatrix assays:", "assays", assays)
 	// Get all unique elements
 	elementSet := make(map[string]bool)
+	slog.Info("prepareDataMatrix elementSet:", "elementSet", elementSet)
 	for _, assay := range assays {
 		for element := range assay.NormalizedElements {
+			slog.Info("prepareDataMatrix element:", "element", element)
 			elementSet[element] = true
 		}
 	}
 
 	// Sort elements for consistent ordering
 	elements := make([]string, 0, len(elementSet))
+	slog.Info("prepareDataMatrix elements:", "elements", elements)
 	for element := range elementSet {
 		elements = append(elements, element)
 	}
+	slog.Info("prepareDataMatrix elements:", "elements", elements)
 	sort.Strings(elements)
-
+	slog.Info("prepareDataMatrix elements:", "elements", elements)
 	// Create data matrix
 	data := make([][]float64, len(assays))
+	slog.Info("prepareDataMatrix data:", "data", data)
 	for i, assay := range assays {
 		row := make([]float64, len(elements))
 		for j, element := range elements {

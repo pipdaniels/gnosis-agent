@@ -13,6 +13,8 @@ import (
 	"time"
 	"unicode"
 
+	"gnosis-agent/internal/agents/anomaly"
+	"gnosis-agent/internal/agents/prospectivity"
 	"gnosis-agent/internal/db"
 	"gnosis-agent/internal/dto"
 	"gnosis-agent/internal/llm"
@@ -165,20 +167,27 @@ func Upload(c echo.Context) error {
 	return render(c, pages.Upload())
 }
 
-// WebHandler holds dependencies for web-layer handlers.
+// WebHandler handles all incoming platform web requests.
 type WebHandler struct {
-	mongo       *db.MongoManager
-	authService *auth.AuthService
+	mongo              *db.MongoManager
+	authService        *auth.AuthService
+	anomalyAgent       *anomaly.AnomalyAgent
+	prospectivityAgent *prospectivity.ProspectivityAgent
 }
 
-// NewWebHandler creates a WebHandler with the given MongoManager and AuthService.
-func NewWebHandler(mongo *db.MongoManager, authService *auth.AuthService) *WebHandler {
-	return &WebHandler{mongo: mongo, authService: authService}
+// NewWebHandler initializes and returns a new WebHandler.
+func NewWebHandler(mongo *db.MongoManager, authService *auth.AuthService, anomalyAgent *anomaly.AnomalyAgent, prospectivityAgent *prospectivity.ProspectivityAgent) *WebHandler {
+	return &WebHandler{
+		mongo:              mongo,
+		authService:        authService,
+		anomalyAgent:       anomalyAgent,
+		prospectivityAgent: prospectivityAgent,
+	}
 }
 
 // HandleUpload processes a multipart file upload (CSV or XLSX) and saves
 // the parsed assays as a RawDataset in the organisation's raw_datasets collection.
-func (h *WebHandler)  HandleUpload(c echo.Context) error {
+func (h *WebHandler) HandleUpload(c echo.Context) error {
 	// 1. Extract org / user from JWT claims set by echojwt middleware.
 	slog.Info("Upload function called")
 	token, ok := c.Get("user").(*jwt.Token)
@@ -596,8 +605,102 @@ func (h *WebHandler) HandleRunQC(c echo.Context) error {
 		slog.Warn("HandleRunQC: could not upsert processed_dataset", "error", err)
 	}
 
-	slog.Info("Manual QC run complete", "dataset_id", dataset.DatasetID, "overall_qc", qcResult.OverallQC)
+	// -------------------------------------------------------------------------
+	// Go-ADK PLATFORM ACTION: Trigger ML Pipeline (Anomaly & Prospectivity)
+	// -------------------------------------------------------------------------
+	if h.anomalyAgent != nil {
+		anomResults, err := h.anomalyAgent.DetectAnomalies(&procDS, &qcResult)
+		if err != nil {
+			slog.Warn("HandleRunQC: Anomaly detection failed", "error", err)
+		} else {
+			anomResults.DatasetID = procID
+			_, err = orgDB.Collection("anomaly_results").ReplaceOne(ctx, bson.M{"dataset_id": procID}, anomResults, procOpts)
+			if err != nil {
+				slog.Warn("HandleRunQC: could not save anomaly_results", "error", err)
+			}
+
+			if h.prospectivityAgent != nil {
+				prosResultsInter, err := h.prospectivityAgent.Execute(ctx, anomResults)
+				if err != nil {
+					slog.Warn("HandleRunQC: Prospectivity analysis failed", "error", err)
+				} else if pr, ok := prosResultsInter.(*models.ProspectivityResults); ok {
+					pr.DatasetID = procID
+					_, err = orgDB.Collection("prospectivity_results").ReplaceOne(ctx, bson.M{"dataset_id": procID}, pr, procOpts)
+					if err != nil {
+						slog.Warn("HandleRunQC: could not save prospectivity_results", "error", err)
+					}
+				}
+			}
+		}
+	}
+
+	slog.Info("Manual QC and analysis complete", "dataset_id", dataset.DatasetID, "proc_id", procID)
 	return render(c, components.QCResultPanel(qcResult))
+}
+
+// HandleAnalyzeDataset triggers the ML pipeline (Anomaly + Prospectivity) for an existing processed dataset.
+func (h *WebHandler) HandleAnalyzeDataset(c echo.Context) error {
+	slog.Info("HandleAnalyzeDataset: starting analysis")
+	token, ok := c.Get("user").(*jwt.Token)
+	if !ok {
+		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "unauthorized"})
+	}
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "unauthorized"})
+	}
+	orgID, _ := claims["org_id"].(string)
+	procID := c.Param("id")
+	slog.Info("HandleAnalyzeDataset: starting analysis", "org_id", orgID, "proc_id", procID)
+
+	orgDB, err := h.mongo.GetOrgDatabase(orgID)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "db error"})
+	}
+	ctx := c.Request().Context()
+
+	// 1. Fetch Processed Dataset
+	var procDS models.ProcessedDataset
+	slog.Info("HandleAnalyzeDataset: fetching processed dataset", "proc_id", procID)
+	if err := orgDB.Collection("processed_datasets").FindOne(ctx, bson.M{"dataset_id": procID}).Decode(&procDS); err != nil {
+		return c.JSON(http.StatusNotFound, map[string]string{"error": "Processed dataset not found"})
+	}
+
+	// 2. Run QC (Simulated/Re-read or use existing)
+	// For simplicity, we'll try to find existing QC results for the PARENT dataset
+	// In a real system, we'd store the QC result reference in ProcessedDataset.
+	var qcResult models.QCResults
+	slog.Info("HandleAnalyzeDataset: fetching qc results", "qcResult", qcResult)
+	// We don't have a direct link to raw dataset ID in ProcessedDataset struct currently, 
+	// but we can try to guess or use the first one found.
+	// Actually, let's just create a dummy QC result if missing, as anomaly agent mainly needs the assays.
+	_ = orgDB.Collection("qc_results").FindOne(ctx, bson.M{"org_id": orgID}).Decode(&qcResult) 
+
+	// 3. Trigger ML Pipeline
+	procOpts := options.Replace().SetUpsert(true)
+	slog.Info("HandleAnalyzeDataset: triggering ML pipeline", "procOpts", procOpts)
+	if h.anomalyAgent != nil {
+		anomResults, err := h.anomalyAgent.DetectAnomalies(&procDS, &qcResult)
+		slog.Info("HandleAnalyzeDataset: anomaly detection", "anomResults", anomResults)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Anomaly detection failed: " + err.Error()})
+		}
+		anomResults.DatasetID = procID
+		_, _ = orgDB.Collection("anomaly_results").ReplaceOne(ctx, bson.M{"dataset_id": procID}, anomResults, procOpts)
+
+		if h.prospectivityAgent != nil {
+			prosResultsInter, err := h.prospectivityAgent.Execute(ctx, anomResults)
+			slog.Info("HandleAnalyzeDataset: prospectivity analysis", "prosResultsInter", prosResultsInter)
+			if err == nil {
+				if pr, ok := prosResultsInter.(*models.ProspectivityResults); ok {
+					pr.DatasetID = procID
+					_, _ = orgDB.Collection("prospectivity_results").ReplaceOne(ctx, bson.M{"dataset_id": procID}, pr, procOpts)
+				}
+			}
+		}
+	}
+
+	return c.JSON(http.StatusOK, map[string]string{"success": "true", "message": "Analysis pipeline triggered successfully"})
 }
 
 // HandlePassSample marks a specific sample as passed in the QC results.

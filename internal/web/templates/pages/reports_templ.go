@@ -44,7 +44,7 @@ func Reports(processedDatasets []models.ProcessedDataset, technicalReports []mod
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"page-container\" style=\"max-width: 1400px; margin: 2rem auto; padding: 0 1rem; font-family: sans-serif;\"><div style=\"display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;\"><h1 style=\"margin: 0; font-size: 1.8rem; color: #111827;\">Technical Reports Configuration</h1></div><div style=\"display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; margin-bottom: 3rem;\"><!-- Agent Config Form --><div class=\"card\" style=\"background: white; border-radius: 12px; border: 1px solid #e5e7eb; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); padding: 1.5rem; height: fit-content;\"><h3 style=\"margin-top: 0; color: #111827; font-size: 1.2rem; border-bottom: 1px solid #f3f4f6; padding-bottom: 0.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-bot\"><path d=\"M12 8V4H8\"></path><rect width=\"16\" height=\"12\" x=\"4\" y=\"8\" rx=\"2\"></rect><path d=\"M2 14h2\"></path><path d=\"M20 14h2\"></path><path d=\"M15 13v2\"></path><path d=\"M9 13v2\"></path></svg> Agent Generation Setup</h3>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"page-container\" style=\"max-width: 1400px; margin: 2rem auto; padding: 0 1rem; font-family: sans-serif;\"><div style=\"display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;\"><h1 style=\"margin: 0; font-size: 1.8rem; color: var(--text-primary);\">Technical Reports Configuration</h1></div><div style=\"display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; margin-bottom: 3rem;\"><!-- Agent Config Form --><div class=\"card\" style=\"background: var(--bg-primary); border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); padding: 1.5rem; height: fit-content;\"><h3 style=\"margin-top: 0; color: var(--text-primary); font-size: 1.2rem; border-bottom: 1px solid var(--bg-tertiary); padding-bottom: 0.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-bot\"><path d=\"M12 8V4H8\"></path><rect width=\"16\" height=\"12\" x=\"4\" y=\"8\" rx=\"2\"></rect><path d=\"M2 14h2\"></path><path d=\"M20 14h2\"></path><path d=\"M15 13v2\"></path><path d=\"M9 13v2\"></path></svg> Agent Generation Setup</h3>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -54,7 +54,7 @@ func Reports(processedDatasets []models.ProcessedDataset, technicalReports []mod
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<form id=\"report-generator-form\" style=\"display: flex; flex-direction: column; gap: 1.25rem;\"><div><label style=\"display: block; margin-bottom: 0.3rem; font-weight: 500; font-size: 0.85rem; color: #374151;\">Processed Dataset Context</label> <select name=\"dataset_id\" id=\"dataset_id\" style=\"width: 100%; padding: 0.6rem; border-radius: 6px; border: 1px solid #d1d5db; background: #f9fafb;\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<form id=\"report-generator-form\" style=\"display: flex; flex-direction: column; gap: 1.25rem;\"><div><label style=\"display: block; margin-bottom: 0.3rem; font-weight: 500; font-size: 0.85rem; color: var(--text-secondary);\">Processed Dataset Context</label> <select name=\"dataset_id\" id=\"dataset_id\" style=\"width: 100%; padding: 0.6rem; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-secondary); color: var(--text-primary);\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -90,17 +90,17 @@ func Reports(processedDatasets []models.ProcessedDataset, technicalReports []mod
 						return templ_7745c5c3_Err
 					}
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</select></div><div style=\"display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;\"><div><label style=\"display: block; margin-bottom: 0.3rem; font-weight: 500; font-size: 0.85rem; color: #374151;\">Company Name</label> <input type=\"text\" id=\"company_name\" placeholder=\"Acme Minerals\" required style=\"width: 100%; box-sizing: border-box; padding: 0.6rem; border-radius: 6px; border: 1px solid #d1d5db;\"></div><div><label style=\"display: block; margin-bottom: 0.3rem; font-weight: 500; font-size: 0.85rem; color: #374151;\">Competent Person (Author)</label> <input type=\"text\" id=\"author\" placeholder=\"Dr. John Doe\" required style=\"width: 100%; box-sizing: border-box; padding: 0.6rem; border-radius: 6px; border: 1px solid #d1d5db;\"></div></div><div><label style=\"display: block; margin-bottom: 0.3rem; font-weight: 500; font-size: 0.85rem; color: #374151;\">Business/Brand Logo URL</label> <input type=\"url\" id=\"logo_url\" placeholder=\"https://example.com/logo.png\" style=\"width: 100%; box-sizing: border-box; padding: 0.6rem; border-radius: 6px; border: 1px solid #d1d5db;\"></div><div><label style=\"display: block; margin-bottom: 0.3rem; font-weight: 500; font-size: 0.85rem; color: #374151;\">Template Color Scheme</label> <select id=\"color_scheme\" style=\"width: 100%; padding: 0.6rem; border-radius: 6px; border: 1px solid #d1d5db;\"><option value=\"#1a73e8\">Corporate Blue</option> <option value=\"#047857\">Exploration Emerald</option> <option value=\"#b91c1c\">Geochemistry Crimson</option> <option value=\"#374151\">Executive Slate</option></select></div><div><label style=\"display: block; margin-bottom: 0.3rem; font-weight: 500; font-size: 0.85rem; color: #374151;\">Report Structure / TOC Prompt</label><p style=\"font-size: 0.8rem; color: #6b7280; margin-top: 0; margin-bottom: 0.5rem;\">Define the exact sections the AI should draft.</p><textarea id=\"sections\" rows=\"4\" style=\"width: 100%; box-sizing: border-box; padding: 0.6rem; border-radius: 6px; border: 1px solid #d1d5db; font-family: sans-serif; resize: vertical;\" required>1. Executive Summary 2. Geological Anomalies Profile (Pathfinders) 3. Drilling Decisions & Cost-Benefit Rationale 4. Conclusion & Operational Recommendations</textarea></div><div id=\"trigger-error\" style=\"color: #dc2626; font-size: 0.85rem; display: none;\"></div><button type=\"submit\" id=\"trigger-btn\" style=\"background: #111827; color: white; border: none; padding: 0.8rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 0.5rem; transition: background 0.2s; margin-top: 0.5rem;\"><span id=\"trigger-text\">Run Technical Report Agent</span><div id=\"trigger-loader\" style=\"display: none; width: 14px; height: 14px; border: 2px solid #ffffff; border-bottom-color: transparent; border-radius: 50%; box-sizing: border-box; animation: rotation 1s linear infinite;\"></div></button></form>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</select></div><div style=\"display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;\"><div><label style=\"display: block; margin-bottom: 0.3rem; font-weight: 500; font-size: 0.85rem; color: #374151;\">Company Name</label> <input type=\"text\" id=\"company_name\" placeholder=\"Acme Minerals\" required style=\"width: 100%; box-sizing: border-box; padding: 0.6rem; border-radius: 6px; border: 1px solid #d1d5db;\"></div><div><label style=\"display: block; margin-bottom: 0.3rem; font-weight: 500; font-size: 0.85rem; color: #374151;\">Competent Person (Author)</label> <input type=\"text\" id=\"author\" placeholder=\"Dr. John Doe\" required style=\"width: 100%; box-sizing: border-box; padding: 0.6rem; border-radius: 6px; border: 1px solid #d1d5db;\"></div></div><div><label style=\"display: block; margin-bottom: 0.3rem; font-weight: 500; font-size: 0.85rem; color: #374151;\">Business/Brand Logo URL</label> <input type=\"url\" id=\"logo_url\" placeholder=\"https://example.com/logo.png\" style=\"width: 100%; box-sizing: border-box; padding: 0.6rem; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-primary); color: var(--text-primary);\"></div><div><label style=\"display: block; margin-bottom: 0.3rem; font-weight: 500; font-size: 0.85rem; color: #374151;\">Template Color Scheme</label> <select id=\"color_scheme\" style=\"width: 100%; padding: 0.6rem; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-primary); color: var(--text-primary);\"><option value=\"#1a73e8\">Corporate Blue</option> <option value=\"#047857\">Exploration Emerald</option> <option value=\"#b91c1c\">Geochemistry Crimson</option> <option value=\"#374151\">Executive Slate</option></select></div><div><label style=\"display: block; margin-bottom: 0.3rem; font-weight: 500; font-size: 0.85rem; color: #374151;\">Report Structure / TOC Prompt</label><p style=\"font-size: 0.8rem; color: #6b7280; margin-top: 0; margin-bottom: 0.5rem;\">Define the exact sections the AI should draft.</p><textarea id=\"sections\" rows=\"4\" style=\"width: 100%; box-sizing: border-box; padding: 0.6rem; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-primary); color: var(--text-primary); font-family: sans-serif; resize: vertical;\" required>1. Executive Summary 2. Geological Anomalies Profile (Pathfinders) 3. Drilling Decisions & Cost-Benefit Rationale 4. Conclusion & Operational Recommendations</textarea></div><div id=\"trigger-error\" style=\"color: #dc2626; font-size: 0.85rem; display: none;\"></div><button type=\"submit\" id=\"trigger-btn\" style=\"background: #111827; color: white; border: none; padding: 0.8rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 0.5rem; transition: background 0.2s; margin-top: 0.5rem;\"><span id=\"trigger-text\">Run Technical Report Agent</span><div id=\"trigger-loader\" style=\"display: none; width: 14px; height: 14px; border: 2px solid #ffffff; border-bottom-color: transparent; border-radius: 50%; box-sizing: border-box; animation: rotation 1s linear infinite;\"></div></button></form>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</div><!-- Archives List --><div><h3 style=\"margin-top: 0; color: #111827; font-size: 1.2rem; margin-bottom: 1.5rem;\">Generated Reports Archive</h3>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</div><!-- Archives List --><div><h3 style=\"margin-top: 0; color: var(--text-primary); font-size: 1.2rem; margin-bottom: 1.5rem;\">Generated Reports Archive</h3>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if len(technicalReports) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div class=\"empty-state\" style=\"text-align: center; padding: 3rem 2rem; background: #f9fafb; border: 1px dashed #d1d5db; border-radius: 12px;\"><div style=\"display: inline-flex; align-items: center; justify-content: center; width: 50px; height: 50px; border-radius: 50%; background: #e0e7ff; color: #4f46e5; margin-bottom: 1rem;\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-file-text\"><path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"></path><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"></path><path d=\"M10 9H8\"></path><path d=\"M16 13H8\"></path><path d=\"M16 17H8\"></path></svg></div><p style=\"color: #4b5563; font-weight: 500; font-size: 0.95rem;\">No technical reports generated yet.</p><p style=\"color: #6b7280; font-size: 0.85rem; max-width: 300px; margin: 0 auto;\">Configure the settings on the left to invoke the Agent and draft your first report.</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div class=\"empty-state\" style=\"text-align: center; padding: 3rem 2rem; background: var(--bg-secondary); border: 1px dashed var(--border); border-radius: 12px;\"><div style=\"display: inline-flex; align-items: center; justify-content: center; width: 50px; height: 50px; border-radius: 50%; background: #e0e7ff; color: #4f46e5; margin-bottom: 1rem;\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-file-text\"><path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"></path><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"></path><path d=\"M10 9H8\"></path><path d=\"M16 13H8\"></path><path d=\"M16 17H8\"></path></svg></div><p style=\"color: #4b5563; font-weight: 500; font-size: 0.95rem;\">No technical reports generated yet.</p><p style=\"color: #6b7280; font-size: 0.85rem; max-width: 300px; margin: 0 auto;\">Configure the settings on the left to invoke the Agent and draft your first report.</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -110,7 +110,7 @@ func Reports(processedDatasets []models.ProcessedDataset, technicalReports []mod
 					return templ_7745c5c3_Err
 				}
 				for _, doc := range technicalReports {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<div style=\"background: white; border-radius: 12px; border: 1px solid #e5e7eb; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); padding: 1.5rem;\"><div style=\"display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; border-bottom: 1px solid #f3f4f6; padding-bottom: 1rem;\"><div style=\"display: flex; align-items: center; gap: 1rem;\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<div style=\"background: var(--bg-primary); border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); padding: 1.5rem;\"><div style=\"display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; border-bottom: 1px solid var(--bg-tertiary); padding-bottom: 1rem;\"><div style=\"display: flex; align-items: center; gap: 1rem;\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -138,27 +138,27 @@ func Reports(processedDatasets []models.ProcessedDataset, technicalReports []mod
 							return templ_7745c5c3_Err
 						}
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<div><h4 style=\"margin: 0; color: #111827; font-size: 1.1rem;\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<div><h4 style=\"margin: 0; color: var(--text-primary); font-size: 1.1rem;\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var6 string
 					templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(doc.Title)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/reports.templ`, Line: 103, Col: 81}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/reports.templ`, Line: 103, Col: 93}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</h4><div style=\"font-size: 0.85rem; color: #6b7280; margin-top: 0.2rem;\">Author: <span style=\"font-weight: 500; color: #374151;\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</h4><div style=\"font-size: 0.85rem; color: var(--text-tertiary); margin-top: 0.2rem;\">Author: <span style=\"font-weight: 500; color: var(--text-secondary);\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var7 string
 					templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(doc.Metadata.Author)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/reports.templ`, Line: 104, Col: 158}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/reports.templ`, Line: 104, Col: 185}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 					if templ_7745c5c3_Err != nil {
@@ -171,7 +171,7 @@ func Reports(processedDatasets []models.ProcessedDataset, technicalReports []mod
 					var templ_7745c5c3_Var8 string
 					templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(doc.GeneratedAt.Format("Jan 02, 2006 (15:04)"))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/reports.templ`, Line: 104, Col: 223}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/reports.templ`, Line: 104, Col: 250}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 					if templ_7745c5c3_Err != nil {
@@ -200,14 +200,14 @@ func Reports(processedDatasets []models.ProcessedDataset, technicalReports []mod
 							return templ_7745c5c3_Err
 						}
 						if len(doc.Visualizations) > 1 {
-							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "<h5 style=\"margin: 0 0 0.5rem 0; font-size: 1rem; color: #111827; border-left: 4px solid var(--theme-color); padding-left: 0.5rem;\" data-theme=\"")
+							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "<h5 style=\"margin: 0 0 0.5rem 0; font-size: 1rem; color: var(--text-primary); border-left: 4px solid var(--theme-color); padding-left: 0.5rem;\" data-theme=\"")
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
 							var templ_7745c5c3_Var10 string
 							templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(doc.Visualizations[1].Description)
 							if templ_7745c5c3_Err != nil {
-								return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/reports.templ`, Line: 116, Col: 190}
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/reports.templ`, Line: 116, Col: 202}
 							}
 							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 							if templ_7745c5c3_Err != nil {
@@ -220,7 +220,7 @@ func Reports(processedDatasets []models.ProcessedDataset, technicalReports []mod
 							var templ_7745c5c3_Var11 string
 							templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(section.Title)
 							if templ_7745c5c3_Err != nil {
-								return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/reports.templ`, Line: 116, Col: 207}
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/reports.templ`, Line: 116, Col: 219}
 							}
 							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 							if templ_7745c5c3_Err != nil {
@@ -231,14 +231,14 @@ func Reports(processedDatasets []models.ProcessedDataset, technicalReports []mod
 								return templ_7745c5c3_Err
 							}
 						} else {
-							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<h5 style=\"margin: 0 0 0.5rem 0; font-size: 1rem; color: #111827; border-left: 4px solid #1a73e8; padding-left: 0.5rem;\">")
+							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<h5 style=\"margin: 0 0 0.5rem 0; font-size: 1rem; color: var(--text-primary); border-left: 4px solid #1a73e8; padding-left: 0.5rem;\">")
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
 							var templ_7745c5c3_Var12 string
 							templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(section.Title)
 							if templ_7745c5c3_Err != nil {
-								return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/reports.templ`, Line: 118, Col: 149}
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/reports.templ`, Line: 118, Col: 161}
 							}
 							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 							if templ_7745c5c3_Err != nil {
@@ -267,7 +267,7 @@ func Reports(processedDatasets []models.ProcessedDataset, technicalReports []mod
 							return templ_7745c5c3_Err
 						}
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "</div><div style=\"display: flex; gap: 0.8rem; margin-top: 1rem;\"><button class=\"btn btn-outline\" style=\"border: 1px solid #d1d5db; background: white; padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.85rem; font-weight: 500; cursor: pointer;\">Download PDF</button> <button class=\"btn btn-outline\" style=\"border: 1px solid #e0e7ff; background: #eff6ff; color: #4f46e5; padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.85rem; font-weight: 500; cursor: pointer;\">Share Report</button></div></div>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "</div><div style=\"display: flex; gap: 0.8rem; margin-top: 1rem;\"><button class=\"btn btn-outline\" style=\"border: 1px solid var(--border); background: var(--bg-primary); color: var(--text-primary); padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.85rem; font-weight: 500; cursor: pointer;\">Download PDF</button> <button class=\"btn btn-outline\" style=\"border: 1px solid #e0e7ff; background: #eff6ff; color: #4f46e5; padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.85rem; font-weight: 500; cursor: pointer;\">Share Report</button></div></div>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
